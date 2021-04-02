@@ -1533,5 +1533,15 @@
     "one-month": "One month",
     "my-profile": "My profile",
     "default-sync-period": "Sync history for",
-    "bip39-password-placeholder": "BIP39 password"
+    "bip39-password-placeholder": "BIP39 password",
+    "pinned-messages": "Pinned messages",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "no-pinned-messages": "No pinned messages",
+    "pinned-messages-count": {
+        "one": "1 pinned message",
+        "other": "{{count}} pinned messages"
+    },
+    "pinned-messages-empty": "Pinned messages will appear here. To pin a message, press and hold it and tap `Pin`",
+    "pinned": "Pinned"
 }

@@ -192,6 +192,8 @@
 (reg-root-key-sub ::reactions :reactions)
 (reg-root-key-sub ::message-lists :message-lists)
 (reg-root-key-sub ::pagination-info :pagination-info)
+(reg-root-key-sub ::pin-message-lists :pin-message-lists)
+(reg-root-key-sub ::pin-messages :pin-messages)
 
 ;; keycard
 (reg-root-key-sub :keycard/new-account-sheet? :keycard/new-account-sheet?)
@@ -901,6 +903,12 @@
    (get messages chat-id {})))
 
 (re-frame/reg-sub
+ :chats/pinned
+ :<- [::pin-messages]
+ (fn [pin-messages [_ chat-id]]
+   (get pin-messages chat-id {})))
+
+(re-frame/reg-sub
  :chats/message-reactions
  :<- [:multiaccount/public-key]
  :<- [::reactions]
@@ -930,6 +938,12 @@
    (get-in pagination-info [chat-id :loading-messages?])))
 
 (re-frame/reg-sub
+ :chats/loading-pin-messages?
+ :<- [::pagination-info]
+ (fn [pagination-info [_ chat-id]]
+   (get-in pagination-info [chat-id :loading-pin-messages?])))
+
+(re-frame/reg-sub
  :chats/public?
  :<- [::chats]
  (fn [chats [_ chat-id]]
@@ -940,6 +954,12 @@
  :<- [::message-lists]
  (fn [message-lists [_ chat-id]]
    (get message-lists chat-id)))
+
+(re-frame/reg-sub
+ :chats/pin-message-list
+ :<- [::pin-message-lists]
+ (fn [pin-message-lists [_ chat-id]]
+   (get pin-message-lists chat-id)))
 
 (defn hydrate-messages
   "Pull data from messages and add it to the sorted list"
@@ -977,6 +997,24 @@
            (hydrate-messages messages)
            (chat.db/collapse-gaps chat-id synced-from (datetime/timestamp) chat-type joined loading-messages?))))))
 
+(re-frame/reg-sub
+ :chats/raw-chat-pin-messages-stream
+ (fn [[_ chat-id] _]
+   [(re-frame/subscribe [:chats/pin-message-list chat-id])
+    (re-frame/subscribe [:chats/pinned chat-id])
+    (re-frame/subscribe [:chats/loading-pin-messages? chat-id])
+    (re-frame/subscribe [:chats/synced-from chat-id])])
+ (fn [[pin-message-list messages loading-messages? synced-from] [_ chat-id]]
+   ;;TODO (perf)
+   (let [pin-message-list-seq (models.message-list/->seq pin-message-list)]
+     ; Don't show gaps if that's the case as we are still loading messages
+     (if (and (empty? pin-message-list-seq) loading-messages?)
+       []
+       (-> pin-message-list-seq
+           (chat.db/add-datemarks)
+           (hydrate-messages messages)
+           (chat.db/collapse-gaps chat-id synced-from))))))
+
 ;;we want to keep data unchanged so react doesn't change component when we leave screen
 (def memo-chat-messages-stream (atom nil))
 
@@ -1005,6 +1043,13 @@
    @memo-profile-messages-stream))
 
 (def memo-timeline-messages-stream (atom nil))
+
+(re-frame/reg-sub
+ :chats/pinned-messages-stream
+ (fn [[_ chat-id] _]
+   [(re-frame/subscribe [:chats/raw-chat-pin-messages-stream chat-id])])
+ (fn [[messages]]
+   messages))
 
 (re-frame/reg-sub
  :chats/timeline-messages-stream

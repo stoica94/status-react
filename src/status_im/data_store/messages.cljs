@@ -10,9 +10,12 @@
     (assoc :text (:text content)
            :sticker (:sticker content))
     :always
-    (clojure.set/rename-keys {:chat-id :chatId
+    (clojure.set/rename-keys {:chat-id :chat_id
+                              :message-id        :message_id
+                              :whisper-timestamp :whisperTimestamp
                               :community-id :communityId
-                              :clock-value :clock})))
+                              :clock-value :clock
+                              :pinned? :pinned})))
 
 (defn <-rpc [message]
   (-> message
@@ -90,6 +93,17 @@
                      :on-success #(log/debug "successfully deleted messages by chat-id" chat-id)
                      :on-failure #(log/error "failed to delete messages by chat-id" % chat-id)}]})
 
+(defn pinned-message-by-chat-id-rpc [chat-id
+                                     cursor
+                                     limit
+                                     on-success
+                                     on-failure]
+  {::json-rpc/call [{:method     (json-rpc/call-ext-method "chatPinnedMessages")
+                     :params     [chat-id cursor limit]
+                     :on-success (fn [result]
+                                   (on-success (update result :messages #(map <-rpc %))))
+                     :on-failure on-failure}]})
+
 (fx/defn delete-message [cofx id]
   (delete-message-rpc id))
 
@@ -104,3 +118,9 @@
 
 (fx/defn delete-messages-by-chat-id [cofx chat-id]
   (delete-messages-by-chat-id-rpc chat-id))
+
+(fx/defn send-pin-message [cofx pin-message]
+  {::json-rpc/call [{:method (json-rpc/call-ext-method "sendPinMessage")
+                     :params [(->rpc pin-message)]
+                     :on-success #(log/debug "successfully pinned message" pin-message)
+                     :on-failure #(log/error "failed to pin message" % pin-message)}]})
