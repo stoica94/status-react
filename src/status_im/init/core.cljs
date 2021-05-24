@@ -7,7 +7,8 @@
             [status-im.db :refer [app-db]]
             [status-im.utils.fx :as fx]
             [status-im.theme.core :as theme]
-            [status-im.utils.theme :as utils.theme]))
+            [status-im.utils.theme :as utils.theme]
+            [status-im.navigation.core :as navigation]))
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"
@@ -26,14 +27,15 @@
   {:events [::initialize-view]}
   [cofx {:keys [logout?]}]
   (let [{{:multiaccounts/keys [multiaccounts]} :db} cofx]
-    (when (and (seq multiaccounts) (not logout?))
+    (if (and (seq multiaccounts) (not logout?))
       ;; We specifically pass a bunch of fields instead of the whole multiaccount
       ;; as we want store some fields in multiaccount that are not here
       (let [multiaccount (first (sort-by :timestamp > (vals multiaccounts)))]
         (multiaccounts.login/open-login cofx
                                         (select-keys
                                          multiaccount
-                                         [:key-uid :name :public-key :identicon :images]))))))
+                                         [:key-uid :name :public-key :identicon :images])))
+      (navigation/init-intro cofx))))
 
 (fx/defn initialize-multiaccounts
   {:events [::initialize-multiaccounts]}
@@ -47,13 +49,11 @@
                               {}
                               all-multiaccounts)]
     (fx/merge cofx
-              {:db             (-> db
-                                   (assoc :multiaccounts/multiaccounts multiaccounts)
-                                   (assoc :multiaccounts/logout? logout?)
-                                   (assoc :multiaccounts/loading false))
-               ;; NOTE: Try to dispatch later navigation because of that https://github.com/react-navigation/react-navigation/issues/6879
-               :dispatch-later [{:dispatch [::initialize-view {:logout? logout?}]
-                                 :ms       100}]})))
+              {:db       (-> db
+                             (assoc :multiaccounts/multiaccounts multiaccounts)
+                             (assoc :multiaccounts/logout? logout?)
+                             (assoc :multiaccounts/loading false))
+               :dispatch [::initialize-view {:logout? logout?}]})))
 
 (fx/defn start-app
   {:events [:init/app-started]}

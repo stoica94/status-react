@@ -39,3 +39,29 @@
      :component custom-tokens/custom-token-details}
     {:name      :currency-settings
      :component currency-settings/currency-settings}]])
+
+(def screens
+  [{:name      :wallet
+    :insets    {:top false}
+    :style     {:padding-bottom tabbar.styles/tabs-diff}
+    :on-focus  [:wallet/tab-opened]
+    :component wallet.accounts/accounts-overview}
+   {:name      :wallet-account
+    :component  wallet.account/account}
+   {:name      :add-new-account
+    :component add-account/add-account}
+   {:name      :add-new-account-pin
+    :component add-account/pin}
+   {:name      :account-settings
+    :component account-settings/account-settings}
+   {:name      :wallet-transaction-details
+    :component wallet-transactions/transaction-details}
+   {:name      :wallet-settings-assets
+    :component wallet-settings/manage-assets}
+   {:name      :wallet-add-custom-token
+    :on-focus  [:wallet/wallet-add-custom-token]
+    :component custom-tokens/add-custom-token}
+   {:name      :wallet-custom-token-details
+    :component custom-tokens/custom-token-details}
+   {:name      :currency-settings
+    :component currency-settings/currency-settings}])

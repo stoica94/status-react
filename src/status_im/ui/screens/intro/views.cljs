@@ -23,29 +23,27 @@
             [status-im.utils.datetime :as datetime])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
-(defview intro []
-  (letsubs  [{window-height :height} [:dimensions/window]
-             view-id [:view-id]]
-    [react/view {:style styles/intro-view}
-     [carousel/viewer [{:image (resources/get-theme-image :chat)
-                        :title :intro-title1
-                        :text :intro-text1}
-                       {:image (resources/get-theme-image :wallet)
-                        :title :intro-title2
-                        :text :intro-text2}
-                       {:image (resources/get-theme-image :browser)
-                        :title :intro-title3
-                        :text :intro-text3}] window-height view-id]
-     [react/view styles/buttons-container
-      [react/view {:style (assoc styles/bottom-button :margin-bottom 16)}
-       [quo/button {:on-press #(re-frame/dispatch [:multiaccounts.create.ui/intro-wizard])}
-        (i18n/label :t/get-started)]]
-      [react/nested-text
-       {:style styles/welcome-text-bottom-note}
-       (i18n/label :t/intro-privacy-policy-note1)
-       [{:style    (assoc styles/welcome-text-bottom-note :color colors/blue)
-         :on-press privacy-policy/open-privacy-policy-link!}
-        (i18n/label :t/intro-privacy-policy-note2)]]]]))
+(defn intro []
+  [react/view {:style styles/intro-view}
+   [carousel/viewer [{:image (resources/get-theme-image :chat)
+                      :title :intro-title1
+                      :text :intro-text1}
+                     {:image (resources/get-theme-image :wallet)
+                      :title :intro-title2
+                      :text :intro-text2}
+                     {:image (resources/get-theme-image :browser)
+                      :title :intro-title3
+                      :text :intro-text3}]]
+   [react/view styles/buttons-container
+    [react/view {:style (assoc styles/bottom-button :margin-bottom 16)}
+     [quo/button {:on-press #(re-frame/dispatch [:init-onboarding])}
+      (i18n/label :t/get-started)]]
+    [react/nested-text
+     {:style styles/welcome-text-bottom-note}
+     (i18n/label :t/intro-privacy-policy-note1)
+     [{:style    (assoc styles/welcome-text-bottom-note :color colors/blue)
+       :on-press privacy-policy/open-privacy-policy-link!}
+      (i18n/label :t/intro-privacy-policy-note2)]]]])
 
 (defn generate-key []
   (let [dimensions (r/atom {})]

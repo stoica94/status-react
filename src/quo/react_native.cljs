@@ -3,7 +3,8 @@
             [cljs-bean.core :as bean]
             [quo.platform :as platform]
             ["react-native" :as rn]
-            ["@react-native-community/hooks" :as hooks]))
+            ["@react-native-community/hooks" :as hooks]
+            ["react-native-navigation" :refer (Navigation)]))
 
 (def app-registry (.-AppRegistry rn))
 
@@ -28,13 +29,20 @@
 
 (def keyboard-avoiding-view-class (reagent/adapt-react-class (.-KeyboardAvoidingView ^js rn)))
 
+(def navigation-const (atom nil))
+
+(.then (.constants Navigation) (fn [consts]
+                                 (reset! navigation-const {:top-bar-height (.-topBarHeight consts)
+                                                           :status-bar-height (.-statusBarHeight consts)})))
+
 (defn keyboard-avoiding-view []
   (let [this  (reagent/current-component)
         props (reagent/props this)]
     (into [keyboard-avoiding-view-class
            (merge (when platform/ios?
                     {:behavior :padding})
-                  props)]
+                  props
+                  {:keyboardVerticalOffset (+ 44 (get @navigation-const :status-bar-height))})]
           (reagent/children this))))
 
 (def keyboard (.-Keyboard ^js rn))

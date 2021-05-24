@@ -42,7 +42,8 @@
   {:db
    (-> (assoc db :view-id go-to-view-id)
        (all-screens-params go-to-view-id screen-params))
-   ::navigate-to [go-to-view-id screen-params]
+   ;::navigate-to [go-to-view-id screen-params]
+   :rnn-navigate-to-fx go-to-view-id
    ;; simulate a navigate-to event so it can be captured be anon-metrics
    ::anon-metrics/transform-and-log {:coeffects {:event [:navigate-to go-to-view-id screen-params]}}})
 

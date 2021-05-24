@@ -147,7 +147,7 @@
                                                      :event                   nil
                                                      :cond                    nil
                                                      :block                   nil
-                                                     :interpolate             nil
+                                                     :interpolateNode         nil
                                                      :call                    nil
                                                      :timing                  nil
                                                      :onChange                nil
@@ -156,7 +156,7 @@
                                                      :Text                    #js {}
                                                      :Extrapolate             #js {:CLAMP nil}
                                                      :Code                    #js {}}
-                                  :Easing       #js {:bezier identity
+                                  :EasingNode   #js {:bezier identity
                                                      :linear identity}
                                   :clockRunning nil})
 (def react-native-gesture-handler #js {:default                  #js {}

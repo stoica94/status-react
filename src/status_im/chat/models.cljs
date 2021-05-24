@@ -214,7 +214,7 @@
             (fn [{:keys [db]}]
               {:db (assoc db :current-chat-id chat-id)})
             (preload-chat-data chat-id)
-            (navigation/navigate-to-cofx  :chat-stack {:screen :chat})))
+            (navigation/navigate-to-cofx :chat nil)))
 
 (fx/defn handle-clear-history-response
   {:events [::history-cleared]}

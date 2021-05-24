@@ -20,40 +20,12 @@
             [status-im.add-new.db :as db]
             [status-im.utils.debounce :as debounce]
             [status-im.utils.utils :as utils]
-            [cljs-bean.core :as bean]
-            [status-im.multiaccounts.login.core :as multiaccounts.login]
             [status-im.ui.components.invite.views :as invite]
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
             [status-im.ui.components.tabbar.styles :as tabs.styles]
             [status-im.ui.screens.chat.sheets :as sheets])
   (:require-macros [status-im.utils.views :as views]))
-
-(defn welcome-image-wrapper []
-  (let [dimensions (reagent/atom {})]
-    (fn []
-      [react/view {:on-layout (fn [^js e]
-                                (reset! dimensions (bean/->clj (-> e .-nativeEvent .-layout))))
-                   :style     {:align-items     :center
-                               :justify-content :center
-                               :flex            1}}
-       (let [padding    0
-             image-size (- (min (:width @dimensions) (:height @dimensions)) padding)]
-         [react/image {:source      (resources/get-theme-image :welcome)
-                       :resize-mode :contain
-                       :style       {:width image-size :height image-size}}])])))
-
-(defn welcome []
-  [react/view {:style styles/welcome-view}
-   [welcome-image-wrapper]
-   [react/i18n-text {:style styles/welcome-text :key :welcome-to-status}]
-   [react/view
-    [react/i18n-text {:style styles/welcome-text-description
-                      :key   :welcome-to-status-description}]]
-   [react/view {:align-items :center :margin-bottom 50}
-    [quo/button {:on-press            #(re-frame/dispatch [::multiaccounts.login/welcome-lets-go])
-                 :accessibility-label :lets-go-button}
-     (i18n/label :t/lets-go)]]])
 
 (defn home-tooltip-view []
   [react/view (styles/chat-tooltip)

@@ -45,8 +45,8 @@
 (def checkpoint-1-0-0-rc1-labels
   #{:You
     :about-app
-    :about-key-storage-content
-    :about-key-storage-title
+    `:about-key-storage-content
+    :about-key-storage-title`
     :about-names-content
     :about-names-title
     :access-key

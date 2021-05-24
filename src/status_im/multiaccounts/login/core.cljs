@@ -369,6 +369,7 @@
                                :multiaccount)
                        (assoc :logged-in-since now)
                        (assoc :view-id :home))
+               :init-tabs-fx nil
                ::json-rpc/call
                [{:method     "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}
@@ -425,9 +426,11 @@
                   (assoc-in [:keycard :pin :enter-step] :login)
                   (assoc-in [:keycard :pin :status] nil)
                   (assoc-in [:keycard :pin :login] []))})
-       (if keycard-account?
-         (navigation/navigate-to-cofx :intro-stack {:screen :keycard-login-pin})
-         (navigation/navigate-to-cofx :intro-stack {:screen :login}))))))
+       #(if keycard-account?
+         (navigation/navigate-to-cofx % :intro-stack {:screen :keycard-login-pin})
+         {:init-login-fx nil}
+         ;(navigation/navigate-to-cofx :intro-stack {:screen :login})
+         )))))
 
 (fx/defn get-credentials
   [{:keys [db] :as cofx} key-uid]
@@ -508,7 +511,7 @@
            (popover/show-popover {:view :disable-password-saving})))))))
 
 (fx/defn welcome-lets-go
-  {:events [::welcome-lets-go]}
+  {:events [:welcome-lets-go]}
   [cofx]
   (let [first-account? (get-in cofx [:db :multiaccount :multiaccounts/first-account])]
     (fx/merge cofx
@@ -525,10 +528,10 @@
   (let [multiaccount (get-in db [:multiaccounts/multiaccounts key-uid])]
     (fx/merge
      cofx
-     {:db (-> db
-              (dissoc :intro-wizard :recovered-account?)
-              (update :keycard dissoc :application-info))}
-     (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
+     {:db (update db :keycard dissoc :application-info)
+      :rnn-navigate-to-fx :login}
+     ;(open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])
+     )))
 
 (fx/defn hide-keycard-banner
   {:events [:hide-keycard-banner]}

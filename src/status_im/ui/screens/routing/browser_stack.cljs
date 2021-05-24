@@ -21,3 +21,19 @@
     {:name       :browser-tabs
      :insets     {:top true}
      :component  browser.tabs/tabs}]])
+
+(def screens
+  [{:name      :empty-tab
+    :insets    {:top true}
+    :style     {:padding-bottom tabbar.styles/tabs-diff}
+    :component empty-tab/empty-tab}
+   {:name         :browser
+    :back-handler :noop
+    :options      {:topBar {:visible false}
+                   :hardwareBackButton {:popStackOnPress false}}
+    :component    browser/browser}
+   {:name       :browser-tabs
+    :insets     {:top true}
+    :options      {:topBar {:visible false}
+                   :hardwareBackButton {:popStackOnPress false}}
+    :component  browser.tabs/tabs}])

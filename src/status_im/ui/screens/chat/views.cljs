@@ -333,7 +333,7 @@
         set-active-panel (get-set-active-panel active-panel)
         on-close #(set-active-panel nil)]
     (reagent/create-class
-     {:component-will-unmount #(re-frame/dispatch-sync [:close-chat])
+     {;:component-will-unmount #(re-frame/dispatch-sync [:close-chat])
       :reagent-render
       (fn []
         (let [{:keys [chat-id show-input? group-chat admins invitation-admin] :as chat}
@@ -341,7 +341,7 @@
               @(re-frame/subscribe [:chats/current-chat-chat-view])
               max-bottom-space (max @bottom-space @panel-space)]
           [:<>
-           [topbar]
+           ;[topbar]
            [connectivity/loading-indicator]
            (when chat-id
              (if group-chat

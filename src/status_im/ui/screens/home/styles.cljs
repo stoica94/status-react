@@ -40,27 +40,12 @@
    :line-height       22
    :text-align        :center})
 
-(def welcome-view
-  {:flex            1
-   :justify-content :flex-end})
-
-(def welcome-text
-  {:typography :header
-   :text-align :center})
-
 (def welcome-blank-text
   {:font-size   15
    :width       270
    :line-height 22
    :text-align  :center
    :color       colors/gray})
-
-(def welcome-text-description
-  {:margin-top        16
-   :margin-bottom     32
-   :text-align        :center
-   :margin-horizontal 40
-   :color             colors/gray})
 
 (def empty-chats-header-container
   {:align-items     :center

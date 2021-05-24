@@ -92,3 +92,35 @@
      :insets    {:top    false
                  :bottom true}
      :component group/new-group}]])
+
+(def screens
+  [{:name      :home
+    :style     {:padding-bottom tabbar.styles/tabs-diff}
+    :component home/home}
+   {:name      :referral-enclav
+    :component referrals.public-chat/view}
+   {:name      :chat
+    :component chat/chat}
+   {:name      :group-chat-profile
+    :insets    {:top false}
+    :component profile.group-chat/group-chat-profile}
+   {:name      :group-chat-invite
+    :component profile.group-chat/group-chat-invite}
+   {:name      :stickers
+    :component stickers/packs}
+   {:name      :stickers-pack
+    :component stickers/pack}
+   {:name      :notifications-center
+    :component notifications-center/center}
+   ;; Community
+   {:name      :community
+    :component community/community}
+   {:name      :community-management
+    :insets    {:top false}
+    :component community.profile/management-container}
+   {:name      :community-members
+    :component members/members-container}
+   {:name      :community-requests-to-join
+    :component requests-to-join/requests-to-join-container}
+   {:name      :create-community-channel
+    :component create-channel/create-channel}])

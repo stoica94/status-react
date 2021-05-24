@@ -8,6 +8,7 @@
  */
 
 #import "AppDelegate.h"
+#import <ReactNativeNavigation/ReactNativeNavigation.h>
 
 #import <asl.h>
 #import "ReactNativeConfig.h"
@@ -18,7 +19,6 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
-#import <React/RCTRootView.h>
 
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
@@ -77,13 +77,14 @@ static void InitializeFlipper(UIApplication *application) {
       dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:@"BLANK_PREVIEW"];
   [[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];
 
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  [ReactNativeNavigation bootstrapWithDelegate:self launchOptions:launchOptions];
+  /*RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                       moduleName:@"StatusIm"
                                                initialProperties:nil];
-  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
+  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];*/
 
-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  /*self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   _blankView = [[UIView alloc]initWithFrame:self.window.frame];
   _blankView.backgroundColor = [UIColor whiteColor];
   _blankView.alpha = 0;
@@ -91,7 +92,7 @@ static void InitializeFlipper(UIApplication *application) {
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
-  [self.window makeKeyAndVisible];
+  [self.window makeKeyAndVisible];*/
   [RNSplashScreen show];
 
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
@@ -114,6 +115,10 @@ static void InitializeFlipper(UIApplication *application) {
   return [RCTLinkingManager application:application
                    continueUserActivity:userActivity
                      restorationHandler:restorationHandler];
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge {
+  return [ReactNativeNavigation extraModulesForBridge:bridge];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
