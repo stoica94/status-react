@@ -230,13 +230,15 @@
 ;; KeyboardAvoidingView
 (def navigation-const (atom nil))
 
-(.then (.constants Navigation) (fn [consts]
-                                 (reset! navigation-const {:top-bar-height (.-topBarHeight consts)
-                                                           :status-bar-height (.-statusBarHeight consts)})))
+(.then (.constants Navigation)
+       (fn [^js consts]
+         (reset! navigation-const {:top-bar-height (.-topBarHeight consts)
+                                   :status-bar-height (.-statusBarHeight consts)})))
 
 (defn keyboard-avoiding-view [props & children]
   (into [keyboard-avoiding-view-class
-         (merge (when platform/ios? {:behavior :padding}) props {:keyboardVerticalOffset (+ 44 (get @navigation-const :status-bar-height))})]
+         (merge (when platform/ios? {:behavior :padding}) props {:keyboardVerticalOffset
+                                                                 (+ 44 (get @navigation-const :status-bar-height))})]
         children))
 
 (defn scroll-view [props & children]

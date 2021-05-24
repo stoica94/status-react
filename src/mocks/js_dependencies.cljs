@@ -113,6 +113,10 @@
                                   :useFocusEffect      identity
                                   :CommonActions       #js {}
                                   :StackActions        #js {}})
+
+(def react-native-navigation #js {:Navigation #js {:constants (fn [] #js {:then identity})
+                                                   :events identity}})
+
 (def react-navigation-stack #js {:createStackNavigator identity
                                  :TransitionPresets    #js {:ModalPresentationIOS #js {}}})
 (def react-navigation-bottom-tabs #js {:createBottomTabNavigator identity})
@@ -226,6 +230,7 @@
     "react-native-device-info" react-native-device-info
     "react-native-push-notification" react-native-push-notification
     "react-native-linear-gradient" react-native-gradien
+    "react-native-navigation" react-native-navigation
     "@react-native-community/push-notification-ios" push-notification-ios
     "./fleets.js" default-fleets
     "./chats.js" default-chats

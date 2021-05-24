@@ -31,7 +31,7 @@
 
 (def navigation-const (atom nil))
 
-(.then (.constants Navigation) (fn [consts]
+(.then (.constants Navigation) (fn [^js consts]
                                  (reset! navigation-const {:top-bar-height (.-topBarHeight consts)
                                                            :status-bar-height (.-statusBarHeight consts)})))
 
