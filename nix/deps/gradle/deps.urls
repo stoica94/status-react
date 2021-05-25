@@ -208,7 +208,6 @@ https://dl.google.com/dl/android/maven2/com/android/tools/build/jetifier/jetifie
 https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/26.0.0/manifest-merger-26.0.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/26.0.1/manifest-merger-26.0.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/26.1.4/manifest-merger-26.1.4.pom
-https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/26.2.1/manifest-merger-26.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/26.3.1/manifest-merger-26.3.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/build/manifest-merger/26.5.3/manifest-merger-26.5.3.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/common/26.0.0/common-26.0.0.pom
@@ -222,12 +221,10 @@ https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/26.0.1/ddm
 https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/26.1.4/ddmlib-26.1.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/26.2.1/ddmlib-26.2.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/26.3.1/ddmlib-26.3.1.pom
-https://dl.google.com/dl/android/maven2/com/android/tools/ddms/ddmlib/26.5.3/ddmlib-26.5.3.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/26.0.0/dvlib-26.0.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/26.0.1/dvlib-26.0.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/26.1.4/dvlib-26.1.4.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/26.2.1/dvlib-26.2.1.pom
-https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/26.3.1/dvlib-26.3.1.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/dvlib/26.5.3/dvlib-26.5.3.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/external/com-intellij/intellij-core/26.0.0/intellij-core-26.0.0.pom
 https://dl.google.com/dl/android/maven2/com/android/tools/external/com-intellij/intellij-core/26.0.1/intellij-core-26.0.1.pom
@@ -282,6 +279,9 @@ https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-tas
 https://dl.google.com/dl/android/maven2/com/google/android/material/material/1.0.0/material-1.0.0.pom
 https://dl.google.com/dl/android/maven2/com/google/android/material/material/1.1.0/material-1.1.0.pom
 https://dl.google.com/dl/android/maven2/com/google/android/material/material/1.2.0-alpha03/material-1.2.0-alpha03.pom
+https://repository.sonatype.org/content/groups/sonatype-public-grid/com/android/tools/build/manifest-merger/26.2.1/manifest-merger-26.2.1.pom
+https://repository.sonatype.org/content/groups/sonatype-public-grid/com/android/tools/ddms/ddmlib/26.5.3/ddmlib-26.5.3.pom
+https://repository.sonatype.org/content/groups/sonatype-public-grid/com/android/tools/dvlib/26.3.1/dvlib-26.3.1.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/fbjni/fbjni-java-only/0.0.3/fbjni-java-only-0.0.3.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/flipper/flipper-fresco-plugin/0.54.0/flipper-fresco-plugin-0.54.0.pom
 https://repository.sonatype.org/content/groups/sonatype-public-grid/com/facebook/flipper/flipper/0.54.0/flipper-0.54.0.pom
