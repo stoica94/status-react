@@ -1,5 +1,6 @@
 (ns status-im.navigation.core
   (:require ["react-native-navigation" :refer (Navigation)]
+            ["react-native-gesture-handler" :refer (gestureHandlerRootHOC)]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.colors :as colors]
             [status-im.reloader :as reloader]
@@ -16,7 +17,8 @@
 (defonce root-comp-id (atom nil))
 
 (defn reg-comp [key]
-  (.registerComponent Navigation key (views/screen key)))
+  (let [screen (views/screen key)]
+    (.registerComponent Navigation key (fn [] (gestureHandlerRootHOC screen)) (fn [] screen))))
 
 (.setLazyComponentRegistrator Navigation reg-comp)
 
@@ -30,16 +32,20 @@
 
 ;; register bottom-sheet component
 
+(def sheet-comp
+     (reagent.core/reactify-component
+      (fn []
+        ^{:key (str @colors/theme @reloader/cnt)}
+        [react/safe-area-provider
+         [bottom-sheets/bottom-sheet]
+         (when debug?
+           [reloader/reload-view])])))
+
 (.registerComponent Navigation
                     "bottom-sheet"
-                    (fn []
-                      (reagent.core/reactify-component
-                       (fn []
-                         ^{:key (str @colors/theme @reloader/cnt)}
-                         [react/safe-area-provider
-                          [bottom-sheets/bottom-sheet]
-                          (when debug?
-                            [reloader/reload-view])]))))
+                    (fn [] (gestureHandlerRootHOC sheet-comp))
+                    (fn [] sheet-comp))
+
 
 (re-frame/reg-fx
  :rnn-show-bottom-sheet
@@ -62,6 +68,7 @@
   (.setRoot Navigation (clj->js root)))
 
 (def general-options {:topBar {:noBorder   true
+                               :elevation 0
                                :backButton {:icon  (js/require "../resources/images/icons/arrow_left.png")
                                             :color :black}}})
 
@@ -94,7 +101,8 @@
  (fn []
    (set-root {:root {:stack {:children [{:component {:name :multiaccounts
                                                      :id      :login-multiaccounts
-                                                     :options  {:topBar {:visible false}}}}
+                                                     :options  {:topBar {:elevation 0
+                                                                         :visible false}}}}
                                         {:component {:name :login}}]
                              :options  general-options}}}
              :login-multiaccounts)))
@@ -110,47 +118,59 @@
                                       (println "selectedTabIndex" (.-selectedTabIndex evn))
                                       (reset! root-comp-id (get tab-root-ids (.-selectedTabIndex evn)))))
 
+(def bottom-tab-general
+  {:fontSize 11
+   :iconColor colors/gray :selectedIconColor colors/blue
+   :textColor colors/gray :selectedTextColor colors/blue})
+
 (re-frame/reg-fx
  :init-tabs-fx
  (fn []
    (set-root {:root {:bottomTabs
-                     {:options {;:bottomTabs {:elevation 0
+                     {:options {:bottomTabs {:titleDisplayMode :alwaysShow
+                                             :preferLargeIcons false}}
+                                             ;:elevation 0}
                                              ;:hideShadow true
-                                :bottomTab {:iconWidth 20 :iconHeight 20 :fontSize 11
-                                            :iconColor colors/gray :selectedIconColor colors/blue
-                                            :textColor colors/gray :selectedTextColor colors/blue}}
+
                       :children
                       [{:stack {:children [{:component {:name :home
                                                         :id :home-root
-                                                        :options  {:topBar {:visible false}}}}]
+                                                        :options  {:topBar {:visible false}
+                                                                   ;;TODO for some reason it doesn't work in bottomTabs
+                                                                   ;;options on android so we have to duplicate it for teach tab
+                                                                   :bottomTab bottom-tab-general}}}]
                                 :options (merge general-options
                                                 ;;TAB
                                                 {:bottomTab {:text (i18n/label :t/chat)
                                                              :icon  (js/require "../resources/images/icons/message.png")}})}}
                        {:stack {:children [{:component {:name :empty-tab
                                                         :id :browser-root
-                                                        :options  {:topBar {:visible false}}}}]
+                                                        :options  {:topBar {:visible false}
+                                                                   :bottomTab bottom-tab-general}}}]
                                 :options (merge general-options
                                                 ;;TAB
                                                 {:bottomTab {:text (i18n/label :t/browser)
                                                              :icon  (js/require "../resources/images/icons/browser.png")}})}}
                        {:stack {:children [{:component {:name :wallet
                                                         :id :wallet-root
-                                                        :options  {:topBar {:visible false}}}}]
+                                                        :options  {:topBar {:visible false}
+                                                                   :bottomTab bottom-tab-general}}}]
                                 :options (merge general-options
                                                 ;;TAB
                                                 {:bottomTab {:text (i18n/label :t/wallet)
                                                              :icon  (js/require "../resources/images/icons/wallet.png")}})}}
                        {:stack {:children [{:component {:name :status
                                                         :id :status-root
-                                                        :options  {:topBar {:visible false}}}}]
+                                                        :options  {:topBar {:visible false}
+                                                                   :bottomTab bottom-tab-general}}}]
                                 :options (merge general-options
                                                 ;;TAB
                                                 {:bottomTab {:text (i18n/label :t/status)
                                                              :icon  (js/require "../resources/images/icons/status.png")}})}}
                        {:stack {:children [{:component {:name :my-profile
                                                         :id :profile-root
-                                                        :options  {:topBar {:visible false}}}}]
+                                                        :options  {:topBar {:visible false}
+                                                                   :bottomTab bottom-tab-general}}}]
                                 :options (merge general-options
                                                 ;;TAB
                                                 {:bottomTab {:text (i18n/label :t/profile)

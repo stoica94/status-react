@@ -28,18 +28,17 @@
 (def screens (get-screens))
 
 (defn screen [key]
-  (fn []
-    (reagent.core/reactify-component
-     (fn []
-       ^{:key (str @colors/theme @reloader/cnt)}
-       [react/safe-area-provider
-        [react/safe-area-consumer
-         (fn [insets]
-           (reagent/as-element
-            [react/view {;;TODO check how it works
-                         :style (routing/wrapped-screen-style
-                                 {:insets (get-in screens [(keyword key) :insets])}
-                                 insets)}
-             [(get-in (if js/goog.DEBUG (get-screens) screens) [(keyword key) :component])]]))]
-        (when js/goog.DEBUG
-          [reloader/reload-view])]))))
+  (reagent.core/reactify-component
+   (fn []
+     ^{:key (str @colors/theme @reloader/cnt)}
+     [react/safe-area-provider
+      [react/safe-area-consumer
+       (fn [insets]
+         (reagent/as-element
+          [react/view {;;TODO check how it works
+                       :style (routing/wrapped-screen-style
+                               {:insets (get-in screens [(keyword key) :insets])}
+                               insets)}
+           [(get-in (if js/goog.DEBUG (get-screens) screens) [(keyword key) :component])]]))]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))

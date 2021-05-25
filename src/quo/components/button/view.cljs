@@ -68,25 +68,24 @@
         optional-haptic (fn []
                           (when haptic-feedback
                             (haptic/trigger haptic-type)))]
-    [rn/touchable-opacity (merge {
-
-                                  :type                type
-                                  :disabled            disabled
-                                  :accessibility-label accessibility-label}
-                                 (when on-press
-                                   {:on-press (fn []
-                                                (optional-haptic)
-                                                (on-press))})
-                                 (when on-long-press
-                                   {:on-long-press (fn []
+    [animation/pressable (merge {:bg-color            background-color
+                                 :border-radius       border-radius
+                                 :type                type
+                                 :disabled            disabled
+                                 :accessibility-label accessibility-label}
+                                (when on-press
+                                  {:on-press (fn []
+                                               (optional-haptic)
+                                               (on-press))})
+                                (when on-long-press
+                                  {:on-long-press (fn []
+                                                    (optional-haptic)
+                                                    (on-long-press))})
+                                (when on-press-start
+                                  {:on-press-start (fn []
                                                      (optional-haptic)
-                                                     (on-long-press))})
-                                 (when on-press-start
-                                   {:on-press-start (fn []
-                                                      (optional-haptic)
-                                                      (on-press-start))}))
-     [rn/view {:style (merge (style-container type) {:background-color background-color
-                                                     :border-radius    border-radius} style)}
+                                                     (on-press-start))}))
+     [rn/view {:style (merge (style-container type) style)}
       (when before
         [rn/view
          [icons/icon before {:color icon-color}]])
