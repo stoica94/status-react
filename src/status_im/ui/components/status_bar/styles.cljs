@@ -13,7 +13,8 @@
                                        {:bar-style "dark-content"}))
    :android (create-status-bar-style (if (colors/dark?)
                                        {:translucent? true}
-                                       {:translucent? true
+                                       {:translucent? false
+                                        :background-color colors/white
                                         :bar-style "dark-content"}))})
 
 (styles/defn status-bar-black []

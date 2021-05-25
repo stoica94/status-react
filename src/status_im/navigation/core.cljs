@@ -22,11 +22,14 @@
 
 (.setLazyComponentRegistrator Navigation reg-comp)
 
+(def status-bar-options {:statusBar {:backgroundColor :white
+                                     :style :dark}})
+
 (defn navigate [comp]
   (.push Navigation
          (name @root-comp-id)
          (clj->js {:component {:name    (name comp)
-                               :options (get-in views/screens [comp :options])}})))
+                               :options (merge status-bar-options (get-in views/screens [comp :options]))}})))
 
 ;; BOTTOM SHEETS
 
@@ -53,7 +56,9 @@
    (.showOverlay Navigation
                  (clj->js
                   {:component {:name    "bottom-sheet"
-                               :options {:layout  {:componentBackgroundColor "transparent"}
+                               :options {:statusBar {:translucent true
+                                                     :backgroundColor nil}
+                                         :layout  {:componentBackgroundColor "transparent"}
                                          :overlay {:interceptTouchOutside true}}}}))))
 
 (re-frame/reg-fx
@@ -78,21 +83,24 @@
 (re-frame/reg-fx
  :init-intro-fx
  (fn []
-   (set-root {:root {:stack {:children [{:component {:name :intro}}]
+   (set-root {:root {:stack {:children [{:component {:name :intro}
+                                         :options status-bar-options}]
                              :options  {:topBar {:visible false}}}}}
              nil)))
 
 (re-frame/reg-fx
  :init-onboarding-notification-fx
  (fn []
-   (set-root {:root {:stack {:children [{:component {:name :notifications-onboarding}}]
+   (set-root {:root {:stack {:children [{:component {:name :notifications-onboarding
+                                                     :options status-bar-options}}]
                              :options  {:topBar {:visible false}}}}}
              nil)))
 
 (re-frame/reg-fx
  :init-welcome-fx
  (fn []
-   (set-root {:root {:stack {:children [{:component {:name :welcome}}]
+   (set-root {:root {:stack {:children [{:component {:name :welcome
+                                                     :options status-bar-options}}]
                              :options  {:topBar {:visible false}}}}}
              nil)))
 
@@ -101,10 +109,11 @@
  (fn []
    (set-root {:root {:stack {:children [{:component {:name :multiaccounts
                                                      :id      :login-multiaccounts
-                                                     :options  {:topBar {:elevation 0
-                                                                         :visible false}}}}
-                                        {:component {:name :login}}]
-                             :options  general-options}}}
+                                                     :options  (merge status-bar-options {:topBar {:elevation 0
+                                                                                                   :visible false}})}}
+                                        {:component {:name :login
+                                                     :options status-bar-options}}]
+                             :options   general-options}}}
              :login-multiaccounts)))
 
 (def tab-root-ids {0 :home-root
@@ -135,42 +144,42 @@
                       :children
                       [{:stack {:children [{:component {:name :home
                                                         :id :home-root
-                                                        :options  {:topBar {:visible false}
-                                                                   ;;TODO for some reason it doesn't work in bottomTabs
-                                                                   ;;options on android so we have to duplicate it for teach tab
-                                                                   :bottomTab bottom-tab-general}}}]
+                                                        :options  (merge status-bar-options {:topBar {:visible false}
+                                                                                             ;;TODO for some reason it doesn't work in bottomTabs
+                                                                                             ;;options on android so we have to duplicate it for teach tab
+                                                                                             :bottomTab bottom-tab-general})}}]
                                 :options (merge general-options
                                                 ;;TAB
                                                 {:bottomTab {:text (i18n/label :t/chat)
                                                              :icon  (js/require "../resources/images/icons/message.png")}})}}
                        {:stack {:children [{:component {:name :empty-tab
                                                         :id :browser-root
-                                                        :options  {:topBar {:visible false}
-                                                                   :bottomTab bottom-tab-general}}}]
+                                                        :options  (merge status-bar-options {:topBar {:visible false}
+                                                                                             :bottomTab bottom-tab-general})}}]
                                 :options (merge general-options
                                                 ;;TAB
                                                 {:bottomTab {:text (i18n/label :t/browser)
                                                              :icon  (js/require "../resources/images/icons/browser.png")}})}}
                        {:stack {:children [{:component {:name :wallet
                                                         :id :wallet-root
-                                                        :options  {:topBar {:visible false}
-                                                                   :bottomTab bottom-tab-general}}}]
+                                                        :options  (merge status-bar-options {:topBar {:visible false}
+                                                                                             :bottomTab bottom-tab-general})}}]
                                 :options (merge general-options
                                                 ;;TAB
                                                 {:bottomTab {:text (i18n/label :t/wallet)
                                                              :icon  (js/require "../resources/images/icons/wallet.png")}})}}
                        {:stack {:children [{:component {:name :status
                                                         :id :status-root
-                                                        :options  {:topBar {:visible false}
-                                                                   :bottomTab bottom-tab-general}}}]
+                                                        :options  (merge status-bar-options {:topBar {:visible false}
+                                                                                             :bottomTab bottom-tab-general})}}]
                                 :options (merge general-options
                                                 ;;TAB
                                                 {:bottomTab {:text (i18n/label :t/status)
                                                              :icon  (js/require "../resources/images/icons/status.png")}})}}
                        {:stack {:children [{:component {:name :my-profile
                                                         :id :profile-root
-                                                        :options  {:topBar {:visible false}
-                                                                   :bottomTab bottom-tab-general}}}]
+                                                        :options  (merge status-bar-options {:topBar {:visible false}
+                                                                                             :bottomTab bottom-tab-general})}}]
                                 :options (merge general-options
                                                 ;;TAB
                                                 {:bottomTab {:text (i18n/label :t/profile)

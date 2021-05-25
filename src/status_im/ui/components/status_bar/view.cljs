@@ -26,22 +26,22 @@
   is shown. At the same time, the background of `StatusBar` should be rendered
   inside the screen in order to have better transitions between screens."
   [view-id]
-  (let [{:keys [type]} (get-config view-id)
-        {:keys [background-color bar-style hidden
-                network-activity-indicator-visible
-                translucent]}
-        (case type
-          :black (styles/status-bar-black)
-          (styles/status-bar-default))]
-    (when bar-style
-      (.setBarStyle ^js react/status-bar-class (clj->js bar-style)) true)
-    (when (and background-color platform/android?)
-      (.setBackgroundColor ^js react/status-bar-class (clj->js background-color)))
-    (when hidden
-      (.setHidden ^js react/status-bar-class (clj->js hidden)))
-    (when network-activity-indicator-visible
-      (.setNetworkActivityIndicatorVisible
-       ^js react/status-bar-class
-       (clj->js network-activity-indicator-visible)))
-    (when translucent
-      (.setTranslucent ^js react/status-bar-class (clj->js translucent)))))
+  #_(let [{:keys [type]} (get-config view-id)
+          {:keys [background-color bar-style hidden
+                  network-activity-indicator-visible
+                  translucent]}
+          (case type
+            :black (styles/status-bar-black)
+            (styles/status-bar-default))]
+      (when bar-style
+        (.setBarStyle ^js react/status-bar-class (clj->js bar-style)) true)
+      (when (and background-color platform/android?)
+        (.setBackgroundColor ^js react/status-bar-class (clj->js background-color)))
+      (when hidden
+        (.setHidden ^js react/status-bar-class (clj->js hidden)))
+      (when network-activity-indicator-visible
+        (.setNetworkActivityIndicatorVisible
+         ^js react/status-bar-class
+         (clj->js network-activity-indicator-visible)))
+      (when translucent
+        (.setTranslucent ^js react/status-bar-class (clj->js translucent)))))
