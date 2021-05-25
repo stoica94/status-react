@@ -10,9 +10,9 @@ import com.facebook.react.PackageList;
 import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
+import com.reactnativenavigation.NavigationApplication;
 import com.reactnativenavigation.react.NavigationReactNativeHost;
 import com.facebook.react.ReactPackage;
-import com.facebook.soloader.SoLoader;
 import com.facebook.react.ReactInstanceManager;
 
 import java.util.List;
@@ -21,7 +21,7 @@ import im.status.ethereum.keycard.RNStatusKeycardPackage;
 import im.status.ethereum.module.StatusPackage;
 import im.status.ethereum.pushnotifications.PushNotificationPackage;
 
-public class MainApplication extends MultiDexApplication implements ReactApplication {
+public class MainApplication extends NavigationApplication {
 
     private final ReactNativeHost mReactNativeHost = new NavigationReactNativeHost(this) {
         @Override

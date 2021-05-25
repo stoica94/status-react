@@ -26,14 +26,14 @@ import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 import com.facebook.react.ReactFragmentActivity;
-import com.facebook.react.ReactActivity;
+import com.reactnativenavigation.NavigationActivity;
 import com.facebook.react.modules.core.PermissionListener;
 import org.devio.rn.splashscreen.SplashScreen;
 
 import java.util.Properties;
 import im.status.ethereum.module.StatusThreadPoolExecutor;
 
-public class MainActivity extends ReactFragmentActivity
+public class MainActivity extends NavigationActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback{
 
 
@@ -236,7 +236,7 @@ public class MainActivity extends ReactFragmentActivity
         }
     }
 
-    @Override
+   /* @Override
     protected ReactActivityDelegate createReactActivityDelegate() {
         return new ReactActivityDelegate(this, getMainComponentName()) {
             @Override
@@ -244,5 +244,5 @@ public class MainActivity extends ReactFragmentActivity
                 return new RNGestureHandlerEnabledRootView(MainActivity.this);
             }
         };
-    }
+    }*/
 }

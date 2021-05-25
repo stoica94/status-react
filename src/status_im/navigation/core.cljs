@@ -163,7 +163,8 @@
  (fn []
    (set-root {:root {:stack {:children [{:component {:name    :get-your-keys
                                                      :id      :onboarding-root-component
-                                                     :options {:topBar {:noBorder true}}}}]
+                                                     :options {:topBar {:elevation 0
+                                                                        :noBorder true}}}}]
                              :options  general-options}}}
              :onboarding-root-component)))
 
