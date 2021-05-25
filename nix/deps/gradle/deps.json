@@ -2940,6 +2940,20 @@
   },
 
   {
+    "path": "com/android/tools/build/manifest-merger/26.2.1/manifest-merger-26.2.1",
+    "host": "https://dl.google.com/dl/android/maven2",
+    "type": "jar",
+    "pom": {
+      "sha1": "fe714f42f14c16ac5f75820a0e6c239e50aa1b64",
+      "sha256": "06dy9pahh78npcpp72k691f3xb48j4n514ssxisd3hmdnzq4pi2n"
+    },
+    "jar": {
+      "sha1": "6a6542caf30fbc4091dffea76c602e97bc9d8949",
+      "sha256": "19l18ac2g2mzbx7k68avhs9rq0llvgi53jzxik9ka41nccr5fc48"
+    }
+  },
+
+  {
     "path": "com/android/tools/build/manifest-merger/26.3.1/manifest-merger-26.3.1",
     "host": "https://dl.google.com/dl/android/maven2",
     "type": "jar",
@@ -3122,6 +3136,20 @@
   },
 
   {
+    "path": "com/android/tools/ddms/ddmlib/26.5.3/ddmlib-26.5.3",
+    "host": "https://dl.google.com/dl/android/maven2",
+    "type": "jar",
+    "pom": {
+      "sha1": "f69c10111005d9ed625cc0b75fed9c5c2fcd1bcb",
+      "sha256": "0nvv2x5ygpw6sgj4nx6dzs2gg2llqnnx69gr8d7ss54dmm359gyb"
+    },
+    "jar": {
+      "sha1": "804a61e67286eeec17d195c78a135f0ed2fbdb8a",
+      "sha256": "0axcj7gy478if4hp2glyxyqsv1jdp9lxcg5340q0x9k8a7gwlni2"
+    }
+  },
+
+  {
     "path": "com/android/tools/dvlib/26.0.0/dvlib-26.0.0",
     "host": "https://dl.google.com/dl/android/maven2",
     "type": "jar",
@@ -3174,6 +3202,20 @@
     "jar": {
       "sha1": "fa3cc125cd311f65dcae6310e381b20d4b2ec0fe",
       "sha256": "1al82s7vxck2qwh47nklsxn9d7zv3dfs8yznzfqzj7cvhgr3pa3j"
+    }
+  },
+
+  {
+    "path": "com/android/tools/dvlib/26.3.1/dvlib-26.3.1",
+    "host": "https://dl.google.com/dl/android/maven2",
+    "type": "jar",
+    "pom": {
+      "sha1": "c438f3c025bd878ac3b54368e012b3792f9c8928",
+      "sha256": "1mhdlqfz0m5q2dgnpx4bbf4yn5wkxkl25qhnby8y1w2ac7lgylny"
+    },
+    "jar": {
+      "sha1": "971430b6163a834656d07434c46fee64d109ad8e",
+      "sha256": "12rkawpbi3i2w20v4v54niyas0jcw7lmk1mz2fm45ylwhhphxcvh"
     }
   },
 
@@ -3930,48 +3972,6 @@
     "jar": {
       "sha1": "05bb1d391bbed501d9ec0de96dbdb3fa1464f255",
       "sha256": "003b0mcsdr39rkspl8ai1rxxiw0gpdf7fh930485hpwk450d0cgx"
-    }
-  },
-
-  {
-    "path": "com/android/tools/build/manifest-merger/26.2.1/manifest-merger-26.2.1",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "jar",
-    "pom": {
-      "sha1": "fe714f42f14c16ac5f75820a0e6c239e50aa1b64",
-      "sha256": "06dy9pahh78npcpp72k691f3xb48j4n514ssxisd3hmdnzq4pi2n"
-    },
-    "jar": {
-      "sha1": "6a6542caf30fbc4091dffea76c602e97bc9d8949",
-      "sha256": "19l18ac2g2mzbx7k68avhs9rq0llvgi53jzxik9ka41nccr5fc48"
-    }
-  },
-
-  {
-    "path": "com/android/tools/ddms/ddmlib/26.5.3/ddmlib-26.5.3",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "jar",
-    "pom": {
-      "sha1": "f69c10111005d9ed625cc0b75fed9c5c2fcd1bcb",
-      "sha256": "0nvv2x5ygpw6sgj4nx6dzs2gg2llqnnx69gr8d7ss54dmm359gyb"
-    },
-    "jar": {
-      "sha1": "804a61e67286eeec17d195c78a135f0ed2fbdb8a",
-      "sha256": "0axcj7gy478if4hp2glyxyqsv1jdp9lxcg5340q0x9k8a7gwlni2"
-    }
-  },
-
-  {
-    "path": "com/android/tools/dvlib/26.3.1/dvlib-26.3.1",
-    "host": "https://repository.sonatype.org/content/groups/sonatype-public-grid",
-    "type": "jar",
-    "pom": {
-      "sha1": "c438f3c025bd878ac3b54368e012b3792f9c8928",
-      "sha256": "1mhdlqfz0m5q2dgnpx4bbf4yn5wkxkl25qhnby8y1w2ac7lgylny"
-    },
-    "jar": {
-      "sha1": "971430b6163a834656d07434c46fee64d109ad8e",
-      "sha256": "12rkawpbi3i2w20v4v54niyas0jcw7lmk1mz2fm45ylwhhphxcvh"
     }
   },
 
