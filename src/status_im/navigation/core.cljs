@@ -123,9 +123,17 @@
                    4 :profile-root})
 
 (.registerBottomTabSelectedListener (.events Navigation)
-                                    (fn [evn]
+                                    (fn [^js evn]
                                       (println "selectedTabIndex" (.-selectedTabIndex evn))
                                       (reset! root-comp-id (get tab-root-ids (.-selectedTabIndex evn)))))
+
+(.registerComponentDidAppearListener (.events Navigation)
+                                    (fn [^js evn]
+                                      (re-frame/dispatch [:set :view-id (keyword (.-componentName evn))])
+                                      (println ".registerComponentDidAppearListener"
+                                               (.-componentId evn)
+                                               (.-componentName evn)
+                                               (.-passProps evn))))
 
 (def bottom-tab-general
   {:fontSize 11
@@ -137,9 +145,9 @@
  (fn []
    (set-root {:root {:bottomTabs
                      {:options {:bottomTabs {:titleDisplayMode :alwaysShow
-                                             :preferLargeIcons false}}
-                                             ;:elevation 0}
-                                             ;:hideShadow true
+                                             :preferLargeIcons false
+                                              :elevation 0
+                                              :hideShadow true}}
 
                       :children
                       [{:stack {:children [{:component {:name :home
