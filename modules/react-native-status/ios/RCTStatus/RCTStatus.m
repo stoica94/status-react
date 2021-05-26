@@ -591,6 +591,18 @@ RCT_EXPORT_METHOD(verify:(NSString *)address
     callback(@[result]);
 }
 
+//////////////////////////////////////////////////////////////////// changeDatabasePassword
+RCT_EXPORT_METHOD(changeDatabasePassword:(NSString *)accountData
+                  currentPassword:(NSString *)currentPassword
+                  newPassword:(NSString *)newPassword
+                  callback:(RCTResponseSenderBlock)callback) {
+#if DEBUG
+    NSLog(@"ChangeDatabasePassword() method called");
+#endif
+    NSString *result = StatusgoChangeDatabasePassword(accountData, currentPassword, newPassword);
+    callback(@[result]);
+}
+
 ////////////////////////////////////////////////////////////////////
 #pragma mark - SendTransaction
 //////////////////////////////////////////////////////////////////// sendTransaction
