@@ -9,12 +9,13 @@
             [status-im.ui.screens.routing.profile-stack :as profile-stack]
             [status-im.ui.screens.routing.browser-stack :as browser-stack]
             [status-im.ui.screens.routing.status-stack :as status-stack]
+            [status-im.ui.screens.routing.main :as modals]
             [status-im.ui.screens.routing.core :as routing]))
 
 (defn get-screens []
   (reduce
-   (fn [acc {:keys [name component options insets]}]
-     (assoc acc name {:component component :options options :insets insets}))
+   (fn [acc {:keys [name component options insets modal title]}]
+     (assoc acc name {:component component :options options :insets insets :modal modal :title title}))
    {}
    (concat intro-login-stack/screens
            chat-stack/screens
@@ -22,10 +23,17 @@
            profile-stack/screens
            ;;TODO change navigation for browser, change root , don't push
            browser-stack/screens
-           status-stack/screens)))
+           status-stack/screens
+           (map #(assoc % :modal true) modals/screens))))
 
 ;;TODO find why hot reload doesn't work
 (def screens (get-screens))
+
+(def components (reduce
+                 (fn [acc {:keys [name component]}]
+                   (assoc acc name component))
+                 {}
+                 (concat chat-stack/components)))
 
 (defn screen [key]
   (reagent.core/reactify-component

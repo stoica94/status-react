@@ -36,23 +36,25 @@
 
 (defn topbar []
   ;;we don't use topbar component, because we want chat view as simple (fast) as possible
-  [react/view {:height 56 :border-bottom-width 1 :border-bottom-color (:ui-01 @quo.colors/theme)}
-   [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:navigate-back])
-                               :accessibility-label :back-button
-                               :style {:height 56 :width 40 :align-items :center :justify-content :center
-                                       :padding-left 16}}
-    [icons/icon :main-icons/arrow-left]]
-   [react/view {:flex 1 :left 52 :right 52 :top 0 :bottom 0 :position :absolute}
-    [toolbar-content/toolbar-content-view]]
-   [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                 {:content (fn []
-                                                                             [sheets/current-chat-actions])
-                                                                  :height  256}])
-                               :accessibility-label :chat-menu-button
-                               :style {:right 0 :top 0 :bottom 0 :position :absolute
-                                       :height 56 :width 40 :align-items :center :justify-content :center
-                                       :padding-right 16}}
-    [icons/icon :main-icons/more]]])
+  [toolbar-content/toolbar-content-view-inner @(re-frame/subscribe [:chats/current-chat])]
+  #_[react/view {:height 56 :border-bottom-width 1 :border-bottom-color (:ui-01 @quo.colors/theme)
+                 :background-color :black}
+     [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:navigate-back])
+                                 :accessibility-label :back-button
+                                 :style {:height 56 :width 40 :align-items :center :justify-content :center
+                                         :padding-left 16}}
+      [icons/icon :main-icons/arrow-left]]
+     [react/view {:flex 1 :left 52 :right 52 :top 0 :bottom 0 :position :absolute}
+      [toolbar-content/toolbar-content-view]]
+     [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:bottom-sheet/show-sheet
+                                                                   {:content (fn []
+                                                                               [sheets/current-chat-actions])
+                                                                    :height  256}])
+                                 :accessibility-label :chat-menu-button
+                                 :style {:right 0 :top 0 :bottom 0 :position :absolute
+                                         :height 56 :width 40 :align-items :center :justify-content :center
+                                         :padding-right 16}}
+      [icons/icon :main-icons/more]]])
 
 (defn invitation-requests [chat-id admins]
   (let [current-pk @(re-frame/subscribe [:multiaccount/public-key])

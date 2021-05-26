@@ -130,8 +130,7 @@
 
 (views/defview installations []
   (views/letsubs [installations [:pairing/installations]]
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/devices)}]
+    [:<>
      [react/scroll-view
       (if (string/blank? (-> installations first :name))
         [edit-installation-name]

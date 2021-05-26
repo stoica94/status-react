@@ -29,8 +29,7 @@
     {:component-will-unmount #(do
                                 (re-frame/dispatch [:search/currency-filter-changed nil])
                                 (reset! search-active? false))}
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/main-currency)}]
+    [:<>
      [react/view {:flex 1}
       [react/view {:padding-horizontal 16
                    :padding-vertical   10}

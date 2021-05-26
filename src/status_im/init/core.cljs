@@ -35,7 +35,9 @@
                                         (select-keys
                                          multiaccount
                                          [:key-uid :name :public-key :identicon :images])))
-      (navigation/init-intro cofx))))
+      (if logout?
+        (navigation/init-login cofx)
+        (navigation/init-intro cofx)))))
 
 (fx/defn initialize-multiaccounts
   {:events [::initialize-multiaccounts]}

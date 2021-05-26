@@ -104,8 +104,6 @@
         methods-filter @(re-frame/subscribe [:rpc-usage/filter])]
     [react/view {:flex 1
                  :margin-horizontal 8}
-     [topbar/topbar
-      {:title (i18n/label :t/rpc-usage-info)}]
      [quo.react-native/view
       {:style {:flex-direction  :row
                :margin-top      8

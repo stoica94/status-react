@@ -211,9 +211,9 @@
             reward          @(re-frame/subscribe [::invite.events/default-reward])
             starter-pack    @(re-frame/subscribe [::invite.events/starter-pack])]
         [rn/view {:flex 1}
-         [topbar/topbar {:modal?       true
-                         :show-border? true
-                         :title        (i18n/label :t/invite-friends)}]
+         #_[topbar/topbar {:modal?       true
+                           :show-border? true
+                           :title        (i18n/label :t/invite-friends)}]
          [rn/scroll-view {:flex 1}
           [reward-item reward :t/invite-reward-you-description]
           [friend-reward-item starter-pack :t/invite-reward-friend-description]

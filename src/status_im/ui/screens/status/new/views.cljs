@@ -58,10 +58,10 @@
       (let [{:keys [uri]} (first (vals @sending-image))]
         [kb-presentation/keyboard-avoiding-view {:style {:flex 1}}
          [react/view {:flex 1}
-          [topbar/topbar
-           {:modal?        true
-            :border-bottom true
-            :title         (i18n/label :t/my-status)}]
+          #_[topbar/topbar
+             {:modal?        true
+              :border-bottom true
+              :title         (i18n/label :t/my-status)}]
           [react/scroll-view {:style                        {:flex 1}
                               :ref                          #(reset! scroll %)
                               :on-layout                    #(reset! scroll-height

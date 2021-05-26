@@ -16,7 +16,6 @@
   (let [channel-name (reagent/atom "")]
     (fn []
       [:<>
-       [topbar/topbar {:title (i18n/label :t/create-channel-title)}]
        [rn/scroll-view {:style                   {:flex 1}
                         :content-container-style {:padding-vertical 16}}
         [rn/view {:style {:padding-bottom     16

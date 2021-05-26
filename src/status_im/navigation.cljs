@@ -55,7 +55,7 @@
 (fx/defn navigate-back
   {:events [:navigate-back]}
   [_]
-  {::navigate-back nil})
+  {:rnn-navigate-back-fx nil})
 
 (fx/defn navigate-reset
   {:events [:navigate-reset]}

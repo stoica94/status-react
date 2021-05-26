@@ -78,13 +78,11 @@
      [local-notifications]]))
 
 (defn notifications-settings []
-  [react/view {:flex 1}
-   [topbar/topbar {:title (i18n/label :t/notification-settings)}]
-   [react/scroll-view {:style                   {:flex 1}
-                       :content-container-style {:padding-vertical 8}}
-    (if platform/ios?
-      [notifications-settings-ios]
-      [notifications-settings-android])]])
+  [react/scroll-view {:style                   {:flex 1}
+                      :content-container-style {:padding-vertical 8}}
+   (if platform/ios?
+     [notifications-settings-ios]
+     [notifications-settings-android])])
 
 (defn notifications-advanced-settings []
   (let [{:keys [remote-push-notifications-enabled?
@@ -92,7 +90,7 @@
                 push-notifications-server-enabled?]}
         @(re-frame/subscribe [:multiaccount])]
     [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/notification-settings)}]
+     #_[topbar/topbar {:title (i18n/label :t/notification-settings)}]
      [react/scroll-view {:style                   {:flex 1}
                          :content-container-style {:padding-vertical 8}}
       [quo/list-item
@@ -139,23 +137,21 @@
 (defview notifications-servers []
   (letsubs [servers [:push-notifications/servers]]
     {:component-did-mount #(re-frame/dispatch [::notifications/fetch-servers])}
-    [react/view {:flex 1}
-     [topbar/topbar {:title :t/notification-servers}]
-     [react/scroll-view {:style                   {:flex 1}
-                         :content-container-style {:padding-vertical 8}}
-      (map server-view servers)
-      [react/keyboard-avoiding-view {}
-       [react/view {:style {:padding-horizontal 20}}
-        [quo/text-input
-         {:label          (i18n/label :t/server)
-          :placeholder    (i18n/label :t/specify-server-public-key)
-          :value          @server
-          :on-change-text #(reset! server %)
-          :auto-focus     true}]]
-       [quo/button {:type     :secondary
-                    :after    :main-icon/next
-                    :disabled (empty? @server)
-                    :on-press #(do
-                                 (re-frame/dispatch [::notifications/add-server @server])
-                                 (reset! server ""))}
-        (i18n/label :t/save)]]]]))
+    [react/scroll-view {:style                   {:flex 1}
+                        :content-container-style {:padding-vertical 8}}
+     (map server-view servers)
+     [react/keyboard-avoiding-view {}
+      [react/view {:style {:padding-horizontal 20}}
+       [quo/text-input
+        {:label          (i18n/label :t/server)
+         :placeholder    (i18n/label :t/specify-server-public-key)
+         :value          @server
+         :on-change-text #(reset! server %)
+         :auto-focus     true}]]
+      [quo/button {:type     :secondary
+                   :after    :main-icon/next
+                   :disabled (empty? @server)
+                   :on-press #(do
+                                (re-frame/dispatch [::notifications/add-server @server])
+                                (reset! server ""))}
+       (i18n/label :t/save)]]]))

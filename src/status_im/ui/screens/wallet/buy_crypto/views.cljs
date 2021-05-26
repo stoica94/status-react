@@ -54,8 +54,8 @@
 (views/defview buy-crypto []
   (views/letsubs [on-ramps [:buy-crypto/on-ramps]]
     [react/view {:flex 1}
-     [topbar/topbar {:border-bottom false
-                     :modal? true}]
+     #_[topbar/topbar {:border-bottom false
+                       :modal? true}]
      [list/flat-list {:data               on-ramps
                       :key-fn             :site-url
                       :header             [buy-crypto-header]

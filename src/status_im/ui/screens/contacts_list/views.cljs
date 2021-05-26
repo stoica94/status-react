@@ -32,44 +32,37 @@
 (defview contacts-list []
   (letsubs [blocked-contacts-count [:contacts/blocked-count]
             contacts      [:contacts/active]]
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/contacts)}]
-     [react/scroll-view {:flex 1}
-      [add-new-contact]
-      (when (pos? blocked-contacts-count)
-        [react/view {:margin-vertical 16}
-         [quo/list-item
-          {:title               (i18n/label :t/blocked-users)
-           :icon                :main-icons/cancel
-           :theme               :negative
-           :accessibility-label :blocked-users-list-button
-           :chevron             true
-           :accessory           :text
-           :accessory-text      blocked-contacts-count
-           :on-press            #(re-frame/dispatch [:navigate-to :blocked-users-list])}]])
-      (if (seq contacts)
-        [list.views/flat-list
-         {:data                      contacts
-          :key-fn                    :address
-          :render-fn                 contacts-list-item}]
-        [react/view {:align-items     :center
-                     :flex            1
-                     :justify-content :center}
-         [react/text {:style {:color colors/gray :margin-vertical 24}}
-          (i18n/label :t/you-dont-have-contacts)]
-         [invite/button]])]]))
+    [react/scroll-view {:flex 1}
+     [add-new-contact]
+     (when (pos? blocked-contacts-count)
+       [react/view {:margin-vertical 16}
+        [quo/list-item
+         {:title               (i18n/label :t/blocked-users)
+          :icon                :main-icons/cancel
+          :theme               :negative
+          :accessibility-label :blocked-users-list-button
+          :chevron             true
+          :accessory           :text
+          :accessory-text      blocked-contacts-count
+          :on-press            #(re-frame/dispatch [:navigate-to :blocked-users-list])}]])
+     (if (seq contacts)
+       [list.views/flat-list
+        {:data                      contacts
+         :key-fn                    :address
+         :render-fn                 contacts-list-item}]
+       [react/view {:align-items     :center
+                    :flex            1
+                    :justify-content :center}
+        [react/text {:style {:color colors/gray :margin-vertical 24}}
+         (i18n/label :t/you-dont-have-contacts)]
+        [invite/button]])]))
 
 (defview blocked-users-list []
   (letsubs [blocked-contacts [:contacts/blocked]]
-    [react/view {:flex 1
-                 :background-color colors/white}
-     [topbar/topbar {:title (i18n/label :t/blocked-users)}]
-     [react/scroll-view {:style {:background-color colors/white
-                                 :padding-vertical 8}}
-      [list.views/flat-list
-       {:data                      blocked-contacts
-        :key-fn                    :address
-        :render-fn                 contacts-list-item
-        :default-separator?        true
-        :enableEmptySections       true
-        :keyboardShouldPersistTaps :always}]]]))
+    [list.views/flat-list
+     {:data                      blocked-contacts
+      :key-fn                    :address
+      :render-fn                 contacts-list-item
+      :default-separator?        true
+      :enableEmptySections       true
+      :keyboardShouldPersistTaps :always}]))

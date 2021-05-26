@@ -217,9 +217,9 @@
   (views/letsubs [{:keys [name chat-id]} [:chats/current-chat]
                   new-group-chat-name (reagent/atom nil)]
     [kb-presentation/keyboard-avoiding-view  {:style styles/group-container}
-     [topbar/topbar
-      {:title  (i18n/label :t/edit-group)
-       :modal? true}]
+     #_[topbar/topbar
+        {:title  (i18n/label :t/edit-group)
+         :modal? true}]
      [react/scroll-view {:style {:padding 16
                                  :flex    1}}
       [quo/text-input

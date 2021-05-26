@@ -25,8 +25,7 @@
   (views/letsubs [link-previews-whitelist [:link-previews-whitelist]
                   link-previews-enabled-sites [:link-preview/enabled-sites]]
     (let [all-enabled (= (count link-previews-whitelist) (count link-previews-enabled-sites))]
-      [react/view {:flex 1}
-       [topbar/topbar {:title (i18n/label :t/chat-link-previews)}]
+      [:<>
        [react/image {:source      (resources/get-theme-image :unfurl)
                      :style       styles/link-preview-settings-image}]
        [quo/text {:style {:margin 16}}

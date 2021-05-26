@@ -23,8 +23,7 @@
     [{:keys [syncing-on-mobile-network?
              remember-syncing-choice?]}
      [:multiaccount]]
-    [react/view {:style styles/container}
-     [topbar/topbar {:title (i18n/label :t/mobile-network-settings)}]
+    [:<>
      [react/view {:style styles/switch-container
                   :accessibility-label "mobile-network-use-mobile"}
       [profile.components/settings-switch-item

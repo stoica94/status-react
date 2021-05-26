@@ -34,11 +34,8 @@
 (views/defview fleet-settings []
   (views/letsubs [custom-fleets [:fleets/custom-fleets]
                   current-fleet [:fleets/current-fleet]]
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/fleet-settings)}]
-     [react/view styles/wrapper
-      [list/flat-list {:data               (fleets custom-fleets)
-                       :default-separator? false
-                       :key-fn             identity
-                       :render-data        (name current-fleet)
-                       :render-fn          render-row}]]]))
+    [list/flat-list {:data               (fleets custom-fleets)
+                     :default-separator? false
+                     :key-fn             identity
+                     :render-data        (name current-fleet)
+                     :render-fn          render-row}]))

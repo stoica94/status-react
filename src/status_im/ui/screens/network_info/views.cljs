@@ -79,7 +79,4 @@
                  "PRESS TO REFRESH"))])])))
 
 (defn network-info []
-  [react/view {:flex 1}
-   [topbar/topbar
-    {:title (i18n/label :t/network-info)}]
-   [check-lag]])
+  [check-lag])

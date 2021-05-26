@@ -4,7 +4,6 @@
             [status-im.constants :as constants]
             [status-im.i18n.i18n :as i18n]
             [status-im.multiaccounts.create.core :refer [step-kw-to-num]]
-            [status-im.privacy-policy.core :as privacy-policy]
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
             [status-im.ui.components.icons.icons :as icons]
@@ -18,135 +17,9 @@
             [status-im.utils.security :as security]
             [status-im.utils.debounce :refer [dispatch-and-chill]]
             [quo.core :as quo]
-            [status-im.ui.screens.intro.carousel :as carousel]
             [status-im.utils.utils :as utils]
             [status-im.utils.datetime :as datetime])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
-
-(defn intro []
-  [react/view {:style styles/intro-view}
-   [carousel/viewer [{:image (resources/get-theme-image :chat)
-                      :title :intro-title1
-                      :text :intro-text1}
-                     {:image (resources/get-theme-image :wallet)
-                      :title :intro-title2
-                      :text :intro-text2}
-                     {:image (resources/get-theme-image :browser)
-                      :title :intro-title3
-                      :text :intro-text3}]]
-   [react/view styles/buttons-container
-    [react/view {:style (assoc styles/bottom-button :margin-bottom 16)}
-     [quo/button {:on-press #(re-frame/dispatch [:init-onboarding])}
-      (i18n/label :t/get-started)]]
-    [react/nested-text
-     {:style styles/welcome-text-bottom-note}
-     (i18n/label :t/intro-privacy-policy-note1)
-     [{:style    (assoc styles/welcome-text-bottom-note :color colors/blue)
-       :on-press privacy-policy/open-privacy-policy-link!}
-      (i18n/label :t/intro-privacy-policy-note2)]]]])
-
-(defn generate-key []
-  (let [dimensions (r/atom {})]
-    (fn []
-      [react/view {:on-layout  (fn [^js e]
-                                 (reset! dimensions (js->clj (-> e .-nativeEvent .-layout) :keywordize-keys true)))
-                   :style {:align-items :center
-                           :justify-content :center
-                           :flex 1}}
-       (let [padding    40
-             image-size (- (min (:width @dimensions) (:height @dimensions)) padding)]
-         [react/image {:source (resources/get-theme-image :keys)
-                       :resize-mode :contain
-                       :style {:width image-size :height image-size}}])])))
-
-(defn choose-key [{:keys [multiaccounts selected-id]}]
-  [react/view
-   {:style {:flex            1
-            :justify-content :center}}
-   [react/scroll-view
-    {:style                   {:max-height 410}
-     :content-container-style {:justify-content :flex-start}}
-    (for [[acc accessibility-n] (map vector multiaccounts (range (count multiaccounts)))]
-      (let [selected?  (= (:id acc) selected-id)
-            public-key (get-in acc [:derived constants/path-whisper-keyword :public-key])]
-        ^{:key public-key}
-        [quo/list-item {:accessibility-label (keyword (str "select-account-button-" accessibility-n))
-                        :active              selected?
-                        :title               [quo/text {:number-of-lines     2
-                                                        :weight              :medium
-                                                        :ellipsize-mode      :middle
-                                                        :accessibility-label :username}
-                                              (gfy/generate-gfy public-key)]
-                        :subtitle            [quo/text {:weight :monospace
-                                                        :color  :secondary}
-                                              (utils/get-shortened-address public-key)]
-                        :accessory           :radio
-                        :on-press            #(re-frame/dispatch [:intro-wizard/on-key-selected (:id acc)])
-                        :icon                [react/image {:source      {:uri (identicon/identicon public-key)}
-                                                           :resize-mode :cover
-                                                           :style       styles/multiaccount-image}]}]))]])
-
-(defn storage-entry [{:keys [type icon icon-width icon-height
-                             image image-selected image-width image-height
-                             title desc]} selected-storage-type]
-  (let [selected? (= type selected-storage-type)]
-    [react/view
-     {:style {:flex 1
-              :padding-top 14}}
-     [react/view {:style {:padding-bottom 4}}
-      [react/text {:style (assoc styles/wizard-text :text-align :left :margin-left 16)}
-       (i18n/label type)]]
-     [react/touchable-highlight
-      {:accessibility-label (keyword (str "select-storage-" type))
-       :on-press #(re-frame/dispatch
-                   [:intro-wizard/on-key-storage-selected
-                    type])}
-      [react/view (assoc (styles/list-item selected?)
-                         :align-items :flex-start
-                         :padding-top 16
-                         :padding-bottom 12)
-       (if image
-         [react/image
-          {:source (resources/get-image (if selected? image-selected image))
-           :style  {:width image-width :height image-height}}]
-         [icons/icon icon {:color (if selected? colors/blue colors/gray)
-                           :width icon-width :height icon-height}])
-       [react/view {:style {:margin-horizontal 16 :flex 1}}
-        [react/text {:style (assoc styles/wizard-text :font-weight "500" :color colors/black :text-align :left)}
-         (i18n/label title)]
-        [react/view {:style {:min-height 4 :max-height 4}}]
-        [react/text {:style (assoc styles/wizard-text :text-align :left)}
-         (i18n/label desc)]]
-       [radio/radio selected?]]]]))
-
-(defn select-key-storage [{:keys [selected-storage-type]}]
-  (let [storage-types [{:type        :default
-                        :icon        :main-icons/mobile
-                        :icon-width  24
-                        :icon-height 24
-                        :title       :this-device
-                        :desc        :this-device-desc}
-                       {:type           :advanced
-                        :image          :keycard-logo-gray
-                        :image-selected :keycard-logo-blue
-                        :image-width    24
-                        :image-height   24
-                        :title          :keycard
-                        :desc           :keycard-desc}]]
-    [react/view
-     {:style {:flex            1
-              :justify-content :center}}
-     [react/view
-      {:style
-       {:max-height       420
-        :flex             1
-        :justify-content  :flex-start}}
-      [react/view {:style {:justify-content :flex-start
-                           :height          264}}
-       [storage-entry (first storage-types) selected-storage-type]
-       [react/view {:style {:flex       1
-                            :max-height 16}}]
-       [storage-entry (second storage-types) selected-storage-type]]]]))
 
 (defn bottom-bar [{:keys [step weak-password?
                           forward-action
@@ -227,74 +100,7 @@
                                                   (step-kw-to-num step)))))]
            :else nil)]))
 
-(defn enter-phrase [_]
-  (let [show-bip39-password? (reagent.core/atom false)
-        pressed-in-at (atom nil)]
-    (fn [{:keys [processing?
-                 passphrase-word-count
-                 next-button-disabled?
-                 passphrase-error]}]
-      [react/keyboard-avoiding-view {:flex             1
-                                     :background-color colors/white}
-       [react/pressable
-        {:style {:background-color   colors/white
-                 :flex               1
-                 :justify-content    :center
-                 :padding-horizontal 16}
-         ;; BIP39 password input will be shown only after pressing on screen
-         ;; for longer than 2 seconds
-         :on-press-in (fn []
-                        (reset! pressed-in-at (datetime/now)))
-         :on-press-out (fn []
-                         (when (>= (datetime/seconds-ago @pressed-in-at) 2)
-                           (reset! show-bip39-password? true)))}
-        [react/view
-         [quo/text-input
-          {:on-change-text      #(re-frame/dispatch [:multiaccounts.recover/enter-phrase-input-changed (security/mask-data %)])
-           :auto-focus          true
-           :error               (when passphrase-error (i18n/label passphrase-error))
-           :accessibility-label :passphrase-input
-           :placeholder         (i18n/label :t/seed-phrase-placeholder)
-           :show-cancel         false
-           :bottom-value        40
-           :multiline           true
-           :auto-correct        false
-           :monospace           true}]
-         [react/view {:align-items :flex-end}
-          [react/view {:flex-direction   :row
-                       :align-items      :center
-                       :padding-vertical 8
-                       :opacity          (if passphrase-word-count 1 0)}
-           [quo/text {:color (if next-button-disabled? :secondary :main)
-                      :size  :small}
-            (when-not next-button-disabled?
-              "✓ ")
-            (i18n/label-pluralize passphrase-word-count :t/words-n)]]]
-         (when @show-bip39-password?
-           ;; BIP39 password (`passphrase` in BIP39 https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki#from-mnemonic-to-seed)
-           ;; is an advanced security feature which allows to add an arbitrary
-           ;; extra word to your existing mnemonic. The password is an empty
-           ;; string if not provided. If the password is added a completely
-           ;; different key will be created. 
-           [quo/text-input
-            {:on-change-text
-             #(re-frame/dispatch [:multiaccounts.recover/enter-passphrase-input-changed
-                                  (security/mask-data %)])
-             :placeholder         (i18n/label :t/bip39-password-placeholder)
-             :show-cancel         false}])]]
-       [react/view {:align-items :center}
-        [react/text {:style {:color         colors/gray
-                             :font-size     14
-                             :margin-bottom 8
-                             :text-align    :center}}
-         (i18n/label :t/multiaccounts-recover-enter-phrase-text)]
-        (when processing?
-          [react/view {:flex 1 :align-items :center}
-           [react/activity-indicator {:size      :large
-                                      :animating true}]
-           [react/text {:style {:color      colors/gray
-                                :margin-top 8}}
-            (i18n/label :t/processing)]])]])))
+
 
 (defn recovery-success [pubkey name photo-path]
   [react/view {:flex             1
@@ -331,52 +137,6 @@
                  :number-of-lines 1
                  :ellipsize-mode  :middle}
        (utils/get-shortened-address pubkey)]]]]])
-
-(defview wizard-generate-key []
-  (letsubs [wizard-state [:intro-wizard/generate-key]]
-    [react/view {:style {:flex 1}}
-     [topbar/topbar
-      {:border-bottom false
-       :navigation
-       {:on-press #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
-     [react/view {:style {:flex            1
-                          :justify-content :space-between}}
-      [top-bar {:step :generate-key}]
-      [generate-key]
-      [bottom-bar {:step           :generate-key
-                   :forward-action :intro-wizard/step-forward-pressed
-                   :processing?    (:processing? wizard-state)}]]]))
-
-(defview wizard-choose-key []
-  (letsubs [wizard-state [:intro-wizard/choose-key]]
-    [react/view {:style {:flex 1}}
-     [topbar/topbar
-      {:border-bottom false
-       :navigation
-       {:label    (i18n/label :t/cancel)
-        :on-press #(re-frame/dispatch [:intro-wizard/navigate-back])}}]
-     [react/view {:style {:flex 1
-                          :justify-content :space-between}}
-      [top-bar {:step :choose-key}]
-      [choose-key wizard-state]
-      [bottom-bar {:step :choose-key
-                   :forward-action :intro-wizard/step-forward-pressed}]]]))
-
-(defview wizard-select-key-storage []
-  (letsubs [wizard-state [:intro-wizard/select-key-storage]]
-    [react/view {:style {:flex 1}}
-     [topbar/topbar
-      {:navigation
-       (if (:recovering? wizard-state)
-         {:label   (i18n/label :t/cancel)
-          :on-press #(re-frame/dispatch [:intro-wizard/navigate-back])}
-         {:on-press #(re-frame/dispatch [:intro-wizard/navigate-back])})}]
-     [react/view {:style {:flex 1
-                          :justify-content :space-between}}
-      [top-bar {:step :select-key-storage}]
-      [select-key-storage wizard-state]
-      [bottom-bar {:step :select-key-storage
-                   :forward-action (:forward-action wizard-state)}]]]))
 
 (defview wizard-enter-phrase []
   (letsubs [wizard-state [:intro-wizard/enter-phrase]]

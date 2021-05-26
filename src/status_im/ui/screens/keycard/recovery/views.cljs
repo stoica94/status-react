@@ -109,8 +109,8 @@
             error [:keycard-setup-error]
             {:keys [free-pairing-slots]} [:keycard-application-info]]
     [react/view styles/container
-     [topbar/topbar {:title (i18n/label :t/step-i-of-n {:number 2
-                                                        :step   1})}]
+     #_[topbar/topbar {:title (i18n/label :t/step-i-of-n {:number 2
+                                                          :step   1})}]
      [react/view {:flex            1
                   :flex-direction  :column
                   :justify-content :space-between

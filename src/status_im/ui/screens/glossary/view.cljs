@@ -48,13 +48,10 @@
                       (map (fn [[k v]]
                              {:title k
                               :data  v})))]
-    [react/view {:flex             1
-                 :background-color colors/white}
-     [topbar/topbar {:title (i18n/label :t/glossary)}]
-     [list/section-list
-      {:contentContainerStyle       {:padding-horizontal 16
-                                     :padding-bottom     16}
-       :stickySectionHeadersEnabled true
-       :sections                    sections
-       :render-fn                   render-element
-       :render-section-header-fn    render-section-header}]]))
+    [list/section-list
+     {:contentContainerStyle       {:padding-horizontal 16
+                                    :padding-bottom     16}
+      :stickySectionHeadersEnabled true
+      :sections                    sections
+      :render-fn                   render-element
+      :render-section-header-fn    render-section-header}]))

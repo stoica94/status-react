@@ -43,11 +43,8 @@
 
 (views/defview log-level-settings []
   (views/letsubs [current-log-level [:log-level/current-log-level]]
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/log-level-settings)}]
-     [react/view styles/wrapper
-      [list/flat-list {:data               log-levels
-                       :default-separator? false
-                       :key-fn             :name
-                       :render-data        current-log-level
-                       :render-fn          render-row}]]]))
+    [list/flat-list {:data               log-levels
+                     :default-separator? false
+                     :key-fn             :name
+                     :render-data        current-log-level
+                     :render-fn          render-row}]))

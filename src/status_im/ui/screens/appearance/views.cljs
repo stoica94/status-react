@@ -25,8 +25,7 @@
 
 (views/defview appearance []
   (views/letsubs [{:keys [appearance profile-pictures-visibility]} [:multiaccount]]
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/appearance)}]
+    [:<>
      [quo/list-header (i18n/label :t/preference)]
      [react/view {:flex-direction  :row :padding-horizontal 8
                   :justify-content :space-between :margin-vertical 16}
@@ -51,9 +50,7 @@
 
 (views/defview profile-pic []
   (views/letsubs [{:keys [profile-pictures-visibility]} [:multiaccount]]
-    [react/view {:flex 1}
-     [topbar/topbar {:title (i18n/label :t/show-profile-pictures)}]
-     [react/view {:margin-top 8}
-      [radio-item constants/profile-pictures-visibility-everyone profile-pictures-visibility]
-      [radio-item constants/profile-pictures-visibility-contacts-only profile-pictures-visibility]
-      [radio-item constants/profile-pictures-visibility-none profile-pictures-visibility]]]))
+    [react/view {:margin-top 8}
+     [radio-item constants/profile-pictures-visibility-everyone profile-pictures-visibility]
+     [radio-item constants/profile-pictures-visibility-contacts-only profile-pictures-visibility]
+     [radio-item constants/profile-pictures-visibility-none profile-pictures-visibility]]))
