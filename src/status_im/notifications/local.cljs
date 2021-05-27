@@ -117,7 +117,7 @@
    (-> evt create-notification local-push-ios)))
 
 (re-frame/reg-fx
- ::local-pushes-ios
+ :local/local-pushes-ios
  (fn [evts]
    (doseq [evt evts]
      (-> evt create-notification local-push-ios))))

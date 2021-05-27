@@ -133,8 +133,9 @@
       {::async/set!
        {:cached-balances balances}})))
 
-(fx/defn notify [addresses]
-  {::local/local-pushes-ios
+(fx/defn notify
+  [cofx addresses]
+  {:local/local-pushes-ios
    (mapv (fn [address]
            {:title   "TRANSACTION DETECTED"
             :message address})
@@ -163,8 +164,11 @@
          cached-balances)]
     (fx/merge
      cofx
+     {:local/local-pushes-ios [{:title "TASK FINISHED"
+                                :message (str addresses-with-changes)}]}
      (update-cache cached-balances addresses-with-changes nonces)
-     (notify addresses-with-changes))))
+     (notify addresses-with-changes)
+     (finish))))
 
 (defn on-event [task-id]
   (re-frame.core/dispatch [::perform-check task-id])

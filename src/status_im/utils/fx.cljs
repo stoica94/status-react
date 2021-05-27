@@ -20,7 +20,8 @@
     :transport/confirm-messages-processed
     :group-chats/extract-membership-signature
     :utils/dispatch-later
-    ::json-rpc/call})
+    ::json-rpc/call
+    :local/local-pushes-ios})
 
 (defn- safe-merge [fx new-fx]
   (if (:merging-fx-with-common-keys fx)
