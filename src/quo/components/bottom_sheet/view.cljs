@@ -183,7 +183,6 @@
     (reagent/as-element
      [modal {:visible                @visible
              :transparent            true
-             :status-bar-translucent true
              :presentation-style     :overFullScreen
              :hardware-accelerated   true
              :on-request-close       (fn []

@@ -446,7 +446,7 @@
                  :amount-text amount-text
                  :request? true
                  :from-chat? true})
-     :dispatch [:navigate-to :prepare-send-transaction]}))
+     :dispatch [:open-modal :prepare-send-transaction]}))
 
 (fx/defn set-and-validate-amount-request
   {:events [:wallet.request/set-and-validate-amount]}
@@ -490,7 +490,7 @@
                          :to contact
                          :symbol :ETH
                          :from-chat? true})
-             :dispatch [:navigate-to :prepare-send-transaction]}
+             :dispatch [:open-modal :prepare-send-transaction]}
       ens-verified
       (assoc ::resolve-address
              {:registry (get ens/ens-registries chain)
@@ -513,7 +513,7 @@
                  :symbol :ETH
                  :from-chat? true
                  :request-command? true})
-     :dispatch [:navigate-to :request-transaction]}))
+     :dispatch [:open-modal :request-transaction]}))
 
 (fx/defn prepare-transaction-from-wallet
   {:events [:wallet/prepare-transaction-from-wallet]}
@@ -523,7 +523,7 @@
                :to         nil
                :symbol     :ETH
                :from-chat? false})
-   :dispatch [:navigate-to :prepare-send-transaction]
+   :dispatch [:open-modal :prepare-send-transaction]
    :signing/update-gas-price {:success-event :wallet.send/update-gas-price-success}})
 
 (fx/defn cancel-transaction-command
@@ -577,7 +577,7 @@
             {:db (-> db
                      (assoc :wallet/recipient {}))}
             (bottom-sheet/hide-bottom-sheet)
-            (navigation/navigate-to-cofx :recipient nil)))
+            (navigation/open-modal :recipient)))
 
 (fx/defn show-delete-account-confirmation
   {:events [:wallet.settings/show-delete-account-confirmation]}

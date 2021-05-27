@@ -21,7 +21,7 @@
   (re-frame/dispatch [:buy-crypto.ui/open-screen]))
 
 (defn render-on-ramp [{:keys [name fees logo-url description] :as on-ramp}]
-  [react/touchable-highlight {:on-press #(re-frame/dispatch [:navigate-to :buy-crypto-website on-ramp])
+  [react/touchable-highlight {:on-press #(re-frame/dispatch [:open-modal :buy-crypto-website on-ramp])
                               :style {:flex 1}}
    [quo/list-item
     {:title          [react/view {:style {:flex 1}}

@@ -27,7 +27,7 @@
     :theme               :accent
     :title               (i18n/label :t/add-new-contact)
     :accessibility-label :add-new-contact-button
-    :on-press            #(re-frame/dispatch [:navigate-to :new-contact])}])
+    :on-press            #(re-frame/dispatch [:open-modal :new-contact])}])
 
 (defview contacts-list []
   (letsubs [blocked-contacts-count [:contacts/blocked-count]

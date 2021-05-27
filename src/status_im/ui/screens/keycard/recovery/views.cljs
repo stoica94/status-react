@@ -20,8 +20,7 @@
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn intro []
-  [react/view styles/container
-   [topbar/topbar]
+  [:<>
    [react/view {:flex            1
                 :flex-direction  :column
                 :justify-content :space-between

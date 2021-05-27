@@ -296,7 +296,7 @@
            {:accessibility-label :participant-add-to-favs
             :type                :secondary
             :disabled            disabled?
-            :on-press            #(re-frame/dispatch [:navigate-to :new-favourite])}
+            :on-press            #(re-frame/dispatch [:open-modal :new-favourite])}
            (i18n/label :t/add-to-favourites)]
           :right
           [quo/button

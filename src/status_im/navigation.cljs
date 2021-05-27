@@ -57,6 +57,12 @@
   [_]
   {:rnn-navigate-back-fx nil})
 
+(fx/defn set-root
+  {:events [:navigate-set-root]}
+  [_ root]
+  {:rnn-set-root-fx root})
+
+
 (fx/defn navigate-reset
   {:events [:navigate-reset]}
   [_ config]
@@ -71,3 +77,8 @@
              (assoc-in [:navigation/screen-params go-to-view-id] screen-params))]
     {:db                db
      ::navigate-replace [go-to-view-id screen-params]}))
+
+(fx/defn open-modal
+  {:events [:open-modal]}
+  [_ comp]
+  {:open-modal-fx comp})

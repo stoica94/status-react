@@ -15,7 +15,7 @@
   [_ opts]
   {:request-permissions-fx
    {:permissions [:camera]
-    :on-allowed  #(re-frame/dispatch [:navigate-to :qr-scanner opts])
+    :on-allowed  #(re-frame/dispatch [:open-modal :qr-scanner opts])
     :on-denied   (fn []
                    (utils/set-timeout
                     #(utils/show-popup (i18n/label :t/error)
@@ -65,7 +65,7 @@
       (and public-key (not own))
       (fx/merge cofx
                 {:db (assoc db :contacts/identity public-key)
-                 :dispatch [:navigate-to :profile]}
+                 :dispatch [:open-modal :profile]}
                 (navigation/navigate-back))
 
       :else

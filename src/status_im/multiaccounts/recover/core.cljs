@@ -224,7 +224,7 @@
       (fx/merge cofx
                 {:db (update db :intro-wizard assoc :step :create-code
                              :forward-action :multiaccounts.recover/enter-password-next-pressed)}
-                (navigation/navigate-to-cofx :recover-multiaccount-enter-password nil)))))
+                (navigation/navigate-to-cofx :create-password nil)))))
 
 (fx/defn re-encrypt-pressed
   {:events [:multiaccounts.recover/re-encrypt-pressed]}
@@ -235,7 +235,7 @@
                          :forward-action :multiaccounts.recover/select-storage-next-pressed
                          :selected-storage-type :default)}
             (if (nfc/nfc-supported?)
-              (navigation/navigate-to-cofx :recover-multiaccount-select-storage nil)
+              (navigation/navigate-to-cofx :select-key-storage nil)
               (select-storage-next-pressed))))
 
 (fx/defn confirm-password-next-button-pressed

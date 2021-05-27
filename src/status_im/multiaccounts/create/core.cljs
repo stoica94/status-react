@@ -360,8 +360,7 @@
                   (re-frame/inject-cofx ::get-signing-phrase)]}
   [{:keys [db] :as cofx} password derived]
   (fx/merge cofx
-            {:db (dissoc db :intro-wizard)
-             :init-onboarding-notification-fx nil}
+            {:db (dissoc db :intro-wizard)}
             (on-multiaccount-created (assoc (get-selected-multiaccount cofx)
                                        :derived derived
                                        :recovered (get-in db [:intro-wizard :recovering?]))

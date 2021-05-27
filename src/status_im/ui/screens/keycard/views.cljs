@@ -14,7 +14,6 @@
             [status-im.ui.screens.chat.photos :as photos]
             [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.screens.keycard.styles :as styles]
-            [status-im.ui.screens.intro.styles :as intro-styles]
             [status-im.constants :as constants]
             [status-im.keycard.login :as keycard.login]
             [status-im.ui.screens.keycard.frozen-card.view :as frozen-card.view])
@@ -204,7 +203,7 @@
      [react/view
       {:style {:width         260
                :margin-bottom 15}}
-      [react/view intro-styles/buttons-container
+      [react/view ;TODO intro-styles/buttons-container
        [quo/button {:on-press #(re-frame/dispatch
                                 [::keycard.login/login-after-reset])}
         (i18n/label :t/open)]]])])

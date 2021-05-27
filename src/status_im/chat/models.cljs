@@ -287,7 +287,7 @@
         {:db (assoc-in db [:chats chat-id] chat)}))
    #(when navigate-to?
       {:dispatch-n [[:chat.ui/preload-chat-data chat-id]
-                    [:navigate-to :profile nil]]})))
+                    [:open-modal :profile]]})))
 
 (fx/defn start-profile-chat
   "Starts a new profile chat"

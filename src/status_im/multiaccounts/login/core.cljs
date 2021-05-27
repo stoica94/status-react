@@ -21,7 +21,7 @@
             [status-im.transport.core :as transport]
             [status-im.stickers.core :as stickers]
             [status-im.mobile-sync-settings.core :as mobile-network]
-            [status-im.navigation :as navigation]
+            [status-im.navigation.core :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.logging.core :as logging]
@@ -75,8 +75,8 @@
               (let [account (cond->
                              (update account :address
                                      eip55/address->checksum)
-                              type
-                              (update :type keyword))]
+                             type
+                             (update :type keyword))]
                 ;; if the account is the default wallet we
                 ;; put it first in the list
                 (if wallet
@@ -308,6 +308,7 @@
                "new-auth-method" new-auth-method)
     (fx/merge cofx
               {:db (assoc db :chats/loading? true)
+               :init-tabs-fx nil
                ::json-rpc/call
                [{:method     "browsers_getBrowsers"
                  :on-success #(re-frame/dispatch [::initialize-browsers %])}
@@ -332,7 +333,9 @@
               {:db                   (-> db
                                          (dissoc :multiaccounts/login)
                                          (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
-               :dispatch-later       [{:ms 2000 :dispatch [::initialize-wallet accounts nil nil (:recovered multiaccount) true]}]}
+               :init-onboarding-notification-fx nil
+               :dispatch-later       [{:ms 2000 :dispatch [::initialize-wallet
+                                                           accounts nil nil (:recovered multiaccount) true]}]}
               (finish-keycard-setup)
               (transport/start-messenger)
               (chat.loading/initialize-chats)
@@ -369,7 +372,6 @@
                                :multiaccount)
                        (assoc :logged-in-since now)
                        (assoc :view-id :home))
-               :init-tabs-fx nil
                ::json-rpc/call
                [{:method     "web3_clientVersion"
                  :on-success #(re-frame/dispatch [::initialize-web3-client-version %])}]}
@@ -417,7 +419,7 @@
        {:db (update-in db [:multiaccounts/login] assoc
                        :password password
                        :save-password? true)}
-       (navigation/navigate-to-cofx :intro-stack {:screen :progress})
+       (navigation/init-progress)
        login)
       (fx/merge
        cofx
@@ -427,10 +429,9 @@
                   (assoc-in [:keycard :pin :status] nil)
                   (assoc-in [:keycard :pin :login] []))})
        #(if keycard-account?
-         (navigation/navigate-to-cofx % :intro-stack {:screen :keycard-login-pin})
-         {:init-login-fx nil}
-         ;(navigation/navigate-to-cofx :intro-stack {:screen :login})
-         )))))
+          ;;TODO check this
+         (navigation/rnn-navigate-to % :keycard-login-pin)
+         (navigation/init-login %))))))
 
 (fx/defn get-credentials
   [{:keys [db] :as cofx} key-uid]
@@ -517,8 +518,7 @@
     (fx/merge cofx
               (when first-account?
                 (acquisition/create))
-              (navigation/navigate-reset {:index  0
-                                          :routes [{:name :tabs}]}))))
+              (navigation/init-tabs))))
 
 (fx/defn multiaccount-selected
   {:events [:multiaccounts.login.ui/multiaccount-selected]}
@@ -528,10 +528,9 @@
   (let [multiaccount (get-in db [:multiaccounts/multiaccounts key-uid])]
     (fx/merge
      cofx
-     {:db (update db :keycard dissoc :application-info)
-      :rnn-navigate-to-fx :login}
-     ;(open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])
-     )))
+     {:db (update db :keycard dissoc :application-info)}
+     (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
+
 
 (fx/defn hide-keycard-banner
   {:events [:hide-keycard-banner]}

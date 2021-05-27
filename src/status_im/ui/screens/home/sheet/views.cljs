@@ -33,7 +33,7 @@
      :title               (i18n/label :t/start-new-chat)
      :accessibility-label :start-1-1-chat-button
      :icon                :main-icons/one-on-one-chat
-     :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-chat])}]
+     :on-press            #(hide-sheet-and-dispatch [:open-modal :new-chat])}]
    (when config/group-chat-enabled?
      [quo/list-item
       {:theme               :accent
@@ -46,7 +46,7 @@
      :title               (i18n/label :t/new-public-group-chat)
      :accessibility-label :join-public-chat-button
      :icon                :main-icons/public-chat
-     :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-public-chat])}]
+     :on-press            #(hide-sheet-and-dispatch [:open-modal :new-public-chat])}]
    (when @(re-frame/subscribe [:communities/enabled?])
      [quo/list-item
       {:theme               :accent

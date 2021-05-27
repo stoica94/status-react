@@ -89,37 +89,35 @@
                 send-push-notifications?
                 push-notifications-server-enabled?]}
         @(re-frame/subscribe [:multiaccount])]
-    [react/view {:flex 1}
-     #_[topbar/topbar {:title (i18n/label :t/notification-settings)}]
-     [react/scroll-view {:style                   {:flex 1}
-                         :content-container-style {:padding-vertical 8}}
-      [quo/list-item
-       {:size                :small
-        :title               (i18n/label :t/send-push-notifications)
-        :accessibility-label :send-push-notifications-button
-        :active              send-push-notifications?
-        :on-press            #(re-frame/dispatch
-                               [::notifications/switch-send-push-notifications (not send-push-notifications?)])
-        :accessory           :switch}]
-      [quo/list-footer
-       (i18n/label :t/send-push-notifications-description)]
-      [quo/separator {:style {:margin-vertical  8}}]
-      [quo/list-item
-       {:size                :small
-        :title               (i18n/label :t/push-notifications-server-enabled)
-        :accessibility-label :send-push-notifications-button
-        :active              (and remote-push-notifications-enabled?
-                                  push-notifications-server-enabled?)
-        :on-press            #(re-frame/dispatch
-                               [::notifications/switch-push-notifications-server-enabled (not push-notifications-server-enabled?)])
-        :accessory           :switch}]
-      [quo/list-item
-       {:size                :small
-        :title               (i18n/label :t/push-notifications-servers)
-        :accessibility-label :send-push-notifications-button
-        :chevron             true
-        :on-press            #(re-frame/dispatch
-                               [:navigate-to :notifications-servers])}]]]))
+    [react/scroll-view {:style                   {:flex 1}
+                        :content-container-style {:padding-vertical 8}}
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/send-push-notifications)
+       :accessibility-label :send-push-notifications-button
+       :active              send-push-notifications?
+       :on-press            #(re-frame/dispatch
+                              [::notifications/switch-send-push-notifications (not send-push-notifications?)])
+       :accessory           :switch}]
+     [quo/list-footer
+      (i18n/label :t/send-push-notifications-description)]
+     [quo/separator {:style {:margin-vertical  8}}]
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/push-notifications-server-enabled)
+       :accessibility-label :send-push-notifications-button
+       :active              (and remote-push-notifications-enabled?
+                                 push-notifications-server-enabled?)
+       :on-press            #(re-frame/dispatch
+                              [::notifications/switch-push-notifications-server-enabled (not push-notifications-server-enabled?)])
+       :accessory           :switch}]
+     [quo/list-item
+      {:size                :small
+       :title               (i18n/label :t/push-notifications-servers)
+       :accessibility-label :send-push-notifications-button
+       :chevron             true
+       :on-press            #(re-frame/dispatch
+                              [:navigate-to :notifications-servers])}]]))
 
 (defn server-view [{:keys [public-key type registered]}]
   [quo/list-item

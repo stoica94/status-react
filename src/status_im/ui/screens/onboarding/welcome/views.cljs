@@ -26,9 +26,8 @@
   [react/view {:style styles/welcome-view}
    [welcome-image-wrapper]
    [react/i18n-text {:style styles/welcome-text :key :welcome-to-status}]
-   [react/view
-    [react/i18n-text {:style styles/welcome-text-description
-                      :key   :welcome-to-status-description}]]
+   [react/i18n-text {:style styles/welcome-text-description
+                     :key   :welcome-to-status-description}]
    [react/view {:align-items :center :margin-bottom 50}
     [quo/button {:on-press            #(re-frame/dispatch [:welcome-lets-go])
                  :accessibility-label :lets-go-button}

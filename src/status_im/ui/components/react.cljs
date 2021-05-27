@@ -23,8 +23,6 @@
 (def app-state (.-AppState react-native))
 (def view (reagent/adapt-react-class (.-View react-native)))
 
-(def status-bar-class (.-StatusBar react-native))
-
 (def scroll-view-class (reagent/adapt-react-class (.-ScrollView react-native)))
 (def keyboard-avoiding-view-class (reagent/adapt-react-class (.-KeyboardAvoidingView react-native)))
 

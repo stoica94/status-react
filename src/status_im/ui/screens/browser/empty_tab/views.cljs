@@ -42,7 +42,7 @@
                                           :title               (i18n/label :t/edit)
                                           :accessibility-label :edit-bookmark
                                           :icon                :main-icons/edit
-                                          :on-press            #(hide-sheet-and-dispatch [:navigate-to :new-bookmark bookmark])}]
+                                          :on-press            #(hide-sheet-and-dispatch [:open-modal :new-bookmark bookmark])}]
                                         [quo/list-item
                                          {:theme               :negative
                                           :title               (i18n/label :t/delete)

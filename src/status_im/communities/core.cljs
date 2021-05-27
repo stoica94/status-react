@@ -280,7 +280,7 @@
   (fx/merge cofx
             (reset-community-id-input id)
             (bottom-sheet/hide-bottom-sheet)
-            (navigation/navigate-to :invite-people-community {:invite? true})))
+            (navigation/open-modal :invite-people-community {:invite? true})))
 
 (fx/defn share-community-pressed
   {:events [::share-community-pressed]}
@@ -288,7 +288,7 @@
   (fx/merge cofx
             (reset-community-id-input id)
             (bottom-sheet/hide-bottom-sheet)
-            (navigation/navigate-to :invite-people-community {})))
+            (navigation/open-modal :invite-people-community {})))
 
 (fx/defn create-channel-pressed
   {:events [::create-channel-pressed]}

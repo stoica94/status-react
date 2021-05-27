@@ -39,32 +39,43 @@
 (def status-bar-options {:statusBar {:backgroundColor :white
                                      :style           :dark}})
 
+(re-frame/reg-fx
+ :rnn-set-root-fx
+ (fn [comp]
+   (let [{:keys [options title]} (get views/screens comp)]
+     (.setStackRoot Navigation @root-comp-id {:component {:id      comp
+                                                          :name    comp
+                                                          :options (merge status-bar-options (when title {:topBar {:title {:text title}}}) options)}}))))
+(re-frame/reg-fx
+ :open-modal-fx
+ (fn [comp]
+   (let [{:keys [options title]} (get views/screens comp)]
+     (reset! curr-modal true)
+     (swap! modals conj comp)
+     (.showModal Navigation (clj->js {:stack
+                                      {:children
+                                       [{:component
+                                         {:name    comp
+                                          :id comp
+                                          :options (merge {:topBar
+                                                           (merge
+                                                            (when title {:title {:text title}})
+                                                            {:elevation       0
+                                                             :noBorder        true
+                                                             :leftButtonColor colors/black
+                                                             :leftButtons
+                                                                              {:id   "dismiss-modal"
+                                                                               :icon (js/require "../resources/images/icons/close.png")}})}
+                                                          options)}}]}})))))
+
+
 (defn navigate [comp]
-  (let [{:keys [options modal title]} (get views/screens comp)]
-    (if modal
-      (do
-        (reset! curr-modal true)
-        (swap! modals conj comp)
-        (.showModal Navigation (clj->js {:stack
-                                         {:children
-                                          [{:component
-                                            {:name    comp
-                                             :id comp
-                                             :options (merge {:topBar
-                                                              (merge
-                                                               (when title {:title {:text title}})
-                                                               {:elevation       0
-                                                                :noBorder        true
-                                                                :leftButtonColor colors/black
-                                                                :leftButtons
-                                                                                 {:id   "dismiss-modal"
-                                                                                  :icon (js/require "../resources/images/icons/close.png")}})}
-                                                             options)}}]}})))
-      (.push Navigation
-             (name @root-comp-id)
-             (clj->js {:component {:id      comp
-                                   :name    comp
-                                   :options (merge status-bar-options (when title {:topBar {:title {:text title}}}) options)}})))))
+  (let [{:keys [options title]} (get views/screens comp)]
+    (.push Navigation
+           (name @root-comp-id)
+           (clj->js {:component {:id      comp
+                                 :name    comp
+                                 :options (merge status-bar-options (when title {:topBar {:title {:text title}}}) options)}}))))
 
 (.registerComponentDidAppearListener
  (.events Navigation)
@@ -177,13 +188,12 @@
                                :backButton {:icon  (js/require "../resources/images/icons/arrow_left.png")
                                             :color :black}}})
 
-;;(def progress-root {:root {:stack {:children [{:component {:name :progress}}]}}})
-
 ;;this stack has only one screen with carusel, and showed only once when user installed the app
 (re-frame/reg-fx
  :init-intro-fx
  (fn []
-   (set-root {:root {:stack {:children [{:component {:name :intro}
+   (set-root {:root {:stack {:children [{:component {:name :intro
+                                                     :id :intro}
                                          :options   status-bar-options}]
                              :options  {:topBar {:visible false}}}}}
              nil)))
@@ -192,6 +202,7 @@
  :init-onboarding-notification-fx
  (fn []
    (set-root {:root {:stack {:children [{:component {:name    :notifications-onboarding
+                                                     :id :notifications-onboarding
                                                      :options status-bar-options}}]
                              :options  {:topBar {:visible false}}}}}
              nil)))
@@ -200,6 +211,16 @@
  :init-welcome-fx
  (fn []
    (set-root {:root {:stack {:children [{:component {:name    :welcome
+                                                     :id :welcome
+                                                     :options status-bar-options}}]
+                             :options  {:topBar {:visible false}}}}}
+             nil)))
+
+(re-frame/reg-fx
+ :init-progress-fx
+ (fn []
+   (set-root {:root {:stack {:children [{:component {:name    :progress
+                                                     :id :progress
                                                      :options status-bar-options}}]
                              :options  {:topBar {:visible false}}}}}
              nil)))
@@ -212,7 +233,8 @@
                                                      :options (merge status-bar-options {:topBar {:elevation 0
                                                                                                   :visible   false}})}}
                                         {:component {:name    :login
-                                                     :options status-bar-options}}]
+                                                     :options (merge status-bar-options {:topBar {:elevation 0
+                                                                                                  :visible   false}})}}]
                              :options  general-options}}}
              :login-multiaccounts)))
 
@@ -303,6 +325,12 @@
   [cofx]
   {:init-intro-fx nil})
 
+(fx/defn init-progress
+  {:events [:init-progress]}
+  [cofx]
+  {:init-progress-fx nil})
+
+
 (fx/defn init-onboarding
   {:events [:init-onboarding]}
   [_]
@@ -322,6 +350,11 @@
   {:events [:init-login]}
   [_]
   {:init-login-fx nil})
+
+(fx/defn init-tabs
+  {:events [:init-tabs]}
+  [_]
+  {:init-tabs-fx nil})
 
 ;; NAVIGATION
 

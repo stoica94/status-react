@@ -43,4 +43,4 @@
                        :title :t/keycard
                        :desc  :t/keycard-desc}
         selected-storage-type]]]
-     [ui/next-button #(dispatch-and-chill [:rnn-navigate-to :create-password] 300)]]))
+     [ui/next-button #(dispatch-and-chill [:rnn-navigate-to :create-password] 300) false]]))

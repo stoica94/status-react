@@ -26,12 +26,13 @@
    [react/text {:style (styles/wizard-text)}
     (i18n/label description)]])
 
-(defn next-button [handler]
+(defn next-button [handler disabled]
   [toolbar/toolbar
    {:show-border? true
     :right        [quo/button
                    {:on-press            handler
                     :accessibility-label :onboarding-next-button
                     :type                :secondary
+                    :disabled            disabled
                     :after               :main-icons/next}
                    (i18n/label :t/next)]}])

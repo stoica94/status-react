@@ -52,7 +52,7 @@
                            :icon                [react/image {:source      {:uri (identicon/identicon public-key)}
                                                               :resize-mode :cover
                                                               :style       styles/multiaccount-image}]}]))]]
-     [ui/next-button #(dispatch-and-chill [:rnn-navigate-to :select-key-storage] 300)]]))
+     [ui/next-button #(dispatch-and-chill [:rnn-navigate-to :select-key-storage] 300) false]]))
 
 (defn get-your-keys-image []
   (let [dimensions (reagent/atom {})]
