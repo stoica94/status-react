@@ -9,7 +9,20 @@
    [status-im.utils.money :as money]
    [status-im.utils.platform :as platform]
    [status-im.utils.types :as types]
+   [status-im.notifications.local :as local]
+   ["react-native-background-fetch" :default background-fetch]
    [taoensso.timbre :as log]))
+
+(defn finish-task [id]
+  (.finish ^js background-fetch id))
+
+(re-frame/reg-fx ::finish-task finish-task)
+
+(fx/defn finish [{:keys [db]}]
+  {:events [::finish]}
+  (when-let [task-id (get db :wallet/background-fetch-task-id)]
+    {:db           (dissoc db :wallet/background-fetch-task-id)
+     ::finish-task task-id}))
 
 (fx/defn configure
   {:events [::configure]}
@@ -31,16 +44,20 @@
 
 (fx/defn clean-async-storage
   {:events [::clean-async-storage]}
-  [_]
-  {::async/set!
-   {:rpc-url         nil
-    :cached-balances nil}})
+  [cofx]
+  (fx/merge
+   cofx
+   {::async/set!
+    {:rpc-url         nil
+     :cached-balances nil}}
+   (finish)))
 
 (fx/defn perform-check
   {:events [::perform-check]}
-  [_]
+  [{:keys [db]} task-id]
   (when platform/ios?
-    {::async/get {:keys [:rpc-url :cached-balances]
+    {:db         (assoc db :wallet/background-fetch-task-id task-id)
+     ::async/get {:keys [:rpc-url :cached-balances]
                   :cb   #(re-frame/dispatch [::retrieve-latest-balances %])}}))
 
 (defn- prepare-batch-request [method addresses]
@@ -78,7 +95,7 @@
                             addresses
                             configs
                             (parse-rpc-response result)]))
-      :on-error (fn [err] (log/info "Failed to fetch balances" err))}}))
+      :on-error #(re-frame/dispatch [::finish %])}}))
 
 (fx/defn retrieve-latest-nonces
   {:events [::retrieve-latest-nonces]}
@@ -92,7 +109,7 @@
                                       configs
                                       balances
                                       (parse-rpc-response result)]))
-    :on-error   (fn [err] (log/info "Failed to fetch nonces" err))}})
+    :on-error   #(re-frame/dispatch [::finish %])}})
 
 (defn prepare-results
   ([k data] (prepare-results {} k data))
@@ -103,21 +120,70 @@
     acc
     data)))
 
+(fx/defn update-cache
+  [_ cached-balances addresses latest]
+  (when (seq addresses)
+    (let [balances (mapv (fn [{:keys [address] :as cache}]
+                           (assoc cache
+                                  :balance (money/to-string
+                                            (get-in latest [address :balance]))
+                                  :nonce (money/to-string
+                                          (get-in latest [address :nonce]))))
+                         cached-balances)]
+      {::async/set!
+       {:cached-balances balances}})))
+
+(fx/defn notify [addresses]
+  {::local/local-pushes-ios
+   (mapv (fn [address]
+           {:title   "TRANSACTION DETECTED"
+            :message address})
+         addresses)})
+
 (fx/defn check-results
   {:events [::check-results]}
-  [_ addresses {:keys [cached-balances]} balances nonces]
+  [cofx addresses {:keys [cached-balances]} balances nonces]
   (let [latest (->
                 (prepare-results :balance balances)
-                (prepare-results :nonce nonces))]
-    (doseq [{:keys [address balance nonce]} cached-balances]
-      (println :WUT address balance nonce
-               (get-in latest [address :balance])
-               (get-in latest [address :nonce]))
-      (if (or (not (money/equals
-                    (money/bignumber balance)
-                    (get-in latest [address :balance])))
-              (not (money/equals
-                    (money/bignumber nonce)
-                    (get-in latest [address :nonce]))))
-        (log/info "transaction detected")
-        (log/info "balance was not changed")))))
+                (prepare-results :nonce nonces))
+        addresses-with-changes
+        (keep
+         (fn [{:keys [address balance nonce]}]
+           (when (or (and
+                      (get-in latest [address :balance])
+                      (not (money/equals
+                            (money/bignumber balance)
+                            (get-in latest [address :balance]))))
+                     (and
+                      (get-in latest [address :nonce])
+                      (not (money/equals
+                            (money/bignumber nonce)
+                            (get-in latest [address :nonce])))))
+             address))
+         cached-balances)]
+    (fx/merge
+     cofx
+     (update-cache cached-balances addresses-with-changes nonces)
+     (notify addresses-with-changes))))
+
+(defn on-event [task-id]
+  (re-frame.core/dispatch [::perform-check task-id])
+  #_(.finish ^js background-fetch task-id))
+
+(defn on-timeout [task-id]
+  (local/local-push-ios
+   {:title "ON TIMEOUT"
+    :message (str task-id)})
+  (finish-task task-id))
+
+(defn start-background-fetch []
+  (when platform/ios?
+    (.then
+     (.configure ^js background-fetch
+                 #js {:minimumFetchInterval 20}
+                 on-event
+                 on-timeout)
+     (fn [status]
+       (local/local-push-ios
+        {:title   "START FETCHING"
+         :message (str status)})))))
