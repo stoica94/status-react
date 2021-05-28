@@ -20,7 +20,7 @@
 
 (fx/defn finish [{:keys [db]}]
   {:events [::finish]}
-  (when-let [task-id (get db :wallet/background-fetch-task-id)]
+  (let [task-id (get db :wallet/background-fetch-task-id)]
     {:db           (dissoc db :wallet/background-fetch-task-id)
      :local/local-pushes-ios [{:title   "FINISH"
                                :message task-id}]
@@ -178,7 +178,7 @@
      cofx
      {:local/local-pushes-ios [{:title "TASK FINISHED"
                                 :message (str addresses-with-changes)}]}
-     (update-cache cached-balances addresses-with-changes nonces)
+     (update-cache cached-balances addresses-with-changes latest)
      (notify addresses-with-changes)
      (finish))))
 
