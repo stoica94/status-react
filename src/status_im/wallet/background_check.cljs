@@ -22,23 +22,29 @@
   {:events [::finish]}
   (when-let [task-id (get db :wallet/background-fetch-task-id)]
     {:db           (dissoc db :wallet/background-fetch-task-id)
+     :local/local-pushes-ios [{:title   "FINISH"
+                               :message task-id}]
      ::finish-task task-id}))
 
 (fx/defn configure
   {:events [::configure]}
   [cofx]
   (when platform/ios?
-    (json-rpc/call
+    {:local/local-pushes-ios [{:title   "CONFIGURE"
+                               :message "nothing here"}]
+     ::json-rpc/call
      {:method     "wallet_getCachedBalances"
       :params     [(mapv :address (get-in cofx [:db :multiaccount/accounts]))]
       :on-success #(re-frame/dispatch [::retrieved-balances %])
-      :on-error   #(re-frame/dispatch [::clean-async-storage])})))
+      :on-error   #(re-frame/dispatch [::clean-async-storage])}}))
 
 (fx/defn retrieved-balances
   {:events [::retrieved-balances]}
   [{:keys [db]} balances]
   (log/debug "Cached balances retrieved" balances)
-  {::async/set!
+  {:local/local-pushes-ios [{:title   "STORE BALANCES AND URL"
+                             :message (str "balances: " (count balances))}]
+   ::async/set!
    {:rpc-url         (config/get-rpc-url db)
     :cached-balances balances}})
 
@@ -56,9 +62,11 @@
   {:events [::perform-check]}
   [{:keys [db]} task-id]
   (when platform/ios?
-    {:db         (assoc db :wallet/background-fetch-task-id task-id)
-     ::async/get {:keys [:rpc-url :cached-balances]
-                  :cb   #(re-frame/dispatch [::retrieve-latest-balances %])}}))
+    {:db                     (assoc db :wallet/background-fetch-task-id task-id)
+     :local/local-pushes-ios [{:title   "PERFORM CHECK"
+                               :message task-id}]
+     ::async/get             {:keys [:rpc-url :cached-balances]
+                              :cb   #(re-frame/dispatch [::retrieve-latest-balances %])}}))
 
 (defn- prepare-batch-request [method addresses]
   (str
@@ -86,7 +94,9 @@
   [cofx {:keys [rpc-url cached-balances] :as configs}]
   (log/debug "Configuration retrieved" configs)
   (let [addresses (mapv :address cached-balances)]
-    {:http-post
+    {:local/local-pushes-ios [{:title   "RETRIEVED CACHED BALANCES"
+                               :message (str rpc-url " " (count cached-balances))}]
+     :http-post
      {:url      rpc-url
       :data     (prepare-batch-request "eth_getBalance" addresses)
       :on-success
@@ -100,7 +110,9 @@
 (fx/defn retrieve-latest-nonces
   {:events [::retrieve-latest-nonces]}
   [cofx addresses {:keys [rpc-url] :as configs} balances]
-  {:http-post
+  {:local/local-pushes-ios [{:title   "RETRIEVED BALANCES"
+                             :message (str "latest balances: " (count balances))}]
+   :http-post
    {:url        rpc-url
     :data       (prepare-batch-request "eth_getTransactionCount" addresses)
     :on-success (fn [result]
@@ -171,8 +183,7 @@
      (finish))))
 
 (defn on-event [task-id]
-  (re-frame.core/dispatch [::perform-check task-id])
-  #_(.finish ^js background-fetch task-id))
+  (re-frame.core/dispatch [::perform-check task-id]))
 
 (defn on-timeout [task-id]
   (local/local-push-ios
