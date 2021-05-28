@@ -577,7 +577,7 @@
             {:db (-> db
                      (assoc :wallet/recipient {}))}
             (bottom-sheet/hide-bottom-sheet)
-            (navigation/open-modal :recipient)))
+            (navigation/open-modal :recipient nil)))
 
 (fx/defn show-delete-account-confirmation
   {:events [:wallet.settings/show-delete-account-confirmation]}

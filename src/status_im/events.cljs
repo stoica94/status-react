@@ -244,5 +244,5 @@
   [cofx]
   (fx/merge
    cofx
-   (navigation/open-modal :buy-crypto)
+   (navigation/open-modal :buy-crypto nil)
    (wallet/keep-watching-history)))

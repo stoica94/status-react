@@ -62,7 +62,6 @@
   [_ root]
   {:rnn-set-root-fx root})
 
-
 (fx/defn navigate-reset
   {:events [:navigate-reset]}
   [_ config]
@@ -80,5 +79,8 @@
 
 (fx/defn open-modal
   {:events [:open-modal]}
-  [_ comp]
-  {:open-modal-fx comp})
+  [{:keys [db] :as cofx} comp screen-params]
+  {:db
+                  (-> (assoc db :view-id comp)
+                      (all-screens-params comp screen-params))
+   :open-modal-fx comp})

@@ -84,7 +84,7 @@
                                       :on-success (fn [type data]
                                                     (re-frame/dispatch [::get-reward-success address type data]))})
                                    accounts)}
-              (navigation/open-modal :referral-invite))))
+              (navigation/open-modal :referral-invite nil))))
 
 (re-frame/reg-fx
  ::terms-and-conditions

@@ -29,7 +29,7 @@
 (defn reg-comp [key]
   (println "REG COMP" key)
   (if-let [comp (get views/components (keyword key))]
-    (.registerComponent Navigation key (fn [] (reagent.core/reactify-component (fn [] [react/view {:width 500}
+    (.registerComponent Navigation key (fn [] (reagent.core/reactify-component (fn [] [react/view {:width 500 :height 44}
                                                                                        [comp]]))))
     (let [screen (views/screen key)]
       (.registerComponent Navigation key (fn [] (gestureHandlerRootHOC screen)) (fn [] screen)))))
@@ -37,15 +37,17 @@
 (.setLazyComponentRegistrator Navigation reg-comp)
 
 (def status-bar-options {:statusBar {:backgroundColor :white
-                                     :style           :dark}})
+                                     :style           :dark}
+                         :navigationBar {:backgroundColor colors/white-persist}})
 
 (re-frame/reg-fx
  :rnn-set-root-fx
  (fn [comp]
    (let [{:keys [options title]} (get views/screens comp)]
-     (.setStackRoot Navigation @root-comp-id {:component {:id      comp
-                                                          :name    comp
-                                                          :options (merge status-bar-options (when title {:topBar {:title {:text title}}}) options)}}))))
+     (.setStackRoot Navigation "browser-stack" (clj->js {:component {:id      comp
+                                                                     :name    comp
+                                                                     :options (merge status-bar-options (when title {:topBar {:title {:text title}}}) options)}})))))
+
 (re-frame/reg-fx
  :open-modal-fx
  (fn [comp]
@@ -57,7 +59,8 @@
                                        [{:component
                                          {:name    comp
                                           :id comp
-                                          :options (merge {:topBar
+                                          :options (merge status-bar-options
+                                                          {:topBar
                                                            (merge
                                                             (when title {:title {:text title}})
                                                             {:elevation       0
@@ -193,8 +196,8 @@
  :init-intro-fx
  (fn []
    (set-root {:root {:stack {:children [{:component {:name :intro
-                                                     :id :intro}
-                                         :options   status-bar-options}]
+                                                     :id :intro
+                                                     :options   status-bar-options}}]
                              :options  {:topBar {:visible false}}}}}
              nil)))
 
@@ -267,46 +270,43 @@
                       :children
                                [{:stack {:children [{:component {:name    :home
                                                                  :id      :home-root
-                                                                 :options (merge status-bar-options {:topBar    {:visible false}
-                                                                                                     ;;TODO for some reason it doesn't work in bottomTabs
-                                                                                                     ;;options on android so we have to duplicate it for teach tab
-                                                                                                     :bottomTab bottom-tab-general})}}]
+                                                                 :options (merge status-bar-options {:topBar    {:visible false}})}}]
                                          :options  (merge general-options
                                                           ;;TAB
-                                                          {:bottomTab {:text (i18n/label :t/chat)
-                                                                       :icon (js/require "../resources/images/icons/message.png")}})}}
-                                {:stack {:children [{:component {:name    :empty-tab
+                                                          {:bottomTab (merge bottom-tab-general
+                                                                             {:text (i18n/label :t/chat)
+                                                                              :icon (js/require "../resources/images/icons/message.png")})})}}
+                                {:stack {:id :browser-stack
+                                         :children [{:component {:name    :empty-tab
                                                                  :id      :browser-root
-                                                                 :options (merge status-bar-options {:topBar    {:visible false}
-                                                                                                     :bottomTab bottom-tab-general})}}]
+                                                                 :options (merge status-bar-options {:topBar    {:visible false}})}}]
+
                                          :options  (merge general-options
                                                           ;;TAB
-                                                          {:bottomTab {:text (i18n/label :t/browser)
-                                                                       :icon (js/require "../resources/images/icons/browser.png")}})}}
+                                                          {:bottomTab (merge bottom-tab-general
+                                                                             {:text (i18n/label :t/browser)
+                                                                              :icon (js/require "../resources/images/icons/browser.png")})})}}
                                 {:stack {:children [{:component {:name    :wallet
                                                                  :id      :wallet-root
-                                                                 :options (merge status-bar-options {:topBar    {:visible false}
-                                                                                                     :bottomTab bottom-tab-general})}}]
+                                                                 :options (merge status-bar-options {:topBar    {:visible false}})}}]
                                          :options  (merge general-options
                                                           ;;TAB
-                                                          {:bottomTab {:text (i18n/label :t/wallet)
-                                                                       :icon (js/require "../resources/images/icons/wallet.png")}})}}
+                                                          {:bottomTab (merge bottom-tab-general {:text (i18n/label :t/wallet)
+                                                                                                 :icon (js/require "../resources/images/icons/wallet.png")})})}}
                                 {:stack {:children [{:component {:name    :status
                                                                  :id      :status-root
-                                                                 :options (merge status-bar-options {:topBar    {:visible false}
-                                                                                                     :bottomTab bottom-tab-general})}}]
+                                                                 :options (merge status-bar-options {:topBar    {:visible false}})}}]
                                          :options  (merge general-options
                                                           ;;TAB
-                                                          {:bottomTab {:text (i18n/label :t/status)
-                                                                       :icon (js/require "../resources/images/icons/status.png")}})}}
+                                                          {:bottomTab (merge bottom-tab-general {:text (i18n/label :t/status)
+                                                                                                 :icon (js/require "../resources/images/icons/status.png")})})}}
                                 {:stack {:children [{:component {:name    :my-profile
                                                                  :id      :profile-root
-                                                                 :options (merge status-bar-options {:topBar    {:visible false}
-                                                                                                     :bottomTab bottom-tab-general})}}]
+                                                                 :options (merge status-bar-options {:topBar    {:visible false}})}}]
                                          :options  (merge general-options
                                                           ;;TAB
-                                                          {:bottomTab {:text (i18n/label :t/profile)
-                                                                       :icon (js/require "../resources/images/icons/user_profile.png")}})}}]}}}
+                                                          {:bottomTab (merge bottom-tab-general {:text (i18n/label :t/profile)
+                                                                                                 :icon (js/require "../resources/images/icons/user_profile.png")})})}}]}}}
              :home-root)))
 
 ;;this stack for onboarding navigation, showed only after intro stack
@@ -315,9 +315,9 @@
  (fn []
    (set-root {:root {:stack {:children [{:component {:name    :get-your-keys
                                                      :id      :onboarding-root-component
-                                                     :options {:topBar {:elevation 0
-                                                                        :noBorder  true}}}}]
-                             :options  general-options}}}
+                                                     :options (merge status-bar-options {:topBar {:elevation 0
+                                                                                                  :noBorder  true}})}}]
+                             :options general-options}}}
              :onboarding-root-component)))
 
 (fx/defn init-intro

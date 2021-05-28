@@ -105,7 +105,8 @@
             [status-im.ui.screens.keycard.settings.views :as keycard.settings]
             [status-im.ui.screens.appearance.views :as appearance]
             [status-im.ui.screens.notifications-settings.views :as notifications-settings]
-            [status-im.ui.screens.privacy-and-security-settings.delete-profile :as delete-profile]))
+            [status-im.ui.screens.privacy-and-security-settings.delete-profile :as delete-profile]
+            [status-im.ui.components.colors :as colors]))
 
 (def components
   [{:name :chat-toolbar
@@ -616,7 +617,10 @@
    {:name      :qr-scanner
     :insets    {:top false :bottom false}
     ;;TODO custom topbar
-    :options   {:topBar {:visible false}}
+    :options   {:topBar    {:visible false}
+                :navigationBar {:backgroundColor colors/black-persist}
+                :statusBar {:backgroundColor colors/black-persist
+                            :style           :light}}
     :component qr-scanner/qr-scanner}
 
    ;;TODO WHY MODAL?
