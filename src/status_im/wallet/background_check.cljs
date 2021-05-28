@@ -33,10 +33,10 @@
     {:local/local-pushes-ios [{:title   "CONFIGURE"
                                :message "nothing here"}]
      ::json-rpc/call
-     {:method     "wallet_getCachedBalances"
-      :params     [(mapv :address (get-in cofx [:db :multiaccount/accounts]))]
-      :on-success #(re-frame/dispatch [::retrieved-balances %])
-      :on-error   #(re-frame/dispatch [::clean-async-storage])}}))
+     [{:method     "wallet_getCachedBalances"
+       :params     [(mapv :address (get-in cofx [:db :multiaccount/accounts]))]
+       :on-success #(re-frame/dispatch [::retrieved-balances %])
+       :on-error   #(re-frame/dispatch [::clean-async-storage])}]}))
 
 (fx/defn retrieved-balances
   {:events [::retrieved-balances]}
