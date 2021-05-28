@@ -24,6 +24,7 @@
             :View                     {}
             :RefreshControl           {}
             :FlatList                 {}
+            :SectionList              {}
             :Text                     {}
             :StatusBar                {}
             :ScrollView               {}
@@ -192,6 +193,9 @@
 (def react-native-device-info
   #js {:getInstallReferrer identity})
 
+(def react-native-camera-kit
+  #js {:CameraKitCamera #js {}})
+
 (def react-native-push-notification
   #js {:localNotification identity
        :requestPermission identity})
@@ -232,6 +236,7 @@
     "react-native-linear-gradient" react-native-gradien
     "react-native-navigation" react-native-navigation
     "@react-native-community/push-notification-ios" push-notification-ios
+    "react-native-camera-kit" react-native-camera-kit
     "./fleets.js" default-fleets
     "./chats.js" default-chats
     "../translations/ar.json" (js/JSON.parse (slurp "./translations/ar.json"))

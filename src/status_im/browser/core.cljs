@@ -322,7 +322,7 @@
                 {:db (assoc db :browser/options
                             {:browser-id (:browser-id browser)})}
                 ;;TODO change tab to browser
-                (navigation/set-root :browser nil)
+                (navigation/set-root :browser)
                 (update-browser browser)
                 (resolve-url nil)))))
 
@@ -336,7 +336,7 @@
                           {:browser-id browser-id})}
               (update-browser browser)
               ;;TODO change tab to browser
-              (navigation/set-root :browser nil)
+              (navigation/set-root :browser)
               (resolve-url nil))))
 
 (fx/defn web3-error-callback
