@@ -5,7 +5,7 @@
             [quo.gesture-handler :as gh]
             [oops.core :refer [oget ocall]]
             ["react-native-reanimated" :default animated :refer (clockRunning EasingNode)]
-            ["react-native-redash" :as redash]
+            ["react-native-redash/lib/module/v1" :as redash]
             quo.react)
   (:require-macros [quo.react :refer [maybe-js-deps]]))
 

@@ -10,6 +10,8 @@
             [status-im.privacy-policy.core :as privacy-policy]
             [status-im.ui.components.colors :as colors]))
 
+(defonce index (reagent/atom 0))
+
 (defn code [val]
   ^{:key val}
   [animated/code {:exec val}])
@@ -22,34 +24,72 @@
        [code (animated/set active (if selected 1 0))]
        [animated/view {:style (styles/dot-progress active-transition progress)}]])))
 
-(defn dots-selector [{:keys [n selected progress]}]
-  [react/view {:style (styles/dot-selector)}
-   (for [i (range n)]
-     ^{:key i}
-     [dot {:progress progress
-           :selected (= selected i)}])])
+(defn dots-selector [{:keys [n progress]}]
+  (let [selected @index]
+    [react/view {:style (styles/dot-selector)}
+     (for [i (range n)]
+       ^{:key i}
+       [dot {:progress progress
+             :selected (= selected i)}])]))
 
-(defn carousel [slides]
+(defn slides-view [slides width]
+  (let [height            (reagent/atom 0)
+        text-height       (reagent/atom 0)
+        text-temp-height  (atom 0)
+        text-temp-timer   (atom nil)]
+    (fn [_]
+      [:<>
+       (doall
+        (for [s slides]
+          ^{:key (:title s)}
+          [react/view {:style {:flex               1
+                               :width              width
+                               :justify-content    :flex-end
+                               :align-items        :center
+                               :padding-horizontal 32}}
+           (let [size (min width @height)]
+             [react/view {:style     {:flex 1}
+                          :on-layout (fn [^js e]
+                                       (let [new-height (-> e .-nativeEvent .-layout .-height)]
+                                         (swap! height #(if (pos? %) (min % new-height) new-height))))}
+              [react/image {:source      (:image s)
+                            :resize-mode :contain
+                            :style       {:width  size
+                                          :height size}}]])
+           [quo/text {:style  styles/wizard-title
+                      :align  :center
+                      :weight :bold
+                      :size   :x-large}
+            (i18n/label (:title s))]
+           [quo/text {:style (styles/wizard-text-with-height @text-height)
+                      :on-layout
+                             (fn [^js e]
+                               (let [new-height (-> e .-nativeEvent .-layout .-height)]
+                                 (when (and (not= new-height @text-temp-height)
+                                            (not (zero? new-height))
+                                            (< new-height 200))
+                                   (swap! text-temp-height #(if (pos? %) (max % new-height) new-height))
+                                   (when @text-temp-timer (js/clearTimeout @text-temp-timer))
+                                   (reset! text-temp-timer
+                                           (js/setTimeout #(reset! text-height @text-temp-height) 500)))))}
+            (i18n/label (:text s))]]))])))
+
+(defn carousel [slides width]
   ;;TODO this is really not the best implementation, must be a better way
   (let [scroll-x          (reagent/atom 0)
         scroll-view-ref   (atom nil)
-        width             (reagent/atom 0)
-        height            (reagent/atom 0)
-        text-height       (reagent/atom 0)
-        index             (reagent/atom 0)
+
         manual-scroll     (atom false)
-        text-temp-height  (atom 0)
-        text-temp-timer   (atom nil)
         progress          (animated/value 1)
         autoscroll        (animated/value 1)
         finished          (animated/value 0)
         clock             (animated/clock)
         go-next           (fn []
                             (let [x (if (>= @scroll-x (* (dec (count slides))
-                                                         @width))
+                                                         width))
                                       0
-                                      (+ @scroll-x @width))]
-                              (reset! index (Math/round (/ x @width)))
+                                      (+ @scroll-x width))]
+                              (reset! index (Math/round (/ x width)))
                               (some-> ^js @scroll-view-ref (.scrollTo #js {:x x :animated true}))))
         code              (animated/block
                            [(animated/cond* (animated/and* (animated/not* (animated/clock-running clock))
@@ -72,9 +112,7 @@
     (fn [_ _]
       [react/view {:style     {:align-items     :center
                                :flex            1
-                               :justify-content :flex-end}
-                   :on-layout (fn [^js e]
-                                (reset! width (-> e .-nativeEvent .-layout .-width)))}
+                               :justify-content :flex-end}}
        [animated/code {:exec code}]
        [react/scroll-view {:horizontal                        true
                            :paging-enabled                    true
@@ -86,48 +124,14 @@
                            :on-scroll                         #(let [x (.-nativeEvent.contentOffset.x ^js %)]
                                                                  (when @manual-scroll
                                                                    ;; NOTE: Will be not synced if velocity is big
-                                                                   (reset! index (Math/round (/ x @width))))
+                                                                   (reset! index (Math/round (/ x width))))
                                                                  (reset! scroll-x x))
                            :on-scroll-begin-drag              cancel-animation
                            :on-scroll-end-drag                restart-animation
                            :on-momentum-scroll-end            #(reset! manual-scroll false)
                            :style                             {:margin-bottom 16}}
-        (doall
-         (for [s slides]
-           ^{:key (:title s)}
-           [react/view {:style {:flex               1
-                                :width              @width
-                                :justify-content    :flex-end
-                                :align-items        :center
-                                :padding-horizontal 32}}
-            (let [size (min @width @height)]
-              [react/view {:style     {:flex 1}
-                           :on-layout (fn [^js e]
-                                        (let [new-height (-> e .-nativeEvent .-layout .-height)]
-                                          (swap! height #(if (pos? %) (min % new-height) new-height))))}
-               [react/image {:source      (:image s)
-                             :resize-mode :contain
-                             :style       {:width  size
-                                           :height size}}]])
-            [react/text {:style  styles/wizard-title
-                         :align  :center
-                         :weight :bold
-                         :size   :x-large}
-             (i18n/label (:title s))]
-            [react/text {:style (styles/wizard-text-with-height @text-height)
-                         :on-layout
-                                (fn [^js e]
-                                  (let [new-height (-> e .-nativeEvent .-layout .-height)]
-                                    (when (and (not= new-height @text-temp-height)
-                                               (not (zero? new-height))
-                                               (< new-height 200))
-                                      (swap! text-temp-height #(if (pos? %) (max % new-height) new-height))
-                                      (when @text-temp-timer (js/clearTimeout @text-temp-timer))
-                                      (reset! text-temp-timer
-                                              (js/setTimeout #(reset! text-height @text-temp-height) 500)))))}
-             (i18n/label (:text s))]]))]
-       [dots-selector {:selected @index
-                       :progress progress
+        [slides-view slides width]]
+       [dots-selector {:progress progress
                        :n        (count slides)}]])))
 
 (defn intro []
@@ -140,7 +144,8 @@
                :text :intro-text2}
               {:image (resources/get-theme-image :browser)
                :title :intro-title3
-               :text :intro-text3}]]
+               :text :intro-text3}]
+             @(re-frame/subscribe [:dimensions/window-width])]
    [react/view styles/buttons-container
     [react/view {:style (assoc styles/bottom-button :margin-bottom 16)}
      [quo/button {:on-press #(re-frame/dispatch [:init-onboarding])}

@@ -263,9 +263,9 @@
  (fn []
    (set-root {:root {:bottomTabs
                      {:options {:bottomTabs {:titleDisplayMode :alwaysShow
-                                             :preferLargeIcons false
-                                             :elevation        0
-                                             :hideShadow       true}}
+                                             :preferLargeIcons false}}
+                                             ;:elevation        0
+                                             ;:hideShadow       true}}
 
                       :children
                                [{:stack {:children [{:component {:name    :home
