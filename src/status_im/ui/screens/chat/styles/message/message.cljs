@@ -75,7 +75,7 @@
     :padding-left               8
     :padding-right              10
     :padding-vertical           5
-    :background-color           (if outgoing colors/blue colors/gray-lighter)
+    :background-color           colors/gray-lighter
     :justify-content :center}
    (if outgoing
      {:align-self  :flex-end
@@ -98,9 +98,8 @@
       :align-items  :flex-start
       :padding-left 8})))
 
-(defn pin-author-text [outgoing]
-  {:color       (if outgoing colors/white-persist colors/black-persist)
-   :margin-left 5})
+(defn pin-author-text []
+  {:margin-left 5})
 
 (def message-author-touchable
   {:margin-left    12
@@ -171,7 +170,7 @@
      {:border-bottom-left-radius 4})
 
    (cond
-     pinned?                                             {:background-color colors/yellow-light}
+     pinned?                                             {:background-color colors/pin-background}
      (= content-type constants/content-type-system-text) nil
      outgoing                                            {:background-color colors/blue}
      mentioned                                           {:background-color colors/mentioned-background

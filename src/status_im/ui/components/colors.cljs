@@ -18,7 +18,7 @@
            :gray                 "#838C91"
            :blue-light           "#23252F"
            :red                  "#FC5F5F"
-           :yellow-light         "#FFF3DB"})
+           :pin-background         "#34232B"})
 
 (def light {:white                "#ffffff"
             :black                "#000000"
@@ -29,7 +29,7 @@
             :mentioned-border     "#b8ecf9"
             :blue-light           "#ECEFFC"
             :red                  "#ff2d55"
-            :yellow-light         "#FFF3DB"})
+            :pin-background         "#FFEECC"})
 
 (def themes {:dark dark :light light})
 
@@ -82,7 +82,7 @@
 (def green-transparent-10 (alpha green 0.1))                ;; icon for successful inboud transaction
 
 ;; YELLOW
-(def yellow-light (:yellow-light light))                    ;; Light yellow, used as background for pinned messages
+(def pin-background (:pin-background light))                    ;; Light yellow, used as background for pinned messages
 
 (def purple "#887af9")
 (def orange "#FE8F59")
@@ -142,5 +142,5 @@
       (set! green-transparent-10 (alpha green 0.1))
       (set! red-transparent-10 (alpha red 0.1))
       (set! blue-transparent-10 (alpha blue 0.1))
-      (set! yellow-light (:yellow-light colors)))
+      (set! pin-background (:pin-background colors)))
     (reset! theme type)))

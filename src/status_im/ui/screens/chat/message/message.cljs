@@ -209,13 +209,14 @@
   [react/view {:style (style/pin-indicator outgoing display-photo?)}
    [react/view {:style {:flex-direction :row
                         :align-items    :center}}
-    [icons/icon :main-icons/pin {:color            (if outgoing colors/white-persist colors/gray)
+    [icons/icon :main-icons/pin {:color            colors/gray
                                  :height           pin-icon-height
                                  :width            pin-icon-width
                                  :background-color :red}]
     [quo/text {:weight :regular
-               :size :small
-               :style (style/pin-author-text outgoing)}
+               :size   :small
+               :color  :main
+               :style  (style/pin-author-text)}
      (i18n/label :t/pinned)]]])
 
 (defn message-delivery-status
@@ -397,7 +398,7 @@
              [message-timestamp message true])
            (when (and @collapsible? (not modal))
              (if @collapsed?
-               (let [color (if pinned? colors/yellow-light (if mentioned colors/mentioned-background colors/blue-light))]
+               (let [color (if pinned? colors/pin-background (if mentioned colors/mentioned-background colors/blue-light))]
                  [react/touchable-highlight
                   {:on-press #(swap! collapsed? not)
                    :style    {:position :absolute :bottom 0 :left 0 :right 0 :height 72}}
