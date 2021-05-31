@@ -216,7 +216,7 @@
                                   :content (i18n/label (if (= backup-type :recovery-card)
                                                          :t/keycard-can-use-with-new-passcode :t/keycard-backup-success-body))}}
             (if (multiaccounts.model/logged-in? cofx)
-              (navigation/navigate-to-cofx :profile-stack {:screen :keycard-settings})
+              (navigation/navigate-to-cofx :keycard-settings nil)
               (return-to-keycard-login))))
 
 (fx/defn on-generate-and-load-key-success

@@ -17,7 +17,6 @@
   [_ config]
   {::navigate-reset config})
 
-
 (defn- all-screens-params [db view screen-params]
   (cond-> db
           (and (seq screen-params) (:screen screen-params) (:params screen-params))
