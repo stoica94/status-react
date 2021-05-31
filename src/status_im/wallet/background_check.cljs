@@ -28,9 +28,9 @@
 
 (fx/defn configure
   {:events [::configure]}
-  [cofx]
-  (when platform/ios?
-    {:local/local-pushes-ios [{:title   "CONFIGURE"
+  [{:keys [db] :as cofx}]
+  (when (and platform/ios? (get db :multiaccount))
+    {:local/local-pushes-ios [{:title   "GET CACHED BALANCES"
                                :message "nothing here"}]
      ::json-rpc/call
      [{:method     "wallet_getCachedBalances"
@@ -200,5 +200,22 @@
                  on-timeout)
      (fn [status]
        (local/local-push-ios
+        {:title   "CONFIGURE BG FETCHING"
+         :message (str status)})))))
+
+(fx/defn stop-background-task
+  {:events [::stop]}
+  [_]
+  (when platform/ios?
+    (.then
+     (.start ^js background-fetch "react-native-background-fetch")
+     (fn [status]
+       (local/local-push-ios
         {:title   "START FETCHING"
          :message (str status)})))))
+
+(fx/defn start-background-task
+  {:events [::stop]}
+  [_]
+  (when platform/ios?
+    (.stop ^js background-fetch "react-native-background-fetch")))
