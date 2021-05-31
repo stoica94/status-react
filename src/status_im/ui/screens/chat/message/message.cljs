@@ -397,7 +397,7 @@
              [message-timestamp message true])
            (when (and @collapsible? (not modal))
              (if @collapsed?
-               (let [color (if mentioned colors/mentioned-background colors/blue-light)]
+               (let [color (if pinned? colors/yellow-light (if mentioned colors/mentioned-background colors/blue-light))]
                  [react/touchable-highlight
                   {:on-press #(swap! collapsed? not)
                    :style    {:position :absolute :bottom 0 :left 0 :right 0 :height 72}}
@@ -447,7 +447,9 @@
                                                      [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
                                                        :label    (i18n/label :t/message-reply)}
                                                       {:on-press #(react/copy-to-clipboard (get content :text))
-                                                       :label    (i18n/label :t/sharing-copy-to-clipboard)}]))})
+                                                       :label    (i18n/label :t/sharing-copy-to-clipboard)}
+                                                      {:on-press #(re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned? (not pinned?))])
+                                                       :label    (if pinned? (i18n/label :t/unpin) (i18n/label :t/pin))}]))})
       [react/view (style/message-view message)
        [react/view {:style (style/message-view-content)}
         [react/view {:style (style/style-message-text outgoing)}
