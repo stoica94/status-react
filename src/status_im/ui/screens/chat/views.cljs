@@ -273,26 +273,31 @@
     [react/view {:style (when platform/android? {:scaleY -1})}
      [chat.group/group-chat-footer chat-id invitation-admin]]))
 
-(defn render-fn [{:keys [outgoing type] :as message}
+(defn render-fn [{:keys [outgoing type message-id] :as message}
                  idx
                  _
                  {:keys [group-chat public? current-public-key space-keeper chat-id show-input?]}]
-  [react/view {:style (when platform/android? {:scaleY -1})}
-   (if (= type :datemark)
-     [message-datemark/chat-datemark (:value message)]
-     (if (= type :gap)
-       [gap/gap message idx messages-list-ref false chat-id]
+  (let [pinned-messages @(re-frame/subscribe [:chats/pinned chat-id])
+        pinned-message (get pinned-messages message-id)
+        pinned? (some? pinned-message)]
+    [react/view {:style (when platform/android? {:scaleY -1})}
+     (if (= type :datemark)
+       [message-datemark/chat-datemark (:value message)]
+       (if (= type :gap)
+         [gap/gap message idx messages-list-ref false chat-id]
        ; message content
-       [message/chat-message
-        (assoc message
-               :incoming-group (and group-chat (not outgoing))
-               :group-chat group-chat
-               :public? public?
-               :current-public-key current-public-key
-               :show-input? show-input?)
-        space-keeper]))])
+         [message/chat-message
+          (assoc message
+                 :incoming-group (and group-chat (not outgoing))
+                 :group-chat group-chat
+                 :public? public?
+                 :current-public-key current-public-key
+                 :show-input? show-input?
+                 :pinned? pinned?
+                 :pinned-by (when pinned? (pinned-message :from)))
+          space-keeper]))]))
 
-(defn render-pin-fn [{:keys [outgoing type] :as message}
+(defn render-pin-fn [{:keys [outgoing type from] :as message}
                      idx
                      _
                      {:keys [group-chat public? current-public-key space-keeper chat-id show-input?]}]
@@ -308,7 +313,9 @@
                :group-chat group-chat
                :public? public?
                :current-public-key current-public-key
-               :show-input? show-input?)
+               :show-input? show-input?
+               :pinned? true
+               :pinned-by from)
         space-keeper]))])
 
 (def list-key-fn #(or (:message-id %) (:value %)))
@@ -332,6 +339,7 @@
 (defn messages-view [{:keys [chat bottom-space pan-responder space-keeper show-input?]}]
   (let [{:keys [group-chat chat-id public?]} chat
         messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])
+        pinned-messages @(re-frame/subscribe [:chats/pinned chat-id])
         current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
     ;;do not use anonymous functions for handlers
     [list/flat-list

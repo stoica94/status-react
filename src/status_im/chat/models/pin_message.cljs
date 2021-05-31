@@ -39,15 +39,6 @@
           current-clock-value (get-in db [:pagination-info chat-id :pin-cursor-clock-value])
           clock-value (when cursor (loading/cursor->clock-value cursor))]
       {:db (-> db
-               ((fn [db]
-                  (reduce (fn [acc message-id]
-                            (if (get-in acc [:messages chat-id message-id])
-                              (assoc-in acc [:messages chat-id message-id :pinned?]
-                                        true)
-                              (assoc-in acc [:messages chat-id message-id :pinned?]
-                                        false)))
-                          db
-                          messages-id-list)))
                (update-in [:pagination-info chat-id :pin-cursor-clock-value]
                           #(if (and (seq cursor) (or (not %) (< clock-value %)))
                              clock-value
