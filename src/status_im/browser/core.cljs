@@ -321,7 +321,7 @@
       (fx/merge cofx
                 {:db (assoc db :browser/options
                             {:browser-id (:browser-id browser)})}
-                ;;TODO change tab to browser
+                (navigation/change-tab :browser)
                 (navigation/set-root :browser)
                 (update-browser browser)
                 (resolve-url nil)))))

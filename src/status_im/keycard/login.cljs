@@ -71,9 +71,7 @@
                          :error nil
                          :status nil))})
    (when-not (:multiaccounts/login db)
-     (navigation/navigate-to-cofx
-      :profile-stack
-      {:screen :keycard-pin}))))
+     (navigation/navigate-to-cofx :keycard-pin nil))))
 
 (fx/defn dismiss-frozen-keycard-popover
   {:events [::frozen-keycard-popover-dismissed]}

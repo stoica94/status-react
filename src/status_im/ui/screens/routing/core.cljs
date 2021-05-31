@@ -84,8 +84,7 @@
 
 (defn wrapped-screen-style [{:keys [insets style]} insets-obj]
   (merge
-   {:background-color colors/white
-    :flex             1}
+   {:flex 1}
    style
    (when (get insets :bottom)
      {:padding-bottom (+ (oget insets-obj "bottom")

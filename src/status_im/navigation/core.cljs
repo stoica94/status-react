@@ -11,7 +11,8 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
             [status-im.ui.screens.views :as views]
-            [status-im.ui.screens.popover.views :as popover]))
+            [status-im.ui.screens.popover.views :as popover]
+            [status-im.utils.platform :as platform]))
 
 (def debug? ^boolean js/goog.DEBUG)
 
@@ -36,9 +37,19 @@
 
 (.setLazyComponentRegistrator Navigation reg-comp)
 
-(def status-bar-options {:statusBar {:backgroundColor :white
-                                     :style           :dark}
-                         :navigationBar {:backgroundColor colors/white-persist}})
+(defn status-bar-options []
+  (if platform/android?
+    {:navigationBar {:backgroundColor colors/white}
+     :statusBar
+     {:backgroundColor colors/white
+      :style (if (colors/dark?):light :dark)}}
+    {:statusBar {:style (if (colors/dark?):light :dark)}}))
+
+(defn general-options [] {:topBar {:noBorder   true
+                                   :elevation  0
+                                   :background {:color colors/white}
+                                   :backButton {:icon  (js/require "../resources/images/icons/arrow_left.png")
+                                                :color colors/black}}})
 
 (re-frame/reg-fx
  :rnn-set-root-fx
@@ -46,7 +57,9 @@
    (let [{:keys [options title]} (get views/screens comp)]
      (.setStackRoot Navigation "browser-stack" (clj->js {:component {:id      comp
                                                                      :name    comp
-                                                                     :options (merge status-bar-options (when title {:topBar {:title {:text title}}}) options)}})))))
+                                                                     :options (merge (status-bar-options) (when title {:topBar {:title {:text title :color colors/black}}}) options)}})))))
+
+
 
 (re-frame/reg-fx
  :open-modal-fx
@@ -59,10 +72,10 @@
                                        [{:component
                                          {:name    comp
                                           :id comp
-                                          :options (merge status-bar-options
+                                          :options (merge (status-bar-options)
                                                           {:topBar
                                                            (merge
-                                                            (when title {:title {:text title}})
+                                                            (when title {:title {:text title :color colors/black}})
                                                             {:elevation       0
                                                              :noBorder        true
                                                              :leftButtonColor colors/black
@@ -71,23 +84,32 @@
                                                                                :icon (js/require "../resources/images/icons/close.png")}})}
                                                           options)}}]}})))))
 
-
 (defn navigate [comp]
   (let [{:keys [options title]} (get views/screens comp)]
     (.push Navigation
            (name @root-comp-id)
            (clj->js {:component {:id      comp
                                  :name    comp
-                                 :options (merge status-bar-options (when title {:topBar {:title {:text title}}}) options)}}))))
+                                 :options (merge (status-bar-options) (general-options) (update options :topBar merge (when title {:title {:text title :color colors/black}})))}}))
+    (when @curr-modal
+      (reset! curr-modal false)
+      (reset! modals [])
+      (.dismissAllModals Navigation))))
 
 (.registerComponentDidAppearListener
  (.events Navigation)
  (fn [^js evn]
    (set-current-screen (keyword (.-componentName evn)))
-   (println ".registerComponentDidAppearListener"
+   (println "DID APPEAR"
             (.-componentId evn)
-            (.-componentName evn)
-            (.-passProps evn))))
+            (.-componentName evn))))
+
+(.registerComponentDidDisappearListener
+ (.events Navigation)
+ (fn [^js evn]
+   (println "DID DISAPPEAR"
+            (.-componentId evn)
+            (.-componentName evn))))
 
 (defn dissmissModal []
   (.dismissModal Navigation (name (last @modals))))
@@ -135,10 +157,9 @@
    (.showOverlay Navigation
                  (clj->js
                   {:component {:name    "popover"
-                               :options {:statusBar {:translucent     true
-                                                     :backgroundColor nil}
-                                         :layout    {:componentBackgroundColor "transparent"}
-                                         :overlay   {:interceptTouchOutside true}}}}))))
+                               :options (merge (status-bar-options)
+                                               {:layout    {:componentBackgroundColor "transparent"}
+                                                :overlay   {:interceptTouchOutside true}})}}))))
 
 (re-frame/reg-fx
  :rnn-hide-popover
@@ -170,10 +191,9 @@
    (.showOverlay Navigation
                  (clj->js
                   {:component {:name    "bottom-sheet"
-                               :options {:statusBar {:translucent     true
-                                                     :backgroundColor nil}
-                                         :layout    {:componentBackgroundColor "transparent"}
-                                         :overlay   {:interceptTouchOutside true}}}}))))
+                               :options (merge (status-bar-options)
+                                               {:layout    {:componentBackgroundColor "transparent"}
+                                                :overlay   {:interceptTouchOutside true}})}}))))
 
 (re-frame/reg-fx
  :rnn-hide-bottom-sheet
@@ -186,10 +206,7 @@
   (reset! root-comp-id id)
   (.setRoot Navigation (clj->js root)))
 
-(def general-options {:topBar {:noBorder   true
-                               :elevation  0
-                               :backButton {:icon  (js/require "../resources/images/icons/arrow_left.png")
-                                            :color :black}}})
+
 
 ;;this stack has only one screen with carusel, and showed only once when user installed the app
 (re-frame/reg-fx
@@ -197,7 +214,7 @@
  (fn []
    (set-root {:root {:stack {:children [{:component {:name :intro
                                                      :id :intro
-                                                     :options   status-bar-options}}]
+                                                     :options   (status-bar-options)}}]
                              :options  {:topBar {:visible false}}}}}
              nil)))
 
@@ -206,7 +223,7 @@
  (fn []
    (set-root {:root {:stack {:children [{:component {:name    :notifications-onboarding
                                                      :id :notifications-onboarding
-                                                     :options status-bar-options}}]
+                                                     :options (status-bar-options)}}]
                              :options  {:topBar {:visible false}}}}}
              nil)))
 
@@ -215,7 +232,7 @@
  (fn []
    (set-root {:root {:stack {:children [{:component {:name    :welcome
                                                      :id :welcome
-                                                     :options status-bar-options}}]
+                                                     :options (status-bar-options)}}]
                              :options  {:topBar {:visible false}}}}}
              nil)))
 
@@ -224,7 +241,7 @@
  (fn []
    (set-root {:root {:stack {:children [{:component {:name    :progress
                                                      :id :progress
-                                                     :options status-bar-options}}]
+                                                     :options (status-bar-options)}}]
                              :options  {:topBar {:visible false}}}}}
              nil)))
 
@@ -233,12 +250,12 @@
  (fn []
    (set-root {:root {:stack {:children [{:component {:name    :multiaccounts
                                                      :id      :login-multiaccounts
-                                                     :options (merge status-bar-options {:topBar {:elevation 0
-                                                                                                  :visible   false}})}}
+                                                     :options (merge (status-bar-options) {:topBar {:elevation 0
+                                                                                                    :visible   false}})}}
                                         {:component {:name    :login
-                                                     :options (merge status-bar-options {:topBar {:elevation 0
-                                                                                                  :visible   false}})}}]
-                             :options  general-options}}}
+                                                     :options (merge (status-bar-options) {:topBar {:elevation 0
+                                                                                                    :visible   false}})}}]
+                             :options  (general-options)}}}
              :login-multiaccounts)))
 
 (def tab-root-ids {0 :home-root
@@ -247,13 +264,31 @@
                    3 :status-root
                    4 :profile-root})
 
+(def tab-key-idx {:chat 0
+                   :browser 1
+                   :wallet 2
+                   :status 3
+                   :profile 4})
+
+(re-frame/reg-fx
+ :rnn-change-tab-fx
+ (fn [tab]
+   (reset! root-comp-id (get tab-root-ids (get tab-key-idx tab)))
+   (.mergeOptions Navigation "tabs-stack" (clj->js {:bottomTabs {:currentTabIndex (get tab-key-idx tab)}}))))
+
+(re-frame/reg-fx
+ :rnn-pop-to-root-tab-fx
+ (fn [comp]
+   (println "POP TO ROOT" (name comp))
+   (.popToRoot Navigation (name comp))))
+
 (.registerBottomTabSelectedListener
  (.events Navigation)
  (fn [^js evn]
    (println "selectedTabIndex" (.-selectedTabIndex evn))
    (reset! root-comp-id (get tab-root-ids (.-selectedTabIndex evn)))))
 
-(def bottom-tab-general
+(defn bottom-tab-general []
   {:fontSize  11
    :iconColor colors/gray :selectedIconColor colors/blue
    :textColor colors/gray :selectedTextColor colors/blue})
@@ -262,51 +297,52 @@
  :init-tabs-fx
  (fn []
    (set-root {:root {:bottomTabs
-                     {:options {:bottomTabs {:titleDisplayMode :alwaysShow
-                                             :preferLargeIcons false}}
-                                             ;:elevation        0
-                                             ;:hideShadow       true}}
+                     {:id :tabs-stack
+                      :options {:layout {:componentBackgroundColor colors/white}
+                                :bottomTabs {:titleDisplayMode :alwaysHide
+                                             :backgroundColor colors/white}}
 
                       :children
                                [{:stack {:children [{:component {:name    :home
                                                                  :id      :home-root
-                                                                 :options (merge status-bar-options {:topBar    {:visible false}})}}]
-                                         :options  (merge general-options
+                                                                 :options (merge (status-bar-options) { :topBar    {:visible false}})}}]
+                                         :options  (merge (general-options)
                                                           ;;TAB
-                                                          {:bottomTab (merge bottom-tab-general
-                                                                             {:text (i18n/label :t/chat)
+                                                          {
+                                                           :bottomTab (merge (bottom-tab-general)
+                                                                             {;:text (i18n/label :t/chat)
                                                                               :icon (js/require "../resources/images/icons/message.png")})})}}
                                 {:stack {:id :browser-stack
                                          :children [{:component {:name    :empty-tab
                                                                  :id      :browser-root
-                                                                 :options (merge status-bar-options {:topBar    {:visible false}})}}]
+                                                                 :options (merge (status-bar-options) { :topBar    {:visible false}})}}]
 
-                                         :options  (merge general-options
+                                         :options  (merge (general-options)
                                                           ;;TAB
-                                                          {:bottomTab (merge bottom-tab-general
-                                                                             {:text (i18n/label :t/browser)
+                                                          {:bottomTab (merge (bottom-tab-general)
+                                                                             {;:text (i18n/label :t/browser)
                                                                               :icon (js/require "../resources/images/icons/browser.png")})})}}
                                 {:stack {:children [{:component {:name    :wallet
                                                                  :id      :wallet-root
-                                                                 :options (merge status-bar-options {:topBar    {:visible false}})}}]
-                                         :options  (merge general-options
+                                                                 :options (merge (status-bar-options) {:topBar    {:visible false}})}}]
+                                         :options  (merge (general-options)
                                                           ;;TAB
-                                                          {:bottomTab (merge bottom-tab-general {:text (i18n/label :t/wallet)
-                                                                                                 :icon (js/require "../resources/images/icons/wallet.png")})})}}
+                                                          {:bottomTab (merge (bottom-tab-general) {;:text (i18n/label :t/wallet)
+                                                                                                   :icon (js/require "../resources/images/icons/wallet.png")})})}}
                                 {:stack {:children [{:component {:name    :status
                                                                  :id      :status-root
-                                                                 :options (merge status-bar-options {:topBar    {:visible false}})}}]
-                                         :options  (merge general-options
+                                                                 :options (merge (status-bar-options) {:topBar    {:visible false}})}}]
+                                         :options  (merge (general-options)
                                                           ;;TAB
-                                                          {:bottomTab (merge bottom-tab-general {:text (i18n/label :t/status)
-                                                                                                 :icon (js/require "../resources/images/icons/status.png")})})}}
+                                                          {:bottomTab (merge (bottom-tab-general) {;:text (i18n/label :t/status)
+                                                                                                   :icon (js/require "../resources/images/icons/status.png")})})}}
                                 {:stack {:children [{:component {:name    :my-profile
                                                                  :id      :profile-root
-                                                                 :options (merge status-bar-options {:topBar    {:visible false}})}}]
-                                         :options  (merge general-options
+                                                                 :options (merge (status-bar-options) {:topBar    {:visible false}})}}]
+                                         :options  (merge (general-options)
                                                           ;;TAB
-                                                          {:bottomTab (merge bottom-tab-general {:text (i18n/label :t/profile)
-                                                                                                 :icon (js/require "../resources/images/icons/user_profile.png")})})}}]}}}
+                                                          {:bottomTab (merge (bottom-tab-general) {;:text (i18n/label :t/profile)
+                                                                                                   :icon (js/require "../resources/images/icons/user_profile.png")})})}}]}}}
              :home-root)))
 
 ;;this stack for onboarding navigation, showed only after intro stack
@@ -315,9 +351,9 @@
  (fn []
    (set-root {:root {:stack {:children [{:component {:name    :get-your-keys
                                                      :id      :onboarding-root-component
-                                                     :options (merge status-bar-options {:topBar {:elevation 0
-                                                                                                  :noBorder  true}})}}]
-                             :options general-options}}}
+                                                     :options (merge (status-bar-options) {:topBar {:elevation 0
+                                                                                                    :noBorder  true}})}}]
+                             :options (general-options)}}}
              :onboarding-root-component)))
 
 (fx/defn init-intro
@@ -380,3 +416,9 @@
   {:events [:rnn-navigate-back]}
   [_]
   {:rnn-navigate-back-fx nil})
+
+(re-frame/reg-fx
+ :navigate-replace-fx
+ (fn [[view-id _]]
+   (.pop Navigation (name @root-comp-id))
+   (navigate view-id)))

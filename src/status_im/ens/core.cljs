@@ -34,6 +34,7 @@
   [cofx]
   ;; we reset navigation so that navigate back doesn't return
   ;; into the registration flow
+  ;;TODO set root
   (navigation/navigate-reset cofx
                              {:index  1
                               :key    :profile-stack

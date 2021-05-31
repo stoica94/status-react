@@ -1,7 +1,6 @@
 (ns status-im.ui.screens.views
   (:require [status-im.ui.components.react :as react]
             [reagent.core :as reagent]
-            [status-im.ui.components.colors :as colors]
             [status-im.reloader :as reloader]
             [status-im.ui.screens.screens :as screens]
             [status-im.ui.screens.routing.core :as routing]))
@@ -26,7 +25,7 @@
 (defn screen [key]
   (reagent.core/reactify-component
    (fn []
-     ^{:key (str @colors/theme @reloader/cnt)}
+     ^{:key (str "root" key @reloader/cnt)}
      [react/safe-area-provider
       [react/safe-area-consumer
        (fn [insets]

@@ -84,9 +84,7 @@
 (fx/defn open-transaction-details
   {:events [:wallet.ui/show-transaction-details]}
   [cofx hash address]
-  (navigation/navigate-to-cofx cofx :wallet-stack {:screen  :wallet-transaction-details
-                                                   :initial false
-                                                   :params  {:hash hash :address address}}))
+  (navigation/navigate-to-cofx cofx :wallet-transaction-details {:hash hash :address address}))
 
 (defn- validate-token-name!
   [{:keys [address symbol name]}]

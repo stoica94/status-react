@@ -59,8 +59,8 @@
   (let [own (new-chat.db/own-public-key? db public-key)]
     (cond
       (and public-key own)
-      (navigation/navigate-to-cofx cofx :tabs {:screen :profile-stack
-                                               :params {:screen :my-profile}})
+      {:navigate-change-tab-fx :profile
+       :pop-to-root-tab-fx :profile-root}
 
       (and public-key (not own))
       (fx/merge cofx

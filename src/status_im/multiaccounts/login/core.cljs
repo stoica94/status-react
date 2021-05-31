@@ -308,7 +308,6 @@
                "new-auth-method" new-auth-method)
     (fx/merge cofx
               {:db (assoc db :chats/loading? true)
-               :init-tabs-fx nil
                ::json-rpc/call
                [{:method     "browsers_getBrowsers"
                  :on-success #(re-frame/dispatch [::initialize-browsers %])}
@@ -317,7 +316,8 @@
                 {:method     "permissions_getDappPermissions"
                  :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}
                 {:method     "settings_getSettings"
-                 :on-success #(re-frame/dispatch [::get-settings-callback %])}]}
+                 :on-success #(do (re-frame/dispatch [::get-settings-callback %])
+                                  (re-frame/dispatch [:init-tabs]))}]}
               (notifications/load-notification-preferences)
               (when save-password?
                 (keychain/save-user-password key-uid password))

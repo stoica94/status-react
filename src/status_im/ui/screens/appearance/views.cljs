@@ -15,7 +15,10 @@
 
 (defn button [label icon theme selected?]
   [react/touchable-highlight
-   {:on-press #(re-frame/dispatch [:multiaccounts.ui/appearance-switched theme])}
+   {:on-press #(do (re-frame/dispatch [:multiaccounts.ui/appearance-switched theme])
+                   (re-frame/dispatch [:init-tabs])
+                   (re-frame/dispatch [:navigate-change-tab :profile])
+                   (re-frame/dispatch [:navigate-to :appearance]))}
    [react/view (merge {:align-items :center :padding 8 :border-radius 20}
                       (when selected?
                         {:background-color colors/blue-light}))
