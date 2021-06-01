@@ -16,11 +16,10 @@
    :backButton {:icon  (js/require "../resources/images/icons/arrow_left.png")
                 :color colors/black}})
 
-(defn bottom-tab-general [icon]
+(defn bottom-tab-general []
   {:fontSize  11
    :iconColor colors/gray :selectedIconColor colors/blue
-   :textColor colors/gray :selectedTextColor colors/blue
-   :icon      (js/require (str "../resources/images/icons/" icon ".png"))})
+   :textColor colors/gray :selectedTextColor colors/blue})
 
 (defn default-root []
   {:layout {:componentBackgroundColor colors/white
@@ -41,7 +40,7 @@
                                                         :id      :home
                                                         :options (merge (status-bar-options)
                                                                         {:topBar (assoc (topbar-options) :visible false)})}}]
-                                :options  {:bottomTab (bottom-tab-general "message")}}}
+                                :options  {:bottomTab (assoc (bottom-tab-general) :icon (js/require "../resources/images/icons/message.png"))}}}
                        ;BROWSER STACK
                        {:stack {:id       :browser-stack
                                 :children [{:component {:name    :empty-tab
@@ -49,28 +48,28 @@
                                                         :options (merge (status-bar-options)
                                                                         {:topBar (assoc (topbar-options) :visible false)})}}]
 
-                                :options  {:bottomTab (bottom-tab-general "browser")}}}
+                                :options  {:bottomTab (assoc (bottom-tab-general) :icon (js/require "../resources/images/icons/browser.png"))}}}
                        ;WALLET STACK
                        {:stack {:id       :wallet-stack
                                 :children [{:component {:name    :wallet
                                                         :id      :wallet
                                                         :options (merge (status-bar-options)
                                                                         {:topBar (assoc (topbar-options) :visible false)})}}]
-                                :options  {:bottomTab (bottom-tab-general "wallet")}}}
+                                :options  {:bottomTab (assoc (bottom-tab-general) :icon (js/require "../resources/images/icons/wallet.png"))}}}
                        ;STATUS STACK
                        {:stack {:id       :status-stack
                                 :children [{:component {:name    :status
                                                         :id      :status
                                                         :options (merge (status-bar-options)
                                                                         {:topBar (assoc (topbar-options) :visible false)})}}]
-                                :options  {:bottomTab (bottom-tab-general "status")}}}
+                                :options  {:bottomTab (assoc (bottom-tab-general) :icon (js/require "../resources/images/icons/status.png"))}}}
                        ;PROFILE STACK
                        {:stack {:id       :profile-stack
                                 :children [{:component {:name    :my-profile
                                                         :id      :my-profile
                                                         :options (merge (status-bar-options)
                                                                         {:topBar (assoc (topbar-options) :visible false)})}}]
-                                :options  {:bottomTab (bottom-tab-general "user_profile")}}}]}}}
+                                :options  {:bottomTab (assoc (bottom-tab-general) :icon (js/require "../resources/images/icons/user_profile.png"))}}}]}}}
 
    ;;INTRO (onboarding carousel)
    :intro
