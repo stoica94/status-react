@@ -18,12 +18,12 @@
 
 (re-frame/reg-fx ::finish-task finish-task)
 
-(fx/defn finish [{:keys [db]}]
+(fx/defn finish [{:keys [db]} message]
   {:events [::finish]}
   (let [task-id (get db :wallet/background-fetch-task-id)]
     {:db           (dissoc db :wallet/background-fetch-task-id)
      :local/local-pushes-ios [{:title   "FINISH"
-                               :message task-id}]
+                               :message (str task-id message)}]
      ::finish-task task-id}))
 
 (fx/defn configure
@@ -56,7 +56,7 @@
    {::async/set!
     {:rpc-url         nil
      :cached-balances nil}}
-   (finish)))
+   (finish "clean-async-storage")))
 
 (fx/defn perform-check
   {:events [::perform-check]}
@@ -180,7 +180,7 @@
                                 :message (str addresses-with-changes)}]}
      (update-cache cached-balances addresses-with-changes latest)
      (notify addresses-with-changes)
-     (finish))))
+     (finish "successfully finished"))))
 
 (defn on-event [task-id]
   (re-frame.core/dispatch [::perform-check task-id]))
