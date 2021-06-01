@@ -339,7 +339,6 @@
 (defn messages-view [{:keys [chat bottom-space pan-responder space-keeper show-input?]}]
   (let [{:keys [group-chat chat-id public?]} chat
         messages @(re-frame/subscribe [:chats/chat-messages-stream chat-id])
-        pinned-messages @(re-frame/subscribe [:chats/pinned chat-id])
         current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
     ;;do not use anonymous functions for handlers
     [list/flat-list

@@ -11,7 +11,6 @@
            :sticker (:sticker content))
     :always
     (clojure.set/rename-keys {:chat-id :chat_id
-                              :message-id        :message_id
                               :whisper-timestamp :whisperTimestamp
                               :community-id :communityId
                               :clock-value :clock

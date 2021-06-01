@@ -9,7 +9,8 @@
 (defn on-press
   [chat-id gap-ids]
   (fn []
-    (re-frame/dispatch [:chat.ui/fill-gaps chat-id gap-ids])))
+    (re-frame/dispatch [:chat.ui/fill-gaps chat-id gap-ids])
+    (re-frame/dispatch [:chat.ui/load-more-pin-messages-for-current-chat chat-id])))
 
 (views/defview gap
   [{:keys [gap-ids chat-id gap-parameters]}]

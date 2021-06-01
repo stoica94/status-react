@@ -1002,8 +1002,9 @@
  (fn [[_ chat-id] _]
    [(re-frame/subscribe [:chats/pin-message-list chat-id])
     (re-frame/subscribe [:chats/pinned chat-id])
-    (re-frame/subscribe [:chats/loading-pin-messages? chat-id])])
- (fn [[pin-message-list messages loading-messages?] _]
+    (re-frame/subscribe [:chats/loading-pin-messages? chat-id])
+    (re-frame/subscribe [:chats/synced-from chat-id])])
+ (fn [[pin-message-list messages loading-messages?] [_]]
    ;;TODO (perf)
    (let [pin-message-list-seq (models.message-list/->seq pin-message-list)]
      ; Don't show gaps if that's the case as we are still loading messages
