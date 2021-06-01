@@ -203,7 +203,8 @@
                   :chat-key             whisper-private-key}
                  encryption-public-key
                  {})
-                (navigation/navigate-to-cofx :notifications-onboarding nil)))))
+                ;;TODO change this
+                (navigation/navigate-to-cofx :onboarding-notification nil)))))
 
 (fx/defn return-to-keycard-login
   [{:keys [db] :as cofx}]

@@ -80,7 +80,7 @@
   (cond
     (and public-key (new-chat.db/own-public-key? db public-key))
     {:navigate-change-tab-fx :profile
-     :pop-to-root-tab-fx :profile-root}
+     :pop-to-root-tab-fx :profile-stack}
 
     public-key
     (navigation/navigate-to-cofx (assoc-in cofx [:db :contacts/identity] public-key)

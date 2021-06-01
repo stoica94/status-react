@@ -157,7 +157,7 @@
     :component    onboarding.welcome/welcome}
 
    ;[Onboarding] Notification
-   {:name         :notifications-onboarding
+   {:name         :onboarding-notification
     :back-handler :noop
     :insets       {:bottom true}
     :component    onboarding.notifications/notifications-onboarding}

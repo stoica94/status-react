@@ -148,7 +148,7 @@
     @(re-frame/subscribe [:dimensions/window-width])]
    [react/view styles/buttons-container
     [react/view {:style (assoc styles/bottom-button :margin-bottom 16)}
-     [quo/button {:on-press #(re-frame/dispatch [:init-onboarding])}
+     [quo/button {:on-press #(re-frame/dispatch [:init-root :onboarding])}
       (i18n/label :t/get-started)]]
     [react/nested-text
      {:style styles/welcome-text-bottom-note}

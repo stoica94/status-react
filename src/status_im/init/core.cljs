@@ -8,7 +8,8 @@
             [status-im.utils.fx :as fx]
             [status-im.theme.core :as theme]
             [status-im.utils.theme :as utils.theme]
-            [status-im.navigation.core :as navigation]))
+            [status-im.navigation.core :as navigation]
+            [status-im.utils.keychain.core :as keychain]))
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"
@@ -31,11 +32,12 @@
       ;; We specifically pass a bunch of fields instead of the whole multiaccount
       ;; as we want store some fields in multiaccount that are not here
       (let [multiaccount (first (sort-by :timestamp > (vals multiaccounts)))]
-        (multiaccounts.login/open-login cofx
-                                        (select-keys
-                                         multiaccount
-                                         [:key-uid :name :public-key :identicon :images])))
-      (navigation/init-intro cofx))))
+        (fx/merge cofx
+                  (multiaccounts.login/open-login (select-keys
+                                                   multiaccount
+                                                   [:key-uid :name :public-key :identicon :images]))
+                  (keychain/get-auth-method (:key-uid multiaccount))))
+      (navigation/init-root cofx :intro))))
 
 (fx/defn initialize-multiaccounts
   {:events [::initialize-multiaccounts]}

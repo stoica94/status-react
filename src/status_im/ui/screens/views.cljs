@@ -37,3 +37,9 @@
            [(get-in (if js/goog.DEBUG (get-screens) screens) [(keyword key) :component])]]))]
       (when js/goog.DEBUG
         [reloader/reload-view])])))
+
+(defn component [comp]
+  (reagent/reactify-component
+   (fn []
+     [react/view {:width 500 :height 44}
+      [comp]])))

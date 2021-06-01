@@ -316,7 +316,7 @@
                  :on-success #(re-frame/dispatch [::initialize-dapp-permissions %])}
                 {:method     "settings_getSettings"
                  :on-success #(do (re-frame/dispatch [::get-settings-callback %])
-                                  (re-frame/dispatch [:init-tabs]))}]}
+                                  (re-frame/dispatch [:init-root :chat-stack]))}]}
               (notifications/load-notification-preferences)
               (when save-password?
                 (keychain/save-user-password key-uid password))
@@ -329,12 +329,12 @@
         first-account?      (and creating?
                                  (empty? multiaccounts))]
     (fx/merge cofx
-              {:db                   (-> db
-                                         (dissoc :multiaccounts/login)
-                                         (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
-               :init-onboarding-notification-fx nil
-               :dispatch-later       [{:ms 2000 :dispatch [::initialize-wallet
-                                                           accounts nil nil (:recovered multiaccount) true]}]}
+              {:db             (-> db
+                                   (dissoc :multiaccounts/login)
+                                   (assoc-in [:multiaccount :multiaccounts/first-account] first-account?))
+               :init-root-fx   :onboarding-notification
+               :dispatch-later [{:ms 2000 :dispatch [::initialize-wallet
+                                                     accounts nil nil (:recovered multiaccount) true]}]}
               (finish-keycard-setup)
               (transport/start-messenger)
               (chat.loading/initialize-chats)
@@ -393,17 +393,15 @@
 ;; the keychain (save-password), this is not very explicit and we should probably
 ;; make it clearer
 (fx/defn open-login
-  [{:keys [db] :as cofx} override-multiaccount]
-  (fx/merge cofx
-            {:db (-> db
-                     (update :multiaccounts/login
-                             merge
-                             override-multiaccount)
-                     (update :multiaccounts/login
-                             dissoc
-                             :error
-                             :password))}
-            (keychain/get-auth-method (:key-uid override-multiaccount))))
+  [{:keys [db]} override-multiaccount]
+  {:db (-> db
+           (update :multiaccounts/login
+                   merge
+                   override-multiaccount)
+           (update :multiaccounts/login
+                   dissoc
+                   :error
+                   :password))})
 
 (fx/defn open-login-callback
   {:events [:multiaccounts.login.callback/get-user-password-success]}
@@ -418,9 +416,7 @@
        {:db (update-in db [:multiaccounts/login] assoc
                        :password password
                        :save-password? true)
-        :init-progress-fx nil}
-       ;;TODO test needs views then
-       ;(navigation/init-progress)
+        :init-root-fx :progress}
        login)
       (fx/merge
        cofx
@@ -430,11 +426,8 @@
                   (assoc-in [:keycard :pin :status] nil)
                   (assoc-in [:keycard :pin :login] []))})
        #(if keycard-account?
-          ;;TODO check this
           {:rnn-navigate-to-fx :keycard-login-pin}
-         ;(navigation/rnn-navigate-to % :keycard-login-pin)
-          {:init-login-fx nil})))))
-         ;(navigation/init-login %))))))
+          {:init-root-fx :multiaccounts})))))
 
 (fx/defn get-credentials
   [{:keys [db] :as cofx} key-uid]
@@ -519,10 +512,9 @@
   [cofx]
   (let [first-account? (get-in cofx [:db :multiaccount :multiaccounts/first-account])]
     (fx/merge cofx
-              {:init-tabs-fx nil}
+              {:init-root-fx :chat-stack}
               (when first-account?
                 (acquisition/create)))))
-             ; (navigation/init-tabs))))
 
 (fx/defn multiaccount-selected
   {:events [:multiaccounts.login.ui/multiaccount-selected]}
@@ -532,7 +524,8 @@
   (let [multiaccount (get-in db [:multiaccounts/multiaccounts key-uid])]
     (fx/merge
      cofx
-     {:db (update db :keycard dissoc :application-info)}
+     {:db (update db :keycard dissoc :application-info)
+      :rnn-navigate-to-fx :login}
      (open-login (select-keys multiaccount [:key-uid :name :public-key :identicon :images])))))
 
 (fx/defn hide-keycard-banner

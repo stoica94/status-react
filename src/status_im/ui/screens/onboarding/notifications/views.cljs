@@ -20,10 +20,10 @@
                   :style  {:width  118
                            :height 118}}]]
    [quo/button {:on-press            #(do (re-frame/dispatch [::notifications/switch true])
-                                          (re-frame/dispatch [:init-welcome]))
+                                          (re-frame/dispatch [:init-root :welcome]))
                 :accessibility-label :enable-notifications}
     (i18n/label :t/intro-wizard-title6)]
    [quo/button {:type                :secondary :style {:margin-top 8}
                 :accessibility-label :maybe-later
-                :on-press            #(re-frame/dispatch [:init-welcome])}
+                :on-press            #(re-frame/dispatch [:init-root :welcome])}
     (i18n/label :t/maybe-later)]])

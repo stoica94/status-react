@@ -10,7 +10,7 @@
    :interceptors [(re-frame/inject-cofx :random-id-generator)]}
   [cofx {:keys [public-key]}]
   (fx/merge cofx
-            (navigation/pop-to-root-tab :home-root)
+            (navigation/pop-to-root-tab :chat-stack)
             (chat/start-chat public-key)))
 
 (fx/defn contact-code-submitted

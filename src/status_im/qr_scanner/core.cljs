@@ -60,7 +60,7 @@
     (cond
       (and public-key own)
       {:navigate-change-tab-fx :profile
-       :pop-to-root-tab-fx :profile-root}
+       :pop-to-root-tab-fx :profile-stack}
 
       (and public-key (not own))
       (fx/merge cofx
