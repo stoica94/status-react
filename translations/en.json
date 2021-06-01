@@ -1543,5 +1543,5 @@
         "other": "{{count}} pinned messages"
     },
     "pinned-messages-empty": "Pinned messages will appear here. To pin a message, press and hold it and tap `Pin`",
-    "pinned": "Pinned"
+    "pinned-by": "Pinned by"
 }

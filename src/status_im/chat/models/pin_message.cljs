@@ -26,12 +26,14 @@
           {:keys [all-messages new-messages]} (reduce (fn [{:keys [all-messages] :as acc}
                                                            {:keys [message-id alias from]
                                                             :as   message}]
-                                                        (cond-> acc
-                                                          (nil? (get all-messages message-id))
-                                                          (update :new-messages conj message)
+                                                        (let [message-pin (merge message
+                                                                                 {:pinned-by from})]
+                                                          (cond-> acc
+                                                            (nil? (get all-messages message-id))
+                                                            (update :new-messages conj message-pin)
 
-                                                          :always
-                                                          (update :all-messages assoc message-id message)))
+                                                            :always
+                                                            (update :all-messages assoc message-id message-pin))))
                                                       {:all-messages already-loaded-pin-messages
                                                        :new-messages []}
                                                       pin-messages)
@@ -55,32 +57,34 @@
 
 (fx/defn receive-signal
   [{:keys [db] :as cofx} pin-messages]
-  (let [{:keys [chat-id]} (first pin-messages)
-        already-loaded-pin-messages (get-in db [:pin-messages chat-id] {})
-        already-loaded-messages (get-in db [:messages chat-id] {})
-        {:keys [all-messages new-messages]} (reduce (fn [{:keys [all-messages] :as acc}
-                                                         {:keys [message_id pinned from]
-                                                          :as   message}]
-                                                      (let [current-message (get already-loaded-messages message_id)
-                                                            current-message-pin (merge current-message
-                                                                                       {:pinned    pinned
-                                                                                        :pinned-by from})]
-                                                        (cond-> acc
-                                                          (and pinned (nil? current-message))
-                                                          (update :new-messages conj current-message-pin)
+  (let [{:keys [chat-id]} (first pin-messages)]
+    (when (= chat-id (db :current-chat-id))
+      (let [{:keys [chat-id]} (first pin-messages)
+            already-loaded-pin-messages (get-in db [:pin-messages chat-id] {})
+            already-loaded-messages (get-in db [:messages chat-id] {})
+            {:keys [all-messages new-messages]} (reduce (fn [{:keys [all-messages] :as acc}
+                                                             {:keys [message_id pinned from]
+                                                              :as   message}]
+                                                          (let [current-message (get already-loaded-messages message_id)
+                                                                current-message-pin (merge current-message
+                                                                                           {:pinned    pinned
+                                                                                            :pinned-by from})]
+                                                            (cond-> acc
+                                                              (and pinned (nil? current-message))
+                                                              (update :new-messages conj current-message-pin)
 
-                                                          (nil? pinned)
-                                                          (update :all-messages dissoc message_id)
+                                                              (nil? pinned)
+                                                              (update :all-messages dissoc message_id)
 
-                                                          (some? pinned)
-                                                          (update :all-messages assoc message_id current-message-pin))))
-                                                    {:all-messages already-loaded-pin-messages
-                                                     :new-messages []}
-                                                    pin-messages)]
-    {:db (-> db
-             (assoc-in [:pin-messages chat-id] all-messages)
-             (assoc-in [:pin-message-lists chat-id]
-                       (message-list/add-many nil (vals all-messages))))}))
+                                                              (some? pinned)
+                                                              (update :all-messages assoc message_id current-message-pin))))
+                                                        {:all-messages already-loaded-pin-messages
+                                                         :new-messages []}
+                                                        pin-messages)]
+        {:db (-> db
+                 (assoc-in [:pin-messages chat-id] all-messages)
+                 (assoc-in [:pin-message-lists chat-id]
+                           (message-list/add-many nil (vals all-messages))))}))))
 
 (fx/defn load-more-pin-messages
   {:events [:load-more-pin-messages]}
@@ -105,19 +109,21 @@
   "Pin message, rebuild pinned messages list"
   {:events [::send-pin-message]}
   [{:keys [db] :as cofx} {:keys [chat-id message-id pinned?] :as pin-message}]
-  (fx/merge cofx
-            {:db (as-> db $
-                   (assoc-in $ [:messages chat-id message-id :pinned?] pinned?)
-                   (if pinned?
-                     (-> $
-                         (update-in [:pin-message-lists chat-id] message-list/add pin-message)
-                         (assoc-in [:pin-messages chat-id message-id] pin-message))
-                     (-> $
-                         (update-in [:pin-message-lists chat-id] message-list/remove-message pin-message)
-                         (update-in [:pin-messages chat-id] dissoc message-id))))}
-            (data-store.messages/send-pin-message {:chat-id (pin-message :chat-id)
-                                                   :message_id (pin-message :message-id)
-                                                   :pinned (pin-message :pinned?)})))
+  (let [current-public-key (get-in db [:multiaccount :public-key])
+        message (merge pin-message {:pinned-by current-public-key})]
+    (fx/merge cofx
+              {:db (as-> db $
+                     (assoc-in $ [:messages chat-id message-id :pinned?] pinned?)
+                     (if pinned?
+                       (-> $
+                           (update-in [:pin-message-lists chat-id] message-list/add message)
+                           (assoc-in [:pin-messages chat-id message-id] message))
+                       (-> $
+                           (update-in [:pin-message-lists chat-id] message-list/remove-message pin-message)
+                           (update-in [:pin-messages chat-id] dissoc message-id))))}
+              (data-store.messages/send-pin-message {:chat-id (pin-message :chat-id)
+                                                     :message_id (pin-message :message-id)
+                                                     :pinned (pin-message :pinned?)}))))
 
 (fx/defn load-more-messages-for-current-chat
   {:events [:chat.ui/load-more-pin-messages-for-current-chat]}

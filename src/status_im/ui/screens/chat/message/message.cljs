@@ -201,11 +201,16 @@
     [react/view style/not-sent-icon
      [icons/icon :main-icons/warning {:color colors/red}]]]])
 
+(defn pin-author-name [pinned-by]
+  (let [user-contact @(re-frame/subscribe [:multiaccount/contact])
+        contact-names @(re-frame/subscribe [:contacts/contact-two-names-by-identity pinned-by])]
+    (if (= pinned-by (user-contact :public-key)) (i18n/label :t/You) (first contact-names))))
+
 (def pin-icon-width 9)
 
 (def pin-icon-height 15)
 
-(defn pinned-by-indicator [outgoing display-photo?]
+(defn pinned-by-indicator [outgoing display-photo? pinned-by]
   [react/view {:style (style/pin-indicator outgoing display-photo?)}
    [react/view {:style {:flex-direction :row
                         :align-items    :center}}
@@ -216,8 +221,13 @@
     [quo/text {:weight :regular
                :size   :small
                :color  :main
+               :style  (style/pinned-by-text)}
+     (i18n/label :t/pinned-by)]
+    [quo/text {:weight :medium
+               :size   :small
+               :color  :main
                :style  (style/pin-author-text)}
-     (i18n/label :t/pinned)]]])
+     (pin-author-name pinned-by)]]])
 
 (defn message-delivery-status
   [{:keys [chat-id message-id outgoing-status message-type]}]
@@ -512,7 +522,7 @@
   [message-content-wrapper message
    [unknown-content-type message]])
 
-(defn chat-message [{:keys [outgoing display-photo? pinned?] :as message} space-keeper]
+(defn chat-message [{:keys [outgoing display-photo? pinned? pinned-by] :as message} space-keeper]
   [react/view
    [reactions/with-reaction-picker
     {:message         message
@@ -533,4 +543,4 @@
      :render          ->message}]
    (when pinned?
      [react/view {:style (style/pin-indicator-container outgoing)}
-      [pinned-by-indicator outgoing display-photo?]])])
+      [pinned-by-indicator outgoing display-photo? pinned-by]])])

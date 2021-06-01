@@ -294,10 +294,10 @@
                  :current-public-key current-public-key
                  :show-input? show-input?
                  :pinned? pinned?
-                 :pinned-by (when pinned? (pinned-message :from)))
+                 :pinned-by (when pinned? (pinned-message :pinned-by)))
           space-keeper]))]))
 
-(defn render-pin-fn [{:keys [outgoing type from] :as message}
+(defn render-pin-fn [{:keys [outgoing type] :as message}
                      idx
                      _
                      {:keys [group-chat public? current-public-key space-keeper chat-id show-input?]}]
@@ -314,8 +314,7 @@
                :public? public?
                :current-public-key current-public-key
                :show-input? show-input?
-               :pinned? true
-               :pinned-by from)
+               :pinned? true)
         space-keeper]))])
 
 (def list-key-fn #(or (:message-id %) (:value %)))

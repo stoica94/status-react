@@ -99,6 +99,9 @@
       :padding-left 8})))
 
 (defn pin-author-text []
+  {:margin-left 3})
+
+(defn pinned-by-text []
   {:margin-left 5})
 
 (def message-author-touchable
