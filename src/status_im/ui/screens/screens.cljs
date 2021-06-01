@@ -98,6 +98,7 @@
             [status-im.ui.screens.keycard.settings.views :as keycard.settings]
             [status-im.ui.screens.appearance.views :as appearance]
             [status-im.ui.screens.privacy-and-security-settings.delete-profile :as delete-profile]
+            [status-im.ui.screens.default-sync-period-settings.view :as default-sync-period-settings]
             [status-im.ui.components.colors :as colors]))
 
 (def components
@@ -500,6 +501,8 @@
     ;;TODO dynamic title
     :options   {:topBar {:visible false}}
     :component  delete-profile/delete-profile}
+   {:name      :default-sync-period-settings
+    :component default-sync-period-settings/default-sync-period-settings}
    ;; {:name:my-profile-ext-settings
    ;;          :component}
 
