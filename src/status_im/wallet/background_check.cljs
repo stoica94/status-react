@@ -208,19 +208,24 @@
         {:title   "CONFIGURE BG FETCHING"
          :message (str status)})))))
 
+(fx/defn start-background-task
+  {:events [::stop]}
+  [_]
+  (when platform/ios?
+    (.then
+     (.start ^js background-fetch)
+     (fn [status]
+       (local/local-push-ios
+        {:title   "START FETCHING ON LOGIN"
+         :message (str status)})))))
+
 (fx/defn stop-background-task
   {:events [::stop]}
   [_]
   (when platform/ios?
     (.then
-     (.start ^js background-fetch "react-native-background-fetch")
+     (.stop ^js background-fetch "react-native-background-fetch")
      (fn [status]
        (local/local-push-ios
-        {:title   "START FETCHING"
+        {:title   "STOP FETCHING ON LOGOUT"
          :message (str status)})))))
-
-(fx/defn start-background-task
-  {:events [::stop]}
-  [_]
-  (when platform/ios?
-    (.stop ^js background-fetch "react-native-background-fetch")))
