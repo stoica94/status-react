@@ -4,9 +4,7 @@
             [quo.core :as quo]
             [status-im.utils.config :as config]
             [status-im.utils.platform :as platform]
-            [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.list.views :as list])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- normal-mode-settings-data [{:keys [network-name

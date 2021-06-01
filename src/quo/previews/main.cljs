@@ -12,7 +12,7 @@
             [reagent.core :as reagent]
             [quo.design-system.colors :as colors]
             [quo.theme :as theme]
-            [status-im.ui.screens.routing.core :as navigation]
+            ;[status-im.ui.screens.routing.core :as navigation]
             [quo.previews.icons :as icons]))
 
 (def screens [{:name      :texts
@@ -75,20 +75,20 @@
    [rn/view
     (for [{:keys [name]} screens]
       ^{:key name}
-      [rn/touchable-opacity {:on-press #(navigation/navigate-to name nil)}
+      [rn/touchable-opacity ;{:on-press #(navigation/navigate-to name nil)}
        [rn/view {:style {:padding-vertical 8}}
         [quo/text (str "Preview " name)]]])]])
 
 (defonce navigation-state (atom nil))
 
-(defn- persist-state! [state-obj]
-  (js/Promise.
-   (fn [resolve _]
-     (reset! navigation-state state-obj)
-     (resolve true))))
+#_(defn- persist-state! [state-obj]
+    (js/Promise.
+     (fn [resolve _]
+       (reset! navigation-state state-obj)
+       (resolve true))))
 
 (defn preview-stack []
-  (let [stack (navigation/create-stack)]
+  (let [stack nil];(navigation/create-stack)]
     [stack {}
      (into [{:name      :main
              :insets    {:top false}
@@ -96,11 +96,11 @@
            screens)]))
 
 (defn preview-screens []
-  [navigation/navigation-container
-   {:ref             navigation/set-navigator-ref
-    :initial-state   @navigation-state
-    :on-state-change persist-state!}
-   [preview-stack]])
+  #_[navigation/navigation-container
+     {:ref             navigation/set-navigator-ref
+      :initial-state   @navigation-state
+      :on-state-change persist-state!}
+     [preview-stack]])
 
 
 

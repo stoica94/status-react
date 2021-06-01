@@ -148,7 +148,6 @@
                     :next-button-disabled?  true
                     :weak-password?         true
                     :encrypt-with-password? true
-                    :back-action            :intro-wizard/navigate-back
                     :forward-action         :multiaccounts.recover/enter-phrase-next-pressed}
                    :recovered-account? true)
             (update :keycard dissoc :flow))}

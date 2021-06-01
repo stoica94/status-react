@@ -128,13 +128,23 @@
             (navigation/navigate-to-cofx (if platform/android?
                                            :notifications-settings :welcome) nil)))
 
+(fx/defn intro-wizard
+  {:events [:multiaccounts.create.ui/intro-wizard]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            {:db (-> db
+                     (update :keycard dissoc :flow)
+                     (dissoc :restored-account?))}
+            (multiaccounts.create/prepare-intro-wizard)
+            (navigation/navigate-to-cofx :get-your-keys nil)))
+
 (fx/defn recovery-no-key
   {:events [:keycard.recovery.no-key.ui/generate-key-pressed]}
   [{:keys [db] :as cofx}]
   (fx/merge cofx
             {:db                           (assoc-in db [:keycard :flow] :create)
              :keycard/check-nfc-enabled nil}
-            (multiaccounts.create/intro-wizard)))
+            (intro-wizard)))
 
 (fx/defn create-keycard-multiaccount
   [{:keys [db] :as cofx}]

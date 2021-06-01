@@ -6,7 +6,6 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.toolbar :as toolbar]
             [status-im.communities.core :as communities]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.utils.debounce :as debounce]))
 
 (defn valid? [community-name]

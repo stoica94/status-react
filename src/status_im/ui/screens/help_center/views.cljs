@@ -4,8 +4,6 @@
             [quo.core :as quo]
             [status-im.ui.components.react :as react]
             [status-im.ui.components.list.views :as list]
-            [status-im.ui.components.colors :as colors]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.constants :as constants]))
 
 (def data

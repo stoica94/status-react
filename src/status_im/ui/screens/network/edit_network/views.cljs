@@ -6,8 +6,7 @@
             [status-im.ui.screens.network.edit-network.styles :as styles]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [quo.core :as quo]
-            [status-im.ui.components.topbar :as topbar])
+            [quo.core :as quo])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn- render-network-type [type _ _ manage-network]

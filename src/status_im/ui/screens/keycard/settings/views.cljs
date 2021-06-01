@@ -6,7 +6,6 @@
             [status-im.react-native.resources :as resources]
             [status-im.ui.components.colors :as colors]
             [quo.core :as quo]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.constants :as constants]
             [status-im.ui.screens.keycard.views :as keycard.views]
             [status-im.keycard.common :as keycard.common]))

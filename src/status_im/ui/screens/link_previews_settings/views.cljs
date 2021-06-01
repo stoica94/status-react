@@ -6,7 +6,6 @@
             [status-im.ui.components.list.views :as list]
             [quo.core :as quo]
             [status-im.react-native.resources :as resources]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.screens.link-previews-settings.styles :as styles]
             [status-im.chat.models.link-preview :as link-preview]))
 

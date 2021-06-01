@@ -9,7 +9,8 @@
             [status-im.utils.datetime :as datetime]
             [status-im.ui.screens.onboarding.views :as ui]
             [status-im.utils.debounce :refer [dispatch-and-chill]]
-            [status-im.utils.utils :as utils]))
+            [status-im.utils.utils :as utils]
+            [reagent.core :as reagent]))
 
 (defview wizard-recovery-success []
   (letsubs [{:keys [pubkey processing? name identicon]} [:intro-wizard/recovery-success]
@@ -56,7 +57,7 @@
       (or processing? existing-account?)]]))
 
 (defn enter-phrase [_]
-  (let [show-bip39-password? (reagent.core/atom false)
+  (let [show-bip39-password? (reagent/atom false)
         pressed-in-at (atom nil)]
     (fn []
       (let [{:keys [processing?

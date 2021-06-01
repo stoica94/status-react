@@ -4,7 +4,6 @@
             [status-im.utils.utils :as utils]
             [status-im.i18n.i18n :as i18n]
             [status-im.ethereum.mnemonic :as mnemonic]
-            [status-im.multiaccounts.model :as multiaccounts.model]
             [status-im.multiaccounts.recover.core :as multiaccounts.recover]
             [status-im.navigation :as navigation]
             [status-im.signing.core :as signing.core]

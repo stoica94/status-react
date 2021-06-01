@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.rpc-usage-info
-  (:require [status-im.ui.components.topbar :as topbar]
-            [status-im.ui.components.react :as react]
+  (:require [status-im.ui.components.react :as react]
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo.core]
             [quo.react-native :as quo.react-native]

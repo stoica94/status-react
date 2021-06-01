@@ -16,7 +16,11 @@
             [status-im.ui.screens.keycard.styles :as styles]
             [status-im.constants :as constants]
             [status-im.keycard.login :as keycard.login]
-            [status-im.ui.screens.keycard.frozen-card.view :as frozen-card.view])
+            [status-im.utils.fx :as fx]
+            [status-im.ui.screens.keycard.frozen-card.view :as frozen-card.view]
+            [status-im.multiaccounts.create.core :as multiaccounts.create]
+            [status-im.bottom-sheet.core :as bottom-sheet]
+            [status-im.navigation :as navigation])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 ;; NOTE(Ferossgp): Seems like it should be in popover
@@ -359,15 +363,21 @@
                       :type     :secondary}
                      (i18n/label :t/recover-key)]}])]])))
 
+(fx/defn get-new-key
+  {:events [:multiaccounts.create.ui/get-new-key]}
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            (multiaccounts.create/prepare-intro-wizard)
+            (bottom-sheet/hide-bottom-sheet)
+            (navigation/navigate-to-cofx :get-your-keys nil)))
+
 (defn- more-sheet-content []
   [react/view {:flex 1}
    [quo/list-item
     {:theme    :accent
      :title    (i18n/label :t/create-new-key)
      :icon     :main-icons/profile
-     :on-press #(do
-                  (re-frame/dispatch [:bottom-sheet/hide])
-                  (re-frame/dispatch [:multiaccounts.create.ui/get-new-key]))}]])
+     :on-press #(re-frame/dispatch [:multiaccounts.create.ui/get-new-key])}]])
 
 (def more-sheet
   {:content more-sheet-content})

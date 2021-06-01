@@ -8,7 +8,6 @@
             [status-im.ui.components.icons.icons :as icons]
             [status-im.ui.components.list.views :as list]
             [status-im.ui.components.react :as react]
-            [status-im.ui.screens.chat.sheets :as sheets]
             [quo.animated :as animated]
             [quo.react-native :as rn]
             [status-im.ui.screens.chat.audio-message.views :as audio-message]
@@ -31,8 +30,7 @@
             [clojure.string :as string]
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]
-            [quo.design-system.colors :as quo.colors]))
+            [status-im.utils.utils :as utils]))
 
 (defn topbar []
   ;;we don't use topbar component, because we want chat view as simple (fast) as possible

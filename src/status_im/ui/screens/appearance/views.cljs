@@ -2,7 +2,6 @@
   (:require-macros [status-im.utils.views :as views])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.react-native.resources :as resources]
             [quo.core :as quo]
             [status-im.ui.components.colors :as colors]

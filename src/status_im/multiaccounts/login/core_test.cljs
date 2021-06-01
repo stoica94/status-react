@@ -1,9 +1,9 @@
 (ns status-im.multiaccounts.login.core-test
   (:require [cljs.test :as test]
             [status-im.multiaccounts.login.core :as login]
-            [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.utils.keychain.core :as keychain]
-            [status-im.utils.fx :as fx]))
+            ;[status-im.multiaccounts.biometric.core :as biometric]
+            [status-im.utils.keychain.core :as keychain]))
+            ;[status-im.utils.fx :as fx]))
 
 (test/deftest save-password-test
   (test/testing "check save password, biometric unavailable"

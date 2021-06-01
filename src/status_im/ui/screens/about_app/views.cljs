@@ -5,8 +5,7 @@
             [status-im.ui.components.copyable-text :as copyable-text]
             [status-im.ui.components.icons.icons :as icons]
             [quo.core :as quo]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar])
+            [status-im.ui.components.react :as react])
   (:require-macros [status-im.utils.views :as views]))
 
 (views/defview about-app []

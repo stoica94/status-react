@@ -12,7 +12,6 @@
             [status-im.ui.screens.profile.contact.views :as contact]
             [status-im.ui.screens.notifications-settings.views :as notifications-settings]
             [status-im.ui.screens.wallet.send.views :as wallet]
-            [status-im.ui.screens.link-previews-settings.views :as link-previews]
             [status-im.ui.screens.status.new.views :as status.new]
             [status-im.ui.screens.browser.bookmarks.views :as bookmarks]
             [status-im.ui.screens.communities.invite :as communities.invite]
@@ -23,7 +22,6 @@
             [status-im.ui.screens.multiaccounts.key-storage.views :as key-storage.views]
             [status-im.ui.screens.home.views :as home]
             [status-im.ui.screens.chat.views :as chat]
-            [status-im.ui.screens.group.views :as group]
             [status-im.ui.screens.referrals.public-chat :as referrals.public-chat]
             [status-im.ui.screens.communities.views :as communities]
             [status-im.ui.screens.communities.community :as community]
@@ -36,7 +34,6 @@
             [status-im.ui.screens.communities.members :as members]
             [status-im.ui.screens.communities.requests-to-join :as requests-to-join]
             [status-im.ui.screens.profile.group-chat.views :as profile.group-chat]
-            [status-im.ui.screens.stickers.views :as stickers]
             [status-im.ui.screens.notifications-center.views :as notifications-center]
             [status-im.ui.screens.browser.empty-tab.views :as empty-tab]
             [status-im.ui.screens.browser.views :as browser]
@@ -44,10 +41,6 @@
             [status-im.ui.screens.multiaccounts.login.views :as login]
             [status-im.ui.screens.progress.views :as progress]
             [status-im.ui.screens.multiaccounts.views :as multiaccounts]
-            [status-im.keycard.core :as keycard.core]
-            [status-im.ui.screens.keycard.onboarding.views :as keycard.onboarding]
-            [status-im.ui.screens.keycard.recovery.views :as keycard.recovery]
-            [status-im.ui.screens.keycard.views :as keycard]
             [status-im.ui.screens.keycard.authentication-method.views :as keycard.authentication]
             [status-im.ui.screens.onboarding.intro.views :as onboarding.intro]
             [status-im.ui.screens.onboarding.keys.views :as onboarding.keys]
@@ -104,7 +97,6 @@
             [status-im.ui.screens.keycard.pairing.views :as keycard.pairing]
             [status-im.ui.screens.keycard.settings.views :as keycard.settings]
             [status-im.ui.screens.appearance.views :as appearance]
-            [status-im.ui.screens.notifications-settings.views :as notifications-settings]
             [status-im.ui.screens.privacy-and-security-settings.delete-profile :as delete-profile]
             [status-im.ui.components.colors :as colors]))
 
@@ -237,7 +229,6 @@
                                  :alignment :fill}}}
     :component chat/chat}
 
-
    {:name      :group-chat-profile
     :insets    {:top false}
     ;;TODO custom
@@ -284,11 +275,11 @@
    {:name      :contact-toggle-list
     :insets    {:top    false
                 :bottom true}
-    :component group/contact-toggle-list}
+    :component group-chat/contact-toggle-list}
    {:name      :new-group
     :insets    {:top    false
                 :bottom true}
-    :component group/new-group}
+    :component group-chat/new-group}
    {:name      :referral-enclav
     ;;TODO custom
     :options {:topBar {:visible false}}
@@ -550,7 +541,7 @@
    ;[Chat] Link preview settings
    {:name       :link-preview-settings
     :title      (i18n/label :t/chat-link-previews)
-    :component  link-previews/link-previews-settings}
+    :component  link-previews-settings/link-previews-settings}
 
    ;[Chat] Edit nickname
    {:name       :nickname

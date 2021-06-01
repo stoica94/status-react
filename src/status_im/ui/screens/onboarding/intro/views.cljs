@@ -63,15 +63,15 @@
             (i18n/label (:title s))]
            [quo/text {:style (styles/wizard-text-with-height @text-height)
                       :on-layout
-                             (fn [^js e]
-                               (let [new-height (-> e .-nativeEvent .-layout .-height)]
-                                 (when (and (not= new-height @text-temp-height)
-                                            (not (zero? new-height))
-                                            (< new-height 200))
-                                   (swap! text-temp-height #(if (pos? %) (max % new-height) new-height))
-                                   (when @text-temp-timer (js/clearTimeout @text-temp-timer))
-                                   (reset! text-temp-timer
-                                           (js/setTimeout #(reset! text-height @text-temp-height) 500)))))}
+                      (fn [^js e]
+                        (let [new-height (-> e .-nativeEvent .-layout .-height)]
+                          (when (and (not= new-height @text-temp-height)
+                                     (not (zero? new-height))
+                                     (< new-height 200))
+                            (swap! text-temp-height #(if (pos? %) (max % new-height) new-height))
+                            (when @text-temp-timer (js/clearTimeout @text-temp-timer))
+                            (reset! text-temp-timer
+                                    (js/setTimeout #(reset! text-height @text-temp-height) 500)))))}
             (i18n/label (:text s))]]))])))
 
 (defn carousel [slides width]
@@ -145,7 +145,7 @@
               {:image (resources/get-theme-image :browser)
                :title :intro-title3
                :text :intro-text3}]
-             @(re-frame/subscribe [:dimensions/window-width])]
+    @(re-frame/subscribe [:dimensions/window-width])]
    [react/view styles/buttons-container
     [react/view {:style (assoc styles/bottom-button :margin-bottom 16)}
      [quo/button {:on-press #(re-frame/dispatch [:init-onboarding])}

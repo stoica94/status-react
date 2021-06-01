@@ -1,18 +1,17 @@
 (ns status-im.navigation.core
-  (:require ["react-native-navigation" :refer (Navigation)]
-            ["react-native-gesture-handler" :refer (gestureHandlerRootHOC)]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.colors :as colors]
-            [status-im.reloader :as reloader]
-            [status-im.ui.screens.routing.core :as routing]
-            [reagent.core :as reagent]
-            [re-frame.core :as re-frame]
-            [status-im.utils.fx :as fx]
-            [status-im.i18n.i18n :as i18n]
-            [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
-            [status-im.ui.screens.views :as views]
-            [status-im.ui.screens.popover.views :as popover]
-            [status-im.utils.platform :as platform]))
+  (:require
+   [status-im.ui.components.react :as react]
+   [status-im.ui.components.colors :as colors]
+   [status-im.reloader :as reloader]
+   [re-frame.core :as re-frame]
+   [status-im.utils.fx :as fx]
+   [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
+   [status-im.ui.screens.views :as views]
+   [status-im.ui.screens.popover.views :as popover]
+   ["react-native-navigation" :refer (Navigation)]
+   ["react-native-gesture-handler" :refer (gestureHandlerRootHOC)]
+   [status-im.utils.platform :as platform]
+   [reagent.core :as reagent]))
 
 (def debug? ^boolean js/goog.DEBUG)
 
@@ -30,8 +29,8 @@
 (defn reg-comp [key]
   (println "REG COMP" key)
   (if-let [comp (get views/components (keyword key))]
-    (.registerComponent Navigation key (fn [] (reagent.core/reactify-component (fn [] [react/view {:width 500 :height 44}
-                                                                                       [comp]]))))
+    (.registerComponent Navigation key (fn [] (reagent/reactify-component (fn [] [react/view {:width 500 :height 44}
+                                                                                  [comp]]))))
     (let [screen (views/screen key)]
       (.registerComponent Navigation key (fn [] (gestureHandlerRootHOC screen)) (fn [] screen)))))
 
@@ -42,8 +41,8 @@
     {:navigationBar {:backgroundColor colors/white}
      :statusBar
      {:backgroundColor colors/white
-      :style (if (colors/dark?):light :dark)}}
-    {:statusBar {:style (if (colors/dark?):light :dark)}}))
+      :style (if (colors/dark?) :light :dark)}}
+    {:statusBar {:style (if (colors/dark?) :light :dark)}}))
 
 (defn general-options [] {:topBar {:noBorder   true
                                    :elevation  0
@@ -58,8 +57,6 @@
      (.setStackRoot Navigation "browser-stack" (clj->js {:component {:id      comp
                                                                      :name    comp
                                                                      :options (merge (status-bar-options) (when title {:topBar {:title {:text title :color colors/black}}}) options)}})))))
-
-
 
 (re-frame/reg-fx
  :open-modal-fx
@@ -80,8 +77,8 @@
                                                              :noBorder        true
                                                              :leftButtonColor colors/black
                                                              :leftButtons
-                                                                              {:id   "dismiss-modal"
-                                                                               :icon (js/require "../resources/images/icons/close.png")}})}
+                                                             {:id   "dismiss-modal"
+                                                              :icon (js/require "../resources/images/icons/close.png")}})}
                                                           options)}}]}})))))
 
 (defn navigate [comp]
@@ -122,7 +119,7 @@
 
 (.registerModalDismissedListener
  (.events Navigation)
- (fn [^js evn]
+ (fn [_]
    (println "..registerModalDismissedListener"
             (butlast @modals)
             @curr-id)
@@ -138,7 +135,7 @@
 ;; POPOVER
 
 (def popover-comp
-  (reagent.core/reactify-component
+  (reagent/reactify-component
    (fn []
      ^{:key (str @colors/theme @reloader/cnt)}
      [react/safe-area-provider
@@ -171,7 +168,7 @@
 ;; register bottom-sheet component
 
 (def sheet-comp
-  (reagent.core/reactify-component
+  (reagent/reactify-component
    (fn []
      ^{:key (str @colors/theme @reloader/cnt)}
      [react/safe-area-provider
@@ -183,7 +180,6 @@
                     "bottom-sheet"
                     (fn [] (gestureHandlerRootHOC sheet-comp))
                     (fn [] sheet-comp))
-
 
 (re-frame/reg-fx
  :rnn-show-bottom-sheet
@@ -205,8 +201,6 @@
 (defn set-root [root id]
   (reset! root-comp-id id)
   (.setRoot Navigation (clj->js root)))
-
-
 
 ;;this stack has only one screen with carusel, and showed only once when user installed the app
 (re-frame/reg-fx
@@ -265,10 +259,10 @@
                    4 :profile-root})
 
 (def tab-key-idx {:chat 0
-                   :browser 1
-                   :wallet 2
-                   :status 3
-                   :profile 4})
+                  :browser 1
+                  :wallet 2
+                  :status 3
+                  :profile 4})
 
 (re-frame/reg-fx
  :rnn-change-tab-fx
@@ -303,46 +297,49 @@
                                              :backgroundColor colors/white}}
 
                       :children
-                               [{:stack {:children [{:component {:name    :home
-                                                                 :id      :home-root
-                                                                 :options (merge (status-bar-options) { :topBar    {:visible false}})}}]
-                                         :options  (merge (general-options)
-                                                          ;;TAB
-                                                          {
-                                                           :bottomTab (merge (bottom-tab-general)
-                                                                             {;:text (i18n/label :t/chat)
-                                                                              :icon (js/require "../resources/images/icons/message.png")})})}}
-                                {:stack {:id :browser-stack
-                                         :children [{:component {:name    :empty-tab
-                                                                 :id      :browser-root
-                                                                 :options (merge (status-bar-options) { :topBar    {:visible false}})}}]
+                      [{:stack {:id :chat-stack
+                                :children [{:component {:name    :home
+                                                        :id      :home-root
+                                                        :options (merge (status-bar-options) {:topBar {:visible false}})}}]
+                                :options  (merge (general-options)
+                                                 ;;TAB
+                                                 {:bottomTab (merge (bottom-tab-general)
+                                                                    {;:text (i18n/label :t/chat)
+                                                                     :icon (js/require "../resources/images/icons/message.png")})})}}
+                       {:stack {:id :browser-stack
+                                :children [{:component {:name    :empty-tab
+                                                        :id      :browser-root
+                                                        :options (merge (status-bar-options) {:topBar {:visible false}})}}]
 
-                                         :options  (merge (general-options)
-                                                          ;;TAB
-                                                          {:bottomTab (merge (bottom-tab-general)
-                                                                             {;:text (i18n/label :t/browser)
-                                                                              :icon (js/require "../resources/images/icons/browser.png")})})}}
-                                {:stack {:children [{:component {:name    :wallet
-                                                                 :id      :wallet-root
-                                                                 :options (merge (status-bar-options) {:topBar    {:visible false}})}}]
-                                         :options  (merge (general-options)
-                                                          ;;TAB
-                                                          {:bottomTab (merge (bottom-tab-general) {;:text (i18n/label :t/wallet)
-                                                                                                   :icon (js/require "../resources/images/icons/wallet.png")})})}}
-                                {:stack {:children [{:component {:name    :status
-                                                                 :id      :status-root
-                                                                 :options (merge (status-bar-options) {:topBar    {:visible false}})}}]
-                                         :options  (merge (general-options)
-                                                          ;;TAB
-                                                          {:bottomTab (merge (bottom-tab-general) {;:text (i18n/label :t/status)
-                                                                                                   :icon (js/require "../resources/images/icons/status.png")})})}}
-                                {:stack {:children [{:component {:name    :my-profile
-                                                                 :id      :profile-root
-                                                                 :options (merge (status-bar-options) {:topBar    {:visible false}})}}]
-                                         :options  (merge (general-options)
-                                                          ;;TAB
-                                                          {:bottomTab (merge (bottom-tab-general) {;:text (i18n/label :t/profile)
-                                                                                                   :icon (js/require "../resources/images/icons/user_profile.png")})})}}]}}}
+                                :options  (merge (general-options)
+                                                 ;;TAB
+                                                 {:bottomTab (merge (bottom-tab-general)
+                                                                    {;:text (i18n/label :t/browser)
+                                                                     :icon (js/require "../resources/images/icons/browser.png")})})}}
+                       {:stack {:id :wallet-stack
+                                :children [{:component {:name    :wallet
+                                                        :id      :wallet-root
+                                                        :options (merge (status-bar-options) {:topBar    {:visible false}})}}]
+                                :options  (merge (general-options)
+                                                 ;;TAB
+                                                 {:bottomTab (merge (bottom-tab-general) {;:text (i18n/label :t/wallet)
+                                                                                          :icon (js/require "../resources/images/icons/wallet.png")})})}}
+                       {:stack {:id :status-stack
+                                :children [{:component {:name    :status
+                                                        :id      :status-root
+                                                        :options (merge (status-bar-options) {:topBar    {:visible false}})}}]
+                                :options  (merge (general-options)
+                                                 ;;TAB
+                                                 {:bottomTab (merge (bottom-tab-general) {;:text (i18n/label :t/status)
+                                                                                          :icon (js/require "../resources/images/icons/status.png")})})}}
+                       {:stack {:id :profile-stack
+                                :children [{:component {:name    :my-profile
+                                                        :id      :profile-root
+                                                        :options (merge (status-bar-options) {:topBar    {:visible false}})}}]
+                                :options  (merge (general-options)
+                                                 ;;TAB
+                                                 {:bottomTab (merge (bottom-tab-general) {;:text (i18n/label :t/profile)
+                                                                                          :icon (js/require "../resources/images/icons/user_profile.png")})})}}]}}}
              :home-root)))
 
 ;;this stack for onboarding navigation, showed only after intro stack
@@ -365,7 +362,6 @@
   {:events [:init-progress]}
   [cofx]
   {:init-progress-fx nil})
-
 
 (fx/defn init-onboarding
   {:events [:init-onboarding]}

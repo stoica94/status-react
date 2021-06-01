@@ -1,13 +1,12 @@
 (ns status-im.ui.screens.onboarding.password.views
   (:require [re-frame.core :as re-frame]
-   [reagent.core :as reagent]
-   [status-im.ui.components.topbar :as topbar]
-   [status-im.ui.components.toolbar :as toolbar]
-   [status-im.i18n.i18n :as i18n]
-   [status-im.constants :as const]
-   [status-im.utils.security :as security]
-   [quo.react-native :as rn]
-   [quo.core :as quo]))
+            [reagent.core :as reagent]
+            [status-im.ui.components.toolbar :as toolbar]
+            [status-im.i18n.i18n :as i18n]
+            [status-im.constants :as const]
+            [status-im.utils.security :as security]
+            [quo.react-native :as rn]
+            [quo.core :as quo]))
 
 (defn validate-password [password]
   (>= (count password) const/min-password-length))

@@ -7,8 +7,7 @@
             [status-im.ui.components.chat-icon.screen :as chat-icon.screen]
             [status-im.i18n.i18n :as i18n]
             [status-im.ui.components.invite.views :as invite]
-            [quo.core :as quo]
-            [status-im.ui.components.topbar :as topbar])
+            [quo.core :as quo])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defn contacts-list-item [{:keys [public-key] :as contact}]

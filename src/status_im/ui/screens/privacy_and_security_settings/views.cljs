@@ -2,11 +2,9 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n.i18n :as i18n]
             [quo.core :as quo]
-            [status-im.ui.components.colors :as colors]
             [status-im.ui.components.common.common :as components.common]
             [status-im.ui.components.react :as react]
             [status-im.multiaccounts.biometric.core :as biometric]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.utils.platform :as platform])
   (:require-macros [status-im.utils.views :as views]))
 

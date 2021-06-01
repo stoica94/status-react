@@ -97,8 +97,6 @@
 (comment
   ;; Recover with seed to device UI flow
   (do
-    ;; Press get-started on welcome screen
-    (re-frame/dispatch [:multiaccounts.create.ui/intro-wizard])
 
     ;; Goto seed screen
     (re-frame/dispatch [::multiaccounts.recover/enter-phrase-pressed])

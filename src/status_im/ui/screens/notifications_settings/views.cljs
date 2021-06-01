@@ -7,8 +7,7 @@
             [quo.platform :as platform]
             [quo.design-system.colors :as quo-colors]
             [status-im.notifications.core :as notifications]
-            [status-im.ui.components.react :as react]
-            [status-im.ui.components.topbar :as topbar]))
+            [status-im.ui.components.react :as react]))
 
 (defonce server (reagent/atom ""))
 
