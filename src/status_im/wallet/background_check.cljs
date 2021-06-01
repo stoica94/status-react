@@ -23,7 +23,7 @@
   (let [task-id (get db :wallet/background-fetch-task-id)]
     {:db           (dissoc db :wallet/background-fetch-task-id)
      :local/local-pushes-ios [{:title   "FINISH"
-                               :message (str task-id message)}]
+                               :message (str task-id " " message)}]
      ::finish-task task-id}))
 
 (fx/defn configure
@@ -146,11 +146,16 @@
        {:cached-balances balances}})))
 
 (fx/defn notify
-  [cofx addresses]
+  [cofx addresses latest]
   {:local/local-pushes-ios
    (mapv (fn [address]
            {:title   "TRANSACTION DETECTED"
-            :message address})
+            :message (clojure.string/join
+                      [address
+                       "nonce:"
+                       (money/to-string (get-in latest [:address :nonce]))
+                       "balance:"
+                       (money/to-string (get-in latest [:address :balance]))])})
          addresses)})
 
 (fx/defn check-results
@@ -179,7 +184,7 @@
      {:local/local-pushes-ios [{:title "TASK FINISHED"
                                 :message (str addresses-with-changes)}]}
      (update-cache cached-balances addresses-with-changes latest)
-     (notify addresses-with-changes)
+     (notify addresses-with-changes latest)
      (finish "successfully finished"))))
 
 (defn on-event [task-id]
