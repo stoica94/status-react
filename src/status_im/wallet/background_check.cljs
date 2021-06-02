@@ -142,7 +142,16 @@
                                   :nonce (money/to-string
                                           (get-in latest [address :nonce]))))
                          cached-balances)]
-      {::async/set!
+      {:local/local-pushes-ios
+       [{:title   "UPDATE-CACHE"
+         :message (clojure.string/join
+                   "; "
+                   (mapv
+                    (fn [{:keys [address balance] :as cache}]
+                      (str address " " balance))
+                    balances))}]
+
+       ::async/set!
        {:cached-balances balances}})))
 
 (fx/defn notify
