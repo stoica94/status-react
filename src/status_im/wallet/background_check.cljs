@@ -151,11 +151,12 @@
    (mapv (fn [address]
            {:title   "TRANSACTION DETECTED"
             :message (clojure.string/join
+                      " "
                       [address
                        "nonce:"
-                       (money/to-string (get-in latest [:address :nonce]))
+                       (money/to-string (get-in latest [address :nonce]))
                        "balance:"
-                       (money/to-string (get-in latest [:address :balance]))])})
+                       (money/to-string (get-in latest [address :balance]))])})
          addresses)})
 
 (fx/defn check-results
@@ -219,9 +220,7 @@
 
 (re-frame/reg-fx ::start start)
 
-(fx/defn start-background-task
-  {:events [::stop]}
-  [_]
+(fx/defn start-background-task [_]
   {::start nil})
 
 (defn stop []
@@ -235,7 +234,5 @@
 
 (re-frame/reg-fx ::stop stop)
 
-(fx/defn stop-background-task
-  {:events [::stop]}
-  [_]
+(fx/defn stop-background-task [_]
   {::stop nil})
