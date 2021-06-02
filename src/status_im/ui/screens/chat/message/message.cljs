@@ -360,18 +360,27 @@
 (def message-height-px 200)
 (def max-message-height-px 150)
 
-(defn on-long-press-fn [on-long-press {:keys [pinned?] :as message} content]
-  (on-long-press
-   (concat
-    (when (:show-input? message)
-      [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-        :label    (i18n/label :t/message-reply)}])
-    [{:on-press #(react/copy-to-clipboard
-                  (components.reply/get-quoted-text-with-mentions
-                   (get content :parsed-text)))
-      :label    (i18n/label :t/sharing-copy-to-clipboard)}]
-    [{:on-press #(re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned? (not pinned?))])
-      :label    (if pinned? (i18n/label :t/unpin) (i18n/label :t/pin))}])))
+(defn on-long-press-fn [on-long-press {:keys [public? pinned?] :as message} content]
+  (let [{:keys [group-chat community-id admins]} @(re-frame/subscribe [:chats/current-chat-chat-view])
+        current-pk @(re-frame/subscribe [:multiaccount/public-key])
+        community @(re-frame/subscribe [:communities/community community-id])
+        group-admin? (get admins current-pk)
+        community-admin? (when community (community :admin))]
+    (on-long-press
+     (concat
+      (when (:show-input? message)
+        [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+          :label    (i18n/label :t/message-reply)}])
+      [{:on-press #(react/copy-to-clipboard
+                    (components.reply/get-quoted-text-with-mentions
+                     (get content :parsed-text)))
+        :label    (i18n/label :t/sharing-copy-to-clipboard)}]
+      (when (and (not public?)
+                 (or (not group-chat)
+                     (and group-chat
+                          (or group-admin?
+                              community-admin?)))) [{:on-press #(re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned? (not pinned?))])
+                                                     :label    (if pinned? (i18n/label :t/unpin) (i18n/label :t/pin))}])))))
 
 (defn collapsible-text-message [{:keys [mentioned]} _]
   (let [collapsed?   (reagent/atom false)
@@ -454,13 +463,23 @@
                                   {:on-press      (fn []
                                                     (react/dismiss-keyboard!))
                                    :on-long-press (fn []
-                                                    (on-long-press
-                                                     [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
-                                                       :label    (i18n/label :t/message-reply)}
-                                                      {:on-press #(react/copy-to-clipboard (get content :text))
-                                                       :label    (i18n/label :t/sharing-copy-to-clipboard)}
-                                                      {:on-press #(re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned? (not pinned?))])
-                                                       :label    (if pinned? (i18n/label :t/unpin) (i18n/label :t/pin))}]))})
+                                                    (let [{:keys [group-chat community-id admins]} @(re-frame/subscribe [:chats/current-chat-chat-view])
+                                                          current-pk @(re-frame/subscribe [:multiaccount/public-key])
+                                                          community @(re-frame/subscribe [:communities/community community-id])
+                                                          group-admin? (get admins current-pk)
+                                                          community-admin? (when community (community :admin))]
+                                                      (on-long-press
+                                                       (concat
+                                                        [{:on-press #(re-frame/dispatch [:chat.ui/reply-to-message message])
+                                                          :label    (i18n/label :t/message-reply)}
+                                                         {:on-press #(react/copy-to-clipboard (get content :text))
+                                                          :label    (i18n/label :t/sharing-copy-to-clipboard)}]
+                                                        (when (and (not public?)
+                                                                   (or (not group-chat)
+                                                                       (and group-chat
+                                                                            (or group-admin?
+                                                                                community-admin?)))) [{:on-press #(re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned? (not pinned?))])
+                                                                                                       :label    (if pinned? (i18n/label :t/unpin) (i18n/label :t/pin))}])))))})
       [react/view (style/message-view message)
        [react/view {:style (style/message-view-content)}
         [react/view {:style (style/style-message-text outgoing)}

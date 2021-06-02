@@ -54,12 +54,6 @@
     [react/view
      [quo/list-item
       {:theme               :accent
-       :title               (i18n/label :t/pinned-messages)
-       :icon                :main-icons/pin
-       :accessory           :text
-       :on-press            #(hide-sheet-and-dispatch [:contact.ui/pinned-messages-pressed chat-id])}]
-     [quo/list-item
-      {:theme               :accent
        :title               (i18n/label :t/share-chat)
        :accessibility-label :share-chat-button
        :icon                :main-icons/share
@@ -96,6 +90,12 @@
        :title    chat-name
        :icon     [chat-icon/chat-icon-view-chat-sheet
                   chat-id group-chat chat-name color]}]
+     [quo/list-item
+      {:theme               :accent
+       :title               (i18n/label :t/pinned-messages)
+       :icon                :main-icons/pin
+       :accessory           :text
+       :on-press            #(hide-sheet-and-dispatch [:contact.ui/pinned-messages-pressed chat-id])}]
      [quo/list-item
       {:theme               :accent
        :title               (i18n/label :t/mark-all-read)
