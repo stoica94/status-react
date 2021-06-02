@@ -24,7 +24,8 @@
             [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.plus-button :as components.plus-button]
             [status-im.ui.components.tabbar.styles :as tabs.styles]
-            [status-im.ui.screens.chat.sheets :as sheets])
+            [status-im.ui.screens.chat.sheets :as sheets]
+            [status-im.ui.components.tabbar.core :as tabbar])
   (:require-macros [status-im.utils.views :as views]))
 
 (defn home-tooltip-view []
@@ -206,4 +207,5 @@
                                      [connectivity/connectivity-button]
                                      [notifications-button]]}]
    [chats-list]
-   [plus-button]])
+   [plus-button]
+   [tabbar/tabs-counts-subscriptions]])

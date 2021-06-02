@@ -22,13 +22,7 @@
 (defview select-key-storage []
   (letsubs [{:keys [selected-storage-type]} [:intro-wizard/select-key-storage]]
     [:<>
-     #_[topbar/topbar
-        {:navigation
-         (if (:recovering? wizard-state)
-           {:label    (i18n/label :t/cancel)
-            :on-press #(re-frame/dispatch [:intro-wizard/navigate-back])}
-           {:on-press #(re-frame/dispatch [:intro-wizard/navigate-back])})}]
-     [react/view {:style {:flex 1}}
+     [react/view {:style {:flex 1 :padding-top 44}}
       [ui/title-with-description :t/intro-wizard-title3 :t/intro-wizard-text3]
       [ui/learn-more :t/about-key-storage-title :t/about-key-storage-content]
       [react/view {:style {:margin-top 60}}
@@ -43,4 +37,10 @@
                        :title :t/keycard
                        :desc  :t/keycard-desc}
         selected-storage-type]]]
-     [ui/next-button #(dispatch-and-chill [:rnn-navigate-to :create-password] 300) false]]))
+     [ui/next-button
+      #(dispatch-and-chill
+        (if (= :advanced selected-storage-type)
+          [:keycard/start-onboarding-flow]
+          [:rnn-navigate-to :create-password])
+        300)
+      false]]))

@@ -111,6 +111,7 @@
    ;Multiaccounts
    {:name      :multiaccounts
     :insets    {:bottom true}
+    :options   {:topBar {:visible false}}
     :component multiaccounts/multiaccounts}
 
    ;Login
@@ -171,52 +172,6 @@
     :back-handler :noop
     :insets       {:bottom true}
     :component    onboarding.phrase/wizard-recovery-success}
-
-   ;; KEYCARD ONBOARDING
-   {:name         :keycard-onboarding-intro
-    :back-handler keycard.core/onboarding-intro-back-handler
-    :component    keycard.onboarding/intro}
-   {:name         :keycard-onboarding-puk-code
-    :back-handler :noop
-    :component    keycard.onboarding/puk-code}
-   {:name         :keycard-onboarding-pin
-    :back-handler :noop
-    :component    keycard.onboarding/pin}
-   {:name         :keycard-onboarding-recovery-phrase
-    :back-handler :noop
-    :component    keycard.onboarding/recovery-phrase}
-   {:name         :keycard-onboarding-recovery-phrase-confirm-word1
-    :back-handler :noop
-    :component    keycard.onboarding/recovery-phrase-confirm-word}
-   {:name         :keycard-onboarding-recovery-phrase-confirm-word2
-    :back-handler :noop
-    :component    keycard.onboarding/recovery-phrase-confirm-word}
-   {:name         :keycard-recovery-intro
-    :back-handler :noop
-    :component    keycard.recovery/intro}
-   {:name         :keycard-recovery-pair
-    :back-handler :noop
-    :component    keycard.recovery/pair}
-   {:name         :keycard-recovery-success
-    :back-handler :noop
-    :insets       {:bottom true}
-    :component    keycard.recovery/success}
-   {:name      :keycard-recovery-no-key
-    :component keycard.recovery/no-key}
-   {:name      :keycard-recovery-pin
-    :component keycard.recovery/pin}
-   {:name      :keycard-authentication-method
-    :component keycard.authentication/keycard-authentication-method}
-   {:name      :keycard-login-pin
-    :component keycard/login-pin}
-   {:name      :keycard-blank
-    :component keycard/blank}
-   {:name      :keycard-wrong
-    :component keycard/wrong}
-   {:name      :keycard-unpaired
-    :component keycard/unpaired}
-   {:name      :not-keycard
-    :component keycard/not-keycard}
 
    ;;CHAT
 
@@ -499,28 +454,6 @@
     :component  delete-profile/delete-profile}
    {:name      :default-sync-period-settings
     :component default-sync-period-settings/default-sync-period-settings}
-   ;; {:name:my-profile-ext-settings
-   ;;          :component}
-
-   ;; KEYCARD
-   {:name      :keycard-settings
-    :title (i18n/label :t/status-keycard)
-    :component keycard.settings/keycard-settings}
-   {:name      :reset-card
-    :title (i18n/label :t/reset-card)
-    :component keycard.settings/reset-card}
-   {:name      :keycard-pin
-    ;;TODO dynamic title
-    :options   {:topBar {:visible false}}
-    :component keycard.settings/reset-pin}
-   {:name      :enter-pin-settings
-    ;;TODO dynamic title
-    :options   {:topBar {:visible false}}
-    :component keycard.pin/enter-pin}
-   {:name      :change-pairing-code
-    ;;TODO dynamic title
-    :options   {:topBar {:visible false}}
-    :component keycard.pairing/change-pairing-code}
 
    ;;MODALS
 
@@ -669,8 +602,6 @@
    ;KEYCARD
    {:name         :keycard-onboarding-intro
     :back-handler keycard.core/onboarding-intro-back-handler
-    ;;TODO dynamic
-    :options      {:topBar {:visible false}}
     :component    keycard.onboarding/intro}
    {:name         :keycard-onboarding-puk-code
     :back-handler :noop
@@ -702,6 +633,50 @@
     :options   {:topBar {:visible false}}
     ;;TODO move to popover?
     :component keycard/not-keycard}
+   {:name         :keycard-onboarding-recovery-phrase
+    :back-handler :noop
+    :component    keycard.onboarding/recovery-phrase}
+   {:name         :keycard-onboarding-recovery-phrase-confirm-word1
+    :back-handler :noop
+    :component    keycard.onboarding/recovery-phrase-confirm-word}
+   {:name         :keycard-onboarding-recovery-phrase-confirm-word2
+    :back-handler :noop
+    :component    keycard.onboarding/recovery-phrase-confirm-word}
+   {:name         :keycard-recovery-intro
+    :back-handler :noop
+    :component    keycard.recovery/intro}
+   {:name         :keycard-recovery-success
+    :back-handler :noop
+    :insets       {:bottom true}
+    :component    keycard.recovery/success}
+   {:name      :keycard-recovery-no-key
+    :component keycard.recovery/no-key}
+   {:name      :keycard-authentication-method
+    :component keycard.authentication/keycard-authentication-method}
+   {:name      :keycard-login-pin
+    :component keycard/login-pin}
+   {:name      :keycard-blank
+    :component keycard/blank}
+   {:name      :keycard-unpaired
+    :component keycard/unpaired}
+   {:name      :keycard-settings
+    :title (i18n/label :t/status-keycard)
+    :component keycard.settings/keycard-settings}
+   {:name      :reset-card
+    :title (i18n/label :t/reset-card)
+    :component keycard.settings/reset-card}
+   {:name      :keycard-pin
+    ;;TODO dynamic title
+    :options   {:topBar {:visible false}}
+    :component keycard.settings/reset-pin}
+   {:name      :enter-pin-settings
+    ;;TODO dynamic title
+    :options   {:topBar {:visible false}}
+    :component keycard.pin/enter-pin}
+   {:name      :change-pairing-code
+    ;;TODO dynamic title
+    :options   {:topBar {:visible false}}
+    :component keycard.pairing/change-pairing-code}
 
    ;;KEYSTORAGE
    {:name      :actions-not-logged-in

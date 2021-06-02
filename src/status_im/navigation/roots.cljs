@@ -18,6 +18,9 @@
 
 (defn bottom-tab-general []
   {:fontSize  11
+   :badgeColor colors/blue
+   :badge ""
+   :dotIndicator {:color colors/blue :visible false :size 10}
    :iconColor colors/gray :selectedIconColor colors/blue
    :textColor colors/gray :selectedTextColor colors/blue})
 
@@ -32,7 +35,8 @@
     {:bottomTabs
      {:id       :tabs-stack
       :options  (merge (default-root)
-                       {:bottomTabs {:titleDisplayMode :alwaysHide
+                       {:bottomTabs {:tabsAttachMode :afterInitialTab
+                                     :titleDisplayMode :alwaysHide
                                      :backgroundColor  colors/white}})
       :children
       [;CHAT STACK
@@ -102,12 +106,12 @@
    {:root {:stack {:id :multiaccounts-stack
                    :children [{:component {:name    :multiaccounts
                                            :id      :multiaccounts
-                                           :options (status-bar-options)}}
+                                           :options (assoc (status-bar-options) :topBar {:visible false})}}
                               {:component {:name    :login
                                            :id      :login
-                                           :options (status-bar-options)}}]
+                                           :options (assoc (status-bar-options) :topBar {:visible false})}}]
                    :options  (merge (default-root)
-                                    {:topBar (assoc (topbar-options) :visible false)})}}}
+                                    {:topBar (topbar-options)})}}}
 
    ;;WELCOME
    :welcome

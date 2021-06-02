@@ -76,3 +76,10 @@
   {:events [:rnn-navigate-back]}
   [_]
   {:rnn-navigate-back-fx nil})
+
+(fx/defn change-tab-count
+  {:events [:change-tab-count]}
+  [_ tab cnt]
+  {:rnn-change-tab-count-fx [tab cnt]})
+
+

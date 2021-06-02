@@ -33,7 +33,7 @@
   [cofx referrer chat-name]
   (fx/merge cofx
             {::persistence/chat-initalized! true}
-            (navigation/navigate-to-cofx :chat nil)))
+            (navigation/navigate-to-cofx :referral-enclav nil)))
 
 (fx/defn join-public-chat
   [cofx chat-name]

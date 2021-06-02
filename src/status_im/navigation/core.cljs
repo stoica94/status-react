@@ -170,15 +170,28 @@
    (.mergeOptions Navigation "tabs-stack" (clj->js {:bottomTabs {:currentTabIndex (get tab-key-idx tab)}}))))
 
 (re-frame/reg-fx
+ :rnn-change-tab-count-fx
+ (fn [[tab cnt]]
+   (.mergeOptions Navigation
+                  (name (get tab-root-ids (get tab-key-idx tab)))
+                  (clj->js {:bottomTab (cond
+                                         (or (pos? cnt) (pos? (:other cnt)))
+                                         {:badge (str (or (:other cnt) cnt)) :dotIndicator {:visible false}}
+                                         (pos? (:public cnt))
+                                         {:badge nil :dotIndicator {:visible true}}
+                                         :else
+                                         {:dotIndicator {:visible false} :badge nil})}))))
+
+(re-frame/reg-fx
  :rnn-pop-to-root-tab-fx
  (fn [comp]
    (.popToRoot Navigation (name comp))))
 
 (defonce register-bottom-tab-reg
-         (.registerBottomTabSelectedListener
-          (.events Navigation)
-          (fn [^js evn]
-            (reset! root-comp-id (get tab-root-ids (.-selectedTabIndex evn))))))
+  (.registerBottomTabSelectedListener
+   (.events Navigation)
+   (fn [^js evn]
+     (reset! root-comp-id (get tab-root-ids (.-selectedTabIndex evn))))))
 
 ;; OVERLAY (Popover and bottom sheets)
 (defn show-overlay [comp]

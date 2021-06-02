@@ -168,12 +168,12 @@
 
 (defn keycard-sheet-content [on-cancel connected? params]
   (fn []
-    (keycard-sheet/connect-keycard
+    [keycard-sheet/connect-keycard
      {:on-cancel     #(re-frame/dispatch on-cancel)
       :connected?    connected?
       :params        params
       :on-connect    ::on-card-connected
-      :on-disconnect ::on-card-disconnected})))
+      :on-disconnect ::on-card-disconnected}]))
 
 (fx/defn show-connection-sheet-component
   [{:keys [db] :as cofx} {:keys [on-card-connected on-card-read handler]
