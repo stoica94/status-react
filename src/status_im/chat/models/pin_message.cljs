@@ -59,6 +59,7 @@
   [{:keys [db] :as cofx} pin-messages]
   (let [{:keys [chat-id]} (first pin-messages)]
     (when (= chat-id (db :current-chat-id))
+      (print "dasj")
       (let [{:keys [chat-id]} (first pin-messages)
             already-loaded-pin-messages (get-in db [:pin-messages chat-id] {})
             already-loaded-messages (get-in db [:messages chat-id] {})
@@ -76,7 +77,7 @@
                                                               (nil? pinned)
                                                               (update :all-messages dissoc message_id)
 
-                                                              (some? pinned)
+                                                              (and (some? pinned) (some? current-message))
                                                               (update :all-messages assoc message_id current-message-pin))))
                                                         {:all-messages already-loaded-pin-messages
                                                          :new-messages []}
