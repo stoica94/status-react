@@ -66,6 +66,7 @@
           merge
           {:elevation       0
            :noBorder        true
+           :background      {:color colors/white}
            :leftButtonColor colors/black
            :leftButtons     {:id   "dismiss-modal"
                              :icon (js/require "../resources/images/icons/close.png")}}))
@@ -76,7 +77,6 @@
    (let [{:keys [options title]} (get views/screens comp)]
      (reset! curr-modal true)
      (swap! modals conj comp)
-     (println "OPEN MODAL" (count @modals))
      (.showModal Navigation
                  (clj->js {:stack {:children
                                    [{:component
@@ -103,7 +103,6 @@
   (.registerModalDismissedListener
    (.events Navigation)
    (fn [_]
-     (println "CLOSE MODAL" (count @modals))
      (if (> (count @modals) 1)
        (let [new-modals (butlast @modals)]
          (reset! modals (vec new-modals))
@@ -113,7 +112,7 @@
          (reset! curr-modal false)
          (re-frame/dispatch [:set :view-id @pushed-screen-id]))))))
 
-;; SCREEN APPEAR
+;; SCREEN DID APPEAR
 (defonce screen-appear-reg
   (.registerComponentDidAppearListener
    (.events Navigation)
@@ -131,82 +130,25 @@
    (reset! root-comp-id root-id)
    (.setRoot Navigation (clj->js (get (roots/roots) root-id)))))
 
+(defn get-component [comp]
+  (let [{:keys [options title]} (get views/screens comp)]
+    {:component {:id      comp
+                 :name    comp
+                 :options (update-title-options (merge options
+                                                       (roots/status-bar-options)
+                                                       {:topBar (merge (:topBar options)
+                                                                       (roots/topbar-options))})
+                                                title)}}))
+
 ;; SET STACK ROOT
 (re-frame/reg-fx
  :rnn-set-root-fx
- (fn [comp]
-   (let [{:keys [options title]} (get views/screens comp)]
-     (.setStackRoot Navigation
-                    "browser-stack"
-                    (clj->js {:component {:id      comp
-                                          :name    comp
-                                          :options (update-title-options options title)}})))))
-
-;; POPOVER
-(def popover-comp
-  (reagent/reactify-component
-   (fn []
-     ^{:key (str @colors/theme @reloader/cnt)}
-     [react/safe-area-provider
-      [popover/popover]
-      (when debug?
-        [reloader/reload-view])])))
-
-(defonce popover-reg
-  (.registerComponent Navigation
-                      "popover"
-                      (fn [] (gestureHandlerRootHOC popover-comp))
-                      (fn [] popover-comp)))
-
-(re-frame/reg-fx
- :rnn-show-popover
- (fn []
-   (.showOverlay Navigation
-                 (clj->js
-                  {:component {:name    "popover"
-                               :options (merge (if platform/android?
-                                                 {:statusBar {:translucent true}}
-                                                 (roots/status-bar-options))
-                                               {:layout  {:componentBackgroundColor "transparent"}
-                                                :overlay {:interceptTouchOutside true}})}}))))
-
-(re-frame/reg-fx
- :rnn-hide-popover
- (fn []
-   (.dismissAllOverlays Navigation)))
-
-;; BOTTOM SHEETS
-(def sheet-comp
-  (reagent/reactify-component
-   (fn []
-     ^{:key (str @colors/theme @reloader/cnt)}
-     [react/safe-area-provider
-      [bottom-sheets/bottom-sheet]
-      (when debug?
-        [reloader/reload-view])])))
-
-(defonce bottom-sheet-reg
-  (.registerComponent Navigation
-                      "bottom-sheet"
-                      (fn [] (gestureHandlerRootHOC sheet-comp))
-                      (fn [] sheet-comp)))
-
-(re-frame/reg-fx
- :rnn-show-bottom-sheet
- (fn []
-   (.showOverlay Navigation
-                 (clj->js
-                  {:component {:name    "bottom-sheet"
-                               :options (merge (if platform/android?
-                                                 {:statusBar {:translucent true}}
-                                                 (roots/status-bar-options))
-                                               {:layout  {:componentBackgroundColor "transparent"}
-                                                :overlay {:interceptTouchOutside true}})}}))))
-
-(re-frame/reg-fx
- :rnn-hide-bottom-sheet
- (fn []
-   (.dismissAllOverlays Navigation)))
+ (fn [[stack comp]]
+   (.setStackRoot Navigation
+                  (name stack)
+                  (clj->js (if (vector? comp)
+                             (mapv get-component comp)
+                             (get-component comp))))))
 
 ;; BOTTOM TABS
 (def tab-root-ids {0 :chat-stack
@@ -233,17 +175,47 @@
    (.popToRoot Navigation (name comp))))
 
 (defonce register-bottom-tab-reg
-  (.registerBottomTabSelectedListener
-   (.events Navigation)
-   (fn [^js evn]
-     (reset! root-comp-id (get tab-root-ids (.-selectedTabIndex evn))))))
+         (.registerBottomTabSelectedListener
+          (.events Navigation)
+          (fn [^js evn]
+            (reset! root-comp-id (get tab-root-ids (.-selectedTabIndex evn))))))
+
+;; OVERLAY (Popover and bottom sheets)
+(defn show-overlay [comp]
+  (.showOverlay Navigation
+                (clj->js
+                 {:component {:name    comp
+                              :id      comp
+                              :options (merge (if platform/android?
+                                                {:statusBar {:translucent true}}
+                                                (roots/status-bar-options))
+                                              {:layout  {:componentBackgroundColor "transparent"}
+                                               :overlay {:interceptTouchOutside true}})}})))
+
+(defn dissmiss-all-overlays []
+  (.dismissAllOverlays Navigation))
+
+;; POPOVER
+(defonce popover-reg
+  (.registerComponent Navigation
+                      "popover"
+                      (fn [] (gestureHandlerRootHOC views/popover-comp))
+                      (fn [] views/popover-comp)))
+
+(re-frame/reg-fx :rnn-show-popover (fn [] (show-overlay "popover")))
+(re-frame/reg-fx :rnn-hide-popover dissmiss-all-overlays)
+
+;; BOTTOM SHEETS
+(defonce bottom-sheet-reg
+  (.registerComponent Navigation
+                      "bottom-sheet"
+                      (fn [] (gestureHandlerRootHOC views/sheet-comp))
+                      (fn [] views/sheet-comp)))
+
+(re-frame/reg-fx :rnn-show-bottom-sheet (fn [] (show-overlay "bottom-sheet")))
+(re-frame/reg-fx :rnn-hide-bottom-sheet dissmiss-all-overlays)
 
 ;; NAVIGATION
-
-(fx/defn init-root
-  {:events [:init-root]}
-  [_ root-id]
-  {:init-root-fx root-id})
 
 (re-frame/reg-fx
  :rnn-navigate-to-fx
@@ -259,18 +231,8 @@
      (dissmissModal)
      (.pop Navigation (name @root-comp-id)))))
 
-(fx/defn rnn-navigate-to
-  {:events [:rnn-navigate-to]}
-  [_ key]
-  {:rnn-navigate-to-fx key})
-
-(fx/defn rnn-navigate-back
-  {:events [:rnn-navigate-back]}
-  [_]
-  {:rnn-navigate-back-fx nil})
-
 (re-frame/reg-fx
  :navigate-replace-fx
- (fn [[view-id _]]
+ (fn [view-id]
    (.pop Navigation (name @root-comp-id))
    (navigate view-id)))

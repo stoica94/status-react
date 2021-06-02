@@ -10,7 +10,6 @@
 (defn edit []
   (let [{:keys [name description]} (<sub [:communities/create])]
     [:<>
-     [topbar/topbar {:title (i18n/label :t/community-edit-title)}]
      [community.create/form]
      [toolbar/toolbar
       {:show-border? true

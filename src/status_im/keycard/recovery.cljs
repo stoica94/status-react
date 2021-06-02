@@ -214,10 +214,8 @@
                                 :status nil
                                 :login  [])
                      (update :keycard dissoc :application-info))}
-            (navigation/navigate-reset {:index  0
-                                        :routes [{:name  :intro-stack
-                                                  :state {:routes [{:name :multiaccounts},
-                                                                   {:name :keycard-login-pin}]}}]})))
+            (navigation/set-stack-root :multiaccounts-stack [:multiaccounts
+                                                             :keycard-login-pin])))
 
 (fx/defn on-backup-success
   [{:keys [db] :as cofx} backup-type]

@@ -21,7 +21,6 @@
             [status-im.transport.core :as transport]
             [status-im.stickers.core :as stickers]
             [status-im.mobile-sync-settings.core :as mobile-network]
-            ;[status-im.navigation.core :as navigation]
             [status-im.utils.fx :as fx]
             [status-im.utils.keychain.core :as keychain]
             [status-im.utils.logging.core :as logging]

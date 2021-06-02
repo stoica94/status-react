@@ -536,8 +536,4 @@
 (fx/defn navigete-to-keycard-settings
   {:events [::navigate-to-keycard-settings]}
   [cofx]
-  (navigation/navigate-reset
-   cofx
-   {:index  1
-    :routes [{:name :my-profile}
-             {:name :keycard-settings}]}))
+  (navigation/set-stack-root :profile-stack [:my-profile :keycard-settings]))

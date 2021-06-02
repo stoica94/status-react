@@ -274,36 +274,32 @@
     :title (i18n/label :t/create-channel-title)
     :component create-channel/create-channel}
    {:name      :contact-toggle-list
-    :insets    {:top    false
-                :bottom true}
+    ;TODO custom subtitle
+    :options {:topBar {:visible false}}
     :component group-chat/contact-toggle-list}
    {:name      :new-group
-    :insets    {:top    false
-                :bottom true}
+    :options {:topBar {:visible false}}
+    ;TODO custom subtitle
     :component group-chat/new-group}
    {:name      :referral-enclav
     ;;TODO custom
     :options {:topBar {:visible false}}
     :component referrals.public-chat/view}
    {:name      :communities
-    :insets    {:bottom true
-                :top    false}
+    ;;TODO custom
+    :options {:topBar {:visible false}}
     :component communities/communities}
    {:name      :community-import
-    :insets    {:bottom true
-                :top    false}
+    :title (i18n/label :t/import-community-title)
     :component communities.import/view}
    {:name      :community-edit
-    :insets    {:bottom true
-                :top    false}
+    :title (i18n/label :t/community-edit-title)
     :component community.edit/edit}
    {:name      :community-create
-    :insets    {:bottom true
-                :top    false}
+    :title (i18n/label :t/new-community-title)
     :component communities.create/view}
    {:name      :community-membership
-    :insets    {:bottom true
-                :top    false}
+    :title (i18n/label :t/membership-title)
     :component membership/membership}
 
    ;;BROWSER
@@ -567,15 +563,6 @@
     :options    {:topBar {:visible false}}
     :component  group-chat/add-participants-toggle-list}
 
-   #_{:name       :create-group-chat
-      :transition :presentation-ios
-      ;;TODO stack
-      :component  chat-stack/new-group-chat}
-   #_{:name       :communities
-      :transition :presentation-ios
-      ;;TODO stack
-      :component  chat-stack/communities}
-
    ;[Communities] Invite people
    {:name      :invite-people-community
     :component communities.invite/invite
@@ -718,10 +705,16 @@
 
    ;;KEYSTORAGE
    {:name      :actions-not-logged-in
+    :options   {:topBar {:visible false}}
+    ;;TODO move to popover?
     :component key-storage.views/actions-not-logged-in}
    {:name      :actions-logged-in
+    :options   {:topBar {:visible false}}
+    ;;TODO move to popover?
     :component key-storage.views/actions-logged-in}
    {:name      :storage
+    :options   {:topBar {:visible false}}
+    ;;TODO move to popover?
     :component key-storage.views/storage}
 
    (when js/goog.DEBUG

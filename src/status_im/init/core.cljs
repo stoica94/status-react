@@ -8,8 +8,8 @@
             [status-im.utils.fx :as fx]
             [status-im.theme.core :as theme]
             [status-im.utils.theme :as utils.theme]
-            [status-im.navigation.core :as navigation]
-            [status-im.utils.keychain.core :as keychain]))
+            [status-im.utils.keychain.core :as keychain]
+            [status-im.navigation :as navigation]))
 
 (fx/defn initialize-app-db
   "Initialize db to initial state"

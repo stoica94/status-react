@@ -123,8 +123,7 @@
   (let [communities (<sub [:communities/section-list])
         communities-enabled? (<sub [:communities/enabled?])]
     [react/view {:flex 1}
-     [topbar/topbar (cond-> {:title (i18n/label :t/communities)
-                             :modal? true}
+     [topbar/topbar (cond-> {:title (i18n/label :t/communities)}
                       communities-enabled?
                       (assoc :right-accessories [{:icon                :main-icons/more
                                                   :accessibility-label :chat-menu-button

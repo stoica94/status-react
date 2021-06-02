@@ -331,7 +331,7 @@
                                                   :membership  access
                                                   :color       color
                                                   :editing?    true})}
-              (navigation/navigate-to :communities {:screen :community-edit}))))
+              (navigation/navigate-to :community-edit :nil))))
 
 (fx/defn community-imported
   {:events [::community-imported]}

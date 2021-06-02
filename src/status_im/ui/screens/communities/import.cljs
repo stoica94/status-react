@@ -11,8 +11,7 @@
 (defn view []
   (let [community-key (reagent/atom "")]
     (fn []
-      [rn/view {:style {:flex 1}}
-       [topbar/topbar {:title (i18n/label :t/import-community-title)}]
+      [:<>
        [rn/scroll-view {:style                   {:flex 1}
                         :content-container-style {:padding 16}}
         [rn/view {:style {:padding-bottom 16

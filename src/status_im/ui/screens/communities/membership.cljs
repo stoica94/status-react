@@ -36,7 +36,6 @@
 (defn membership []
   (let [{:keys [membership]} (<sub [:communities/create])]
     [:<>
-     [topbar/topbar {:title (i18n/label :t/membership-title)}]
      [rn/scroll-view {}
       (doall
        (for [[id o] options]

@@ -2,6 +2,7 @@
   (:require status-im.utils.db
             status-im.events
             status-im.subs
+            status-im.navigation.core
             [re-frame.core :as re-frame]
             [re-frame.interop :as interop]
             [reagent.impl.batching :as batching]

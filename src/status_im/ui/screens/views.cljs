@@ -3,7 +3,9 @@
             [reagent.core :as reagent]
             [status-im.reloader :as reloader]
             [status-im.ui.screens.screens :as screens]
-            [status-im.ui.screens.routing.core :as routing]))
+            [status-im.ui.screens.routing.core :as routing]
+            [status-im.ui.screens.popover.views :as popover]
+            [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]))
 
 (defn get-screens []
   (reduce
@@ -43,3 +45,21 @@
    (fn []
      [react/view {:width 500 :height 44}
       [comp]])))
+
+(def popover-comp
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "popover" @reloader/cnt)}
+     [react/safe-area-provider
+      [popover/popover]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))
+
+(def sheet-comp
+  (reagent/reactify-component
+   (fn []
+     ^{:key (str "seet" @reloader/cnt)}
+     [react/safe-area-provider
+      [bottom-sheets/bottom-sheet]
+      (when js/goog.DEBUG
+        [reloader/reload-view])])))

@@ -91,8 +91,8 @@
      [react/touchable-highlight
       {:on-press #(do
                     (when empty-tab
-                      (re-frame/dispatch [:navigate-set-root :browser]))
-                    (re-frame/dispatch [:navigate-set-root :browser-tabs]))
+                      (re-frame/dispatch [:set-stack-root :browser-stack :browser]))
+                    (re-frame/dispatch [:set-stack-root :browser-stack :browser-tabs]))
        :accessibility-label :browser-open-tabs}
       [icons/icon :main-icons/tabs]]
 

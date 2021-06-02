@@ -161,8 +161,7 @@
 
 (defn view []
   (let [{:keys [name description]} (<sub [:communities/create])]
-    [rn/view {:style {:flex 1}}
-     [topbar/topbar {:title (i18n/label :t/new-community-title)}]
+    [:<>
      [form]
      [toolbar/toolbar
       {:show-border? true
