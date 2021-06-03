@@ -1,5 +1,4 @@
 androidx.activity:activity:1.0.0
-androidx.activity:activity:1.1.0
 androidx.annotation:annotation-experimental:1.0.0
 androidx.annotation:annotation:1.0.0
 androidx.annotation:annotation:1.1.0
@@ -11,7 +10,6 @@ androidx.appcompat:appcompat:1.2.0
 androidx.arch.core:core-common:2.0.0
 androidx.arch.core:core-common:2.1.0
 androidx.arch.core:core-runtime:2.0.0
-androidx.arch.core:core-runtime:2.1.0
 androidx.asynclayoutinflater:asynclayoutinflater:1.0.0
 androidx.cardview:cardview:1.0.0
 androidx.collection:collection:1.0.0
@@ -38,24 +36,18 @@ androidx.exifinterface:exifinterface:1.1.0-beta01
 androidx.exifinterface:exifinterface:1.1.0-rc01
 androidx.fragment:fragment:1.0.0
 androidx.fragment:fragment:1.1.0
-androidx.fragment:fragment:1.2.1
 androidx.interpolator:interpolator:1.0.0
 androidx.legacy:legacy-support-core-ui:1.0.0
 androidx.legacy:legacy-support-core-utils:1.0.0
 androidx.legacy:legacy-support-v4:1.0.0
 androidx.lifecycle:lifecycle-common:2.0.0
 androidx.lifecycle:lifecycle-common:2.1.0
-androidx.lifecycle:lifecycle-common:2.2.0
 androidx.lifecycle:lifecycle-livedata-core:2.0.0
-androidx.lifecycle:lifecycle-livedata-core:2.2.0
 androidx.lifecycle:lifecycle-livedata:2.0.0
 androidx.lifecycle:lifecycle-runtime:2.0.0
 androidx.lifecycle:lifecycle-runtime:2.1.0
-androidx.lifecycle:lifecycle-runtime:2.2.0
-androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0
 androidx.lifecycle:lifecycle-viewmodel:2.0.0
 androidx.lifecycle:lifecycle-viewmodel:2.1.0
-androidx.lifecycle:lifecycle-viewmodel:2.2.0
 androidx.loader:loader:1.0.0
 androidx.localbroadcastmanager:localbroadcastmanager:1.0.0
 androidx.media:media:1.0.0
@@ -356,7 +348,6 @@ com.google.android.gms:play-services-base:17.0.0
 com.google.android.gms:play-services-iid:17.0.0
 com.google.android.gms:play-services-stats:17.0.0
 com.google.android.gms:play-services-tasks:17.0.0
-com.google.android.material:material:1.1.0
 com.google.android.material:material:1.2.0-alpha03
 com.google.auto.value:auto-value-annotations:1.6.2
 com.google.auto.value:auto-value:1.5.2
