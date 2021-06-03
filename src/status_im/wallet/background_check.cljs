@@ -198,8 +198,10 @@
          cached-balances)]
     (fx/merge
      cofx
-     {:local/local-pushes-ios [{:title "TASK FINISHED"
-                                :message (str addresses-with-changes)}]}
+     {:local/local-pushes-ios [{:title   "TASK FINISHED"
+                                :message (str addresses-with-changes)}]
+      :dispatch-later         [{:ms       100
+                                :dispatch [::finish]}]}
      (update-cache cached-balances addresses-with-changes latest)
      (notify addresses-with-changes latest)
      (finish "successfully finished"))))
