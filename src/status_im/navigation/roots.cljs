@@ -19,7 +19,6 @@
 (defn bottom-tab-general []
   {:fontSize  11
    :badgeColor colors/blue
-   :badge ""
    :dotIndicator {:color colors/blue :visible false :size 10}
    :iconColor colors/gray :selectedIconColor colors/blue
    :textColor colors/gray :selectedTextColor colors/blue})
@@ -91,7 +90,7 @@
                                            :id      :get-your-keys
                                            :options (status-bar-options)}}]
                    :options  (merge (default-root)
-                                    {:topBar (assoc (topbar-options) :elevation 0 :noBorder true)})}}}
+                                    {:topBar (assoc (topbar-options) :elevation 0 :noBorder true :animate false)})}}}
 
    ;;PROGRESS
    :progress

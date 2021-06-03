@@ -5,7 +5,6 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.utils.handlers :refer [>evt]]
             [status-im.communities.core :as communities]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.toolbar :as toolbar]))
 
 (defn view []

@@ -1,18 +1,12 @@
 (ns status-im.navigation.core
   (:require
-   ["react-native-navigation" :refer (Navigation)]
-   ["react-native-gesture-handler" :refer (gestureHandlerRootHOC)]
-   [status-im.ui.components.react :as react]
    [status-im.ui.components.colors :as colors]
-   [status-im.reloader :as reloader]
    [re-frame.core :as re-frame]
-   [status-im.utils.fx :as fx]
-   [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]
    [status-im.ui.screens.views :as views]
-   [status-im.ui.screens.popover.views :as popover]
    [status-im.utils.platform :as platform]
-   [reagent.core :as reagent]
-   [status-im.navigation.roots :as roots]))
+   [status-im.navigation.roots :as roots]
+   ["react-native-navigation" :refer (Navigation)]
+   ["react-native-gesture-handler" :refer (gestureHandlerRootHOC)]))
 
 (def debug? ^boolean js/goog.DEBUG)
 
@@ -169,6 +163,7 @@
    (reset! root-comp-id (get tab-root-ids (get tab-key-idx tab)))
    (.mergeOptions Navigation "tabs-stack" (clj->js {:bottomTabs {:currentTabIndex (get tab-key-idx tab)}}))))
 
+;issue on ios https://github.com/wix/react-native-navigation/issues/7146
 (re-frame/reg-fx
  :rnn-change-tab-count-fx
  (fn [[tab cnt]]
@@ -176,11 +171,17 @@
                   (name (get tab-root-ids (get tab-key-idx tab)))
                   (clj->js {:bottomTab (cond
                                          (or (pos? cnt) (pos? (:other cnt)))
-                                         {:badge (str (or (:other cnt) cnt)) :dotIndicator {:visible false}}
+                                         (if (and (= :chat tab) platform/ios?)
+                                           {:dotIndicator {:visible true}}
+                                           {:badge (str (or (:other cnt) cnt)) :dotIndicator {:visible false}})
                                          (pos? (:public cnt))
-                                         {:badge nil :dotIndicator {:visible true}}
+                                         (if platform/ios?
+                                           {:dotIndicator {:visible true}}
+                                           {:badge nil :dotIndicator {:visible true}})
                                          :else
-                                         {:dotIndicator {:visible false} :badge nil})}))))
+                                         (if (and (= :chat tab) platform/ios?)
+                                           {:dotIndicator {:visible false}}
+                                           {:dotIndicator {:visible false} :badge nil}))}))))
 
 (re-frame/reg-fx
  :rnn-pop-to-root-tab-fx

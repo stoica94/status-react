@@ -3,7 +3,7 @@
             [reagent.core :as reagent]
             [status-im.reloader :as reloader]
             [status-im.ui.screens.screens :as screens]
-            [status-im.ui.screens.routing.core :as routing]
+            [oops.core :refer [oget]]
             [status-im.ui.screens.popover.views :as popover]
             [status-im.ui.screens.bottom-sheets.views :as bottom-sheets]))
 
@@ -24,6 +24,19 @@
    {}
    (concat screens/components)))
 
+(defn wrapped-screen-style [{:keys [insets style]} insets-obj]
+  (merge
+   {:flex 1}
+   style
+   (when (get insets :bottom)
+     {:padding-bottom (+ (oget insets-obj "bottom")
+                         (get style :padding-bottom)
+                         (get style :padding-vertical))})
+   (when (get insets :top true)
+     {:padding-top (+ (oget insets-obj "top")
+                      (get style :padding-top)
+                      (get style :padding-vertical))})))
+
 (defn screen [key]
   (reagent.core/reactify-component
    (fn []
@@ -33,7 +46,7 @@
        (fn [insets]
          (reagent/as-element
           [react/view {;;TODO check how it works
-                       :style (routing/wrapped-screen-style
+                       :style (wrapped-screen-style
                                {:insets (get-in screens [(keyword key) :insets])}
                                insets)}
            [(get-in (if js/goog.DEBUG (get-screens) screens) [(keyword key) :component])]]))]

@@ -1,6 +1,5 @@
 (ns status-im.ui.screens.communities.membership
   (:require [quo.react-native :as rn]
-            [status-im.ui.components.topbar :as topbar]
             [status-im.ui.components.toolbar :as toolbar]
             [quo.core :as quo]
             [status-im.i18n.i18n :as i18n]

@@ -1,5 +1,4 @@
-(ns status-im.ui.screens.routing.core
-  (:require [oops.core :refer [oget]]))
+(ns status-im.ui.screens.routing.core)
 
 ;; TODO(Ferossgp): Unify with topbar back icon. Maybe dispatch the same event and move the all logic inside the event.
 #_(defn handle-on-screen-focus
@@ -35,31 +34,3 @@
                 (doseq [[^js text-input default-value] @react/text-input-refs]
                   (.setNativeProps text-input (clj->js {:text default-value}))))))
      #js [navigation]))
-
-(defn wrapped-screen-style [{:keys [insets style]} insets-obj]
-  (merge
-   {:flex 1}
-   style
-   (when (get insets :bottom)
-     {:padding-bottom (+ (oget insets-obj "bottom")
-                         (get style :padding-bottom)
-                         (get style :padding-vertical))})
-   (when (get insets :top true)
-     {:padding-top (+ (oget insets-obj "top")
-                      (get style :padding-top)
-                      (get style :padding-vertical))})))
-
-#_(defn wrap-screen [{:keys [component] :as options}]
-    (assoc options :component
-           (fn [props]
-             (handle-on-screen-blur
-              (oget props "navigation"))
-             (handle-on-screen-focus options)
-             (let [props'   (js->clj props :keywordize-keys true)
-                   focused? (oget props "navigation" "isFocused")]
-               (reagent/as-element
-                [react/safe-area-consumer
-                 (fn [insets]
-                   (reagent/as-element
-                    [react/view {:style (wrapped-screen-style options insets)}
-                     [component props' (focused?)]]))])))))
