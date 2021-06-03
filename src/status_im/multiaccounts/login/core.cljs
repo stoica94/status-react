@@ -291,6 +291,18 @@
               (link-preview/request-link-preview-whitelist)
               (notifications-center/get-activity-center-notifications-count))))
 
+(fx/defn get-node-config-callback
+  {:events [::get-node-config-callback]}
+  [{:keys [db] :as cofx} node-config]
+  (log/info "### get-node-config-callback" (:WakuV2Config (types/json->clj node-config) ))
+  (fx/merge cofx
+            {:db (assoc-in db [:multiaccount :wakuv2-config] (get (types/json->clj node-config) :WakuV2Config))}))
+
+(fx/defn get-node-config
+  [{:keys [db] :as cofx}]
+  (fx/merge cofx
+            (status/get-node-config #(re-frame/dispatch [::get-node-config-callback %]))))
+
 (defn get-new-auth-method [auth-method save-password?]
   (when save-password?
     (when-not (or (= keychain/auth-method-biometric auth-method)
@@ -380,6 +392,7 @@
               (when (and (not login-only?)
                          (not recovered-account?))
                 (wallet/set-initial-blocks-range))
+              (get-node-config)
               (if login-only?
                 (login-only-events key-uid password save-password?)
                 (create-only-events)))))

@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.native-module.core :as status]
+            [taoensso.timbre :as log]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as utils.platform]
@@ -87,7 +88,10 @@
         {:keys [installation-id log-level
                 waku-bloom-filter-mode
                 custom-bootnodes custom-bootnodes-enabled?]} multiaccount
-        use-custom-bootnodes (get custom-bootnodes-enabled? current-network)]
+        use-custom-bootnodes (get custom-bootnodes-enabled? current-network)
+        wakuv2-config (get multiaccount :wakuv2-config {})
+        wakuv2-enabled (get wakuv2-config :Enabled false)
+        _ (log/info "### wakuv2-enabled" wakuv2-enabled)]
     (cond-> (get-in networks [current-network :config])
       :always
       (get-base-node-config)
@@ -119,6 +123,7 @@
               :BloomFilterMode waku-bloom-filter-mode
               :LightClient true
               :MinimumPoW 0.000001}
+             :WakuV2Config (assoc wakuv2-config :Enabled wakuv2-enabled)
              :ShhextConfig
              {:BackupDisabledDataDir      (utils.platform/no-backup-directory)
               :InstallationID             installation-id
@@ -153,6 +158,7 @@
 app-db"
   {:events [::save-new-config]}
   [{:keys [db]} config {:keys [on-success]}]
+  (log/info "### save-new-config" (:WakuV2Config config))
   {::json-rpc/call [{:method "settings_saveSetting"
                      :params [:node-config config]
                      :on-success on-success}]})
