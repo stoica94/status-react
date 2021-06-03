@@ -107,7 +107,7 @@
 (defview custom-token-details []
   (letsubs [{:keys [address name symbol decimals custom?] :as token}
             [:get-screen-params]]
-    [react/keyboard-avoiding-view {:flex 1 :background-color colors/white}
+    [react/keyboard-avoiding-view {:flex 1}
      [topbar/topbar {:title name}]
      [react/scroll-view {:keyboard-should-persist-taps :handled
                          :style                        {:flex 1}}

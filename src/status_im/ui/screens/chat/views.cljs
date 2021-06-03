@@ -30,29 +30,8 @@
             [clojure.string :as string]
             [status-im.constants :as constants]
             [status-im.utils.platform :as platform]
-            [status-im.utils.utils :as utils]))
-
-(defn topbar []
-  ;;we don't use topbar component, because we want chat view as simple (fast) as possible
-  [toolbar-content/toolbar-content-view-inner @(re-frame/subscribe [:chats/current-chat])]
-  #_[react/view {:height 56 :border-bottom-width 1 :border-bottom-color (:ui-01 @quo.colors/theme)
-                 :background-color :black}
-     [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:navigate-back])
-                                 :accessibility-label :back-button
-                                 :style {:height 56 :width 40 :align-items :center :justify-content :center
-                                         :padding-left 16}}
-      [icons/icon :main-icons/arrow-left]]
-     [react/view {:flex 1 :left 52 :right 52 :top 0 :bottom 0 :position :absolute}
-      [toolbar-content/toolbar-content-view]]
-     [react/touchable-highlight {:on-press-in #(re-frame/dispatch [:bottom-sheet/show-sheet
-                                                                   {:content (fn []
-                                                                               [sheets/current-chat-actions])
-                                                                    :height  256}])
-                                 :accessibility-label :chat-menu-button
-                                 :style {:right 0 :top 0 :bottom 0 :position :absolute
-                                         :height 56 :width 40 :align-items :center :justify-content :center
-                                         :padding-right 16}}
-      [icons/icon :main-icons/more]]])
+            [status-im.utils.utils :as utils]
+            [status-im.ui.screens.chat.sheets :as sheets]))
 
 (defn invitation-requests [chat-id admins]
   (let [current-pk @(re-frame/subscribe [:multiaccount/public-key])
@@ -320,6 +299,15 @@
        :inverted                     (when platform/ios? true)
        :style                        (when platform/android? {:scaleY -1})})]))
 
+(defn topbar-button []
+  (re-frame/dispatch [:bottom-sheet/show-sheet
+                      {:content (fn []
+                                  [sheets/current-chat-actions])
+                       :height  256}]))
+
+(defn topbar []
+  [toolbar-content/toolbar-content-view-inner @(re-frame/subscribe [:chats/current-chat])])
+
 (defn chat []
   (let [bottom-space (reagent/atom 0)
         panel-space (reagent/atom 52)
@@ -341,7 +329,6 @@
               @(re-frame/subscribe [:chats/current-chat-chat-view])
               max-bottom-space (max @bottom-space @panel-space)]
           [:<>
-           ;[topbar]
            [connectivity/loading-indicator]
            (when chat-id
              (if group-chat

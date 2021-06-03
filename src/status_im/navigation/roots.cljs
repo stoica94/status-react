@@ -1,6 +1,8 @@
 (ns status-im.navigation.roots
   (:require [status-im.ui.components.colors :as colors]
-            [status-im.utils.platform :as platform]))
+            [status-im.utils.platform :as platform]
+            [status-im.ui.components.icons.icons :as icons]
+            [status-im.ui.screens.views :as views]))
 
 (defn status-bar-options []
   (if platform/android?
@@ -12,12 +14,15 @@
 (defn topbar-options []
   {:noBorder   true
    :elevation  0
+   :title {:color colors/black}
+   :rightButtonColor colors/black
    :background {:color colors/white}
-   :backButton {:icon  (js/require "../resources/images/icons/arrow_left.png")
+   :backButton {:icon  (icons/icon-source :main-icons/arrow-left)
                 :color colors/black}})
 
-(defn bottom-tab-general []
+(defn bottom-tab-general [icon]
   {:fontSize  11
+   :icon (icons/icon-source icon)
    :badgeColor colors/blue
    :dotIndicator {:color colors/blue :visible false :size 10}
    :iconColor colors/gray :selectedIconColor colors/blue
@@ -27,6 +32,29 @@
   {:layout {:componentBackgroundColor colors/white
             :backgroundColor          colors/white}})
 
+(defn merge-top-bar [root-options options]
+  (let [options (:topBar options)]
+    {:topBar
+     (merge root-options
+            options
+            (when (or (:title root-options) (:title options))
+              {:title (merge (:title root-options) (:title options))})
+            (when (or (:background root-options) (:background options))
+              {:background (merge (:background root-options) (:background options))})
+            (when (or (:backButton root-options) (:backButton options))
+              {:backButton (merge (:backButton root-options) (:backButton options))})
+            (when (or (:leftButtons root-options) (:leftButtons options))
+              {:leftButtons (merge (:leftButtons root-options) (:leftButtons options))})
+            (when (or (:rightButtons root-options) (:rightButtons options))
+              {:rightButtons (merge (:rightButtons root-options) (:rightButtons options))}))}))
+
+(defn get-screen-options [screen]
+  (merge (get-in views/screens [screen :options])
+         (status-bar-options)
+         (merge-top-bar (topbar-options)
+                        (get-in views/screens [screen :options]))))
+
+;;TODO problem here is that we have two places for screens, here and in screens ns, and we have handler in navigate
 (defn roots []
   ;;TABS
   {:chat-stack
@@ -34,46 +62,45 @@
     {:bottomTabs
      {:id       :tabs-stack
       :options  (merge (default-root)
-                       {:bottomTabs {:tabsAttachMode :afterInitialTab
+                       {:bottomTabs {:tabsAttachMode   :afterInitialTab
                                      :titleDisplayMode :alwaysHide
                                      :backgroundColor  colors/white}})
-      :children
-      [;CHAT STACK
-       {:stack {:id       :chat-stack
-                :children [{:component {:name    :home
-                                        :id      :home
-                                        :options (merge (status-bar-options)
-                                                        {:topBar (assoc (topbar-options) :visible false)})}}]
-                :options  {:bottomTab (assoc (bottom-tab-general) :icon (js/require "../resources/images/icons/message.png"))}}}
-       ;BROWSER STACK
-       {:stack {:id       :browser-stack
-                :children [{:component {:name    :empty-tab
-                                        :id      :empty-tab
-                                        :options (merge (status-bar-options)
-                                                        {:topBar (assoc (topbar-options) :visible false)})}}]
+      :children [;CHAT STACK
+                 {:stack {:id       :chat-stack
+                          :children [{:component {:name    :home
+                                                  :id      :home
+                                                  :options (merge (status-bar-options)
+                                                                  {:topBar (assoc (topbar-options) :visible false)})}}]
+                          :options  {:bottomTab (bottom-tab-general :main-icons/message)}}}
+                 ;BROWSER STACK
+                 {:stack {:id       :browser-stack
+                          :children [{:component {:name    :empty-tab
+                                                  :id      :empty-tab
+                                                  :options (merge (status-bar-options)
+                                                                  {:topBar (assoc (topbar-options) :visible false)})}}]
 
-                :options  {:bottomTab (assoc (bottom-tab-general) :icon (js/require "../resources/images/icons/browser.png"))}}}
-       ;WALLET STACK
-       {:stack {:id       :wallet-stack
-                :children [{:component {:name    :wallet
-                                        :id      :wallet
-                                        :options (merge (status-bar-options)
-                                                        {:topBar (assoc (topbar-options) :visible false)})}}]
-                :options  {:bottomTab (assoc (bottom-tab-general) :icon (js/require "../resources/images/icons/wallet.png"))}}}
-       ;STATUS STACK
-       {:stack {:id       :status-stack
-                :children [{:component {:name    :status
-                                        :id      :status
-                                        :options (merge (status-bar-options)
-                                                        {:topBar (assoc (topbar-options) :visible false)})}}]
-                :options  {:bottomTab (assoc (bottom-tab-general) :icon (js/require "../resources/images/icons/status.png"))}}}
-       ;PROFILE STACK
-       {:stack {:id       :profile-stack
-                :children [{:component {:name    :my-profile
-                                        :id      :my-profile
-                                        :options (merge (status-bar-options)
-                                                        {:topBar (assoc (topbar-options) :visible false)})}}]
-                :options  {:bottomTab (assoc (bottom-tab-general) :icon (js/require "../resources/images/icons/user_profile.png"))}}}]}}}
+                          :options  {:bottomTab (bottom-tab-general :main-icons/browser)}}}
+                 ;WALLET STACK
+                 {:stack {:id       :wallet-stack
+                          :children [{:component {:name    :wallet
+                                                  :id      :wallet
+                                                  :options (merge (status-bar-options)
+                                                                  {:topBar (assoc (topbar-options) :visible false)})}}]
+                          :options  {:bottomTab (bottom-tab-general :main-icons/wallet)}}}
+                 ;STATUS STACK
+                 {:stack {:id       :status-stack
+                          :children [{:component {:name    :status
+                                                  :id      :status
+                                                  :options (merge (status-bar-options)
+                                                                  {:topBar (assoc (topbar-options) :visible false)})}}]
+                          :options  {:bottomTab (bottom-tab-general :main-icons/status)}}}
+                 ;PROFILE STACK
+                 {:stack {:id       :profile-stack
+                          :children [{:component {:name    :my-profile
+                                                  :id      :my-profile
+                                                  :options (merge (status-bar-options)
+                                                                  {:topBar (assoc (topbar-options) :visible false)})}}]
+                          :options  {:bottomTab (bottom-tab-general :main-icons/user-profile)}}}]}}}
 
    ;;INTRO (onboarding carousel)
    :intro
@@ -102,13 +129,13 @@
 
    ;;LOGIN
    :multiaccounts
-   {:root {:stack {:id :multiaccounts-stack
+   {:root {:stack {:id       :multiaccounts-stack
                    :children [{:component {:name    :multiaccounts
                                            :id      :multiaccounts
-                                           :options (assoc (status-bar-options) :topBar {:visible false})}}
+                                           :options (get-screen-options :multiaccounts)}}
                               {:component {:name    :login
                                            :id      :login
-                                           :options (assoc (status-bar-options) :topBar {:visible false})}}]
+                                           :options (get-screen-options :login)}}]
                    :options  (merge (default-root)
                                     {:topBar (topbar-options)})}}}
 

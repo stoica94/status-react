@@ -99,26 +99,34 @@
             [status-im.ui.screens.appearance.views :as appearance]
             [status-im.ui.screens.privacy-and-security-settings.delete-profile :as delete-profile]
             [status-im.ui.screens.default-sync-period-settings.view :as default-sync-period-settings]
-            [status-im.ui.components.colors :as colors]))
+            [status-im.ui.components.colors :as colors]
+            [status-im.ui.components.icons.icons :as icons]))
 
 (def components
-  [{:name :chat-toolbar
+  [{:name      :chat-toolbar
     :component chat/topbar}])
+
+(defn right-button-options [id icon]
+  {:id   id
+   :icon (icons/icon-source icon)})
 
 (def screens
   [;;INTRO, ONBOARDING, LOGIN
 
    ;Multiaccounts
-   {:name      :multiaccounts
-    :insets    {:bottom true}
-    :options   {:topBar {:visible false}}
-    :component multiaccounts/multiaccounts}
+   {:name          :multiaccounts
+    :insets        {:bottom true}
+    :options       {:topBar {:title        {:text (i18n/label :t/your-keys)}
+                             :rightButtons (right-button-options :multiaccounts :more)}}
+    :right-handler multiaccounts/topbar-button
+    :component     multiaccounts/multiaccounts}
 
    ;Login
-   {:name      :login
-    :insets    {:bottom true}
-    :options   {:topBar {:visible false}}
-    :component login/login}
+   {:name          :login
+    :insets        {:bottom true}
+    :options       {:topBar {:rightButtons (right-button-options :login :more)}}
+    :right-handler login/topbar-button
+    :component     login/login}
 
    {:name      :progress
     :component progress/progress}
@@ -136,42 +144,54 @@
    ;[Onboarding]
    {:name      :choose-name
     :options   {:topBar             {:visible false}
-                :hardwareBackButton {:popStackOnPress false}}
+                :popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
     :insets    {:bottom true}
     :component onboarding.keys/choose-a-chat-name}
 
    ;[Onboarding]
-   {:name         :select-key-storage
-    :back-handler :noop
-    :insets       {:bottom true}
-    :component    onboarding.storage/select-key-storage}
+   {:name      :select-key-storage
+    :insets    {:bottom true}
+    :options   {:popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :component onboarding.storage/select-key-storage}
 
    ;[Onboarding] Create Password
-   {:name         :create-password
-    :back-handler :noop
-    :insets       {:bottom true}
-    :component    onboarding.password/screen}
+   {:name      :create-password
+    :options   {:popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :insets    {:bottom true}
+    :component onboarding.password/screen}
 
    ;[Onboarding] Welcome
-   {:name         :welcome
-    :back-handler :noop
-    :insets       {:bottom true}
-    :component    onboarding.welcome/welcome}
+   {:name      :welcome
+    :options   {:popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :insets    {:bottom true}
+    :component onboarding.welcome/welcome}
 
    ;[Onboarding] Notification
-   {:name         :onboarding-notification
-    :back-handler :noop
-    :insets       {:bottom true}
-    :component    onboarding.notifications/notifications-onboarding}
+   {:name      :onboarding-notification
+    :options   {:popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :insets    {:bottom true}
+    :component onboarding.notifications/notifications-onboarding}
 
    ;[Onboarding] Recovery
    {:name      :recover-multiaccount-enter-phrase
     :insets    {:bottom true}
     :component onboarding.phrase/enter-phrase}
-   {:name         :recover-multiaccount-success
-    :back-handler :noop
-    :insets       {:bottom true}
-    :component    onboarding.phrase/wizard-recovery-success}
+   {:name      :recover-multiaccount-success
+    :options   {:popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :insets    {:bottom true}
+    :component onboarding.phrase/wizard-recovery-success}
 
    ;;CHAT
 
@@ -180,24 +200,25 @@
     :component home/home}
 
    ;Chat
-   {:name      :chat
-    :options   {:topBar {:title {:component {:name :chat-toolbar :id :chat-toolbar}
-                                 :alignment :fill}}}
-    :component chat/chat}
+   {:name          :chat
+    :options       {:topBar {:title        {:component {:name :chat-toolbar :id :chat-toolbar}
+                                            :alignment :fill}
+                             :rightButtons (right-button-options :chat :more)}}
+    :right-handler chat/topbar-button
+    :component     chat/chat}
 
    {:name      :group-chat-profile
     :insets    {:top false}
-    ;;TODO custom
-    :options {:topBar {:visible false}}
+    ;;TODO animated-header
+    :options   {:topBar {:visible false}}
     :component profile.group-chat/group-chat-profile}
    {:name      :group-chat-invite
-    ;;TODO share
-    :options {:topBar {:visible false}}
+    ;;TODO parameter in the event
+    :options   {:topBar {:visible false}}
     :component profile.group-chat/group-chat-invite}
 
-   ;;TODO!!! why two screens ? and also modal!!!
    {:name      :stickers
-    :title     (i18n/label :t/sticker-market)
+    :options {:topBar {:title {:text (i18n/label :t/sticker-market)}}}
     :component stickers/packs}
 
    {:name      :stickers-pack
@@ -205,56 +226,56 @@
 
    {:name      :notifications-center
     ;;TODO custom nav
-    :options {:topBar {:visible false}}
+    :options   {:topBar {:visible false}}
     :component notifications-center/center}
    ;; Community
    {:name      :community
     ;TODO custom
-    :options {:topBar {:visible false}}
+    :options   {:topBar {:visible false}}
     :component community/community}
    {:name      :community-management
     :insets    {:top false}
-    ;TODO custom
-    :options {:topBar {:visible false}}
+    ;TODO animated-header
+    :options   {:topBar {:visible false}}
     :component community.profile/management-container}
    {:name      :community-members
     ;TODO custom subtitle
-    :options {:topBar {:visible false}}
+    :options   {:topBar {:visible false}}
     :component members/members-container}
    {:name      :community-requests-to-join
     ;TODO custom subtitle
-    :options {:topBar {:visible false}}
+    :options   {:topBar {:visible false}}
     :component requests-to-join/requests-to-join-container}
    {:name      :create-community-channel
-    :title (i18n/label :t/create-channel-title)
+    :options {:topBar {:title {:text (i18n/label :t/create-channel-title)}}}
     :component create-channel/create-channel}
    {:name      :contact-toggle-list
     ;TODO custom subtitle
-    :options {:topBar {:visible false}}
+    :options   {:topBar {:visible false}}
     :component group-chat/contact-toggle-list}
    {:name      :new-group
-    :options {:topBar {:visible false}}
+    :options   {:topBar {:visible false}}
     ;TODO custom subtitle
     :component group-chat/new-group}
    {:name      :referral-enclav
-    ;;TODO custom
-    :options {:topBar {:visible false}}
+    ;;TODO custom content
+    :options   {:topBar {:visible false}}
     :component referrals.public-chat/view}
    {:name      :communities
     ;;TODO custom
-    :options {:topBar {:visible false}}
+    :options   {:topBar {:visible false}}
     :component communities/communities}
    {:name      :community-import
-    :title (i18n/label :t/import-community-title)
+    :options {:topBar {:title {:text (i18n/label :t/import-community-title)}}}
     :component communities.import/view}
    {:name      :community-edit
-    :title (i18n/label :t/community-edit-title)
+    :options {:topBar {:title {:text (i18n/label :t/community-edit-title)}}}
     :component community.edit/edit}
    {:name      :community-create
-    :title (i18n/label :t/new-community-title)
+    :options {:topBar {:title {:text (i18n/label :t/new-community-title)}}}
     :component communities.create/view}
    {:name      :community-membership
-    :title (i18n/label :t/membership-title)
+    :options {:topBar {:title {:text (i18n/label :t/membership-title)}}}
     :component membership/membership}
 
    ;;BROWSER
@@ -264,11 +285,12 @@
     :options   {:topBar             {:visible false}
                 :hardwareBackButton {:popStackOnPress false}}
     :component empty-tab/empty-tab}
-   {:name         :browser
-    :back-handler :noop
-    :options      {:topBar             {:visible false}
-                   :hardwareBackButton {:popStackOnPress false}}
-    :component    browser/browser}
+   {:name      :browser
+    :options   {:topBar             {:visible false}
+                :popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :component browser/browser}
    {:name      :browser-tabs
     :insets    {:top true}
     :options   {:topBar             {:visible false}
@@ -307,14 +329,14 @@
     :component wallet-settings/manage-assets}
    {:name      :wallet-add-custom-token
     :on-focus  [:wallet/wallet-add-custom-token]
-    :title     (i18n/label :t/add-custom-token)
+    :options {:topBar {:title {:text (i18n/label :t/add-custom-token)}}}
     :component custom-tokens/add-custom-token}
    {:name      :wallet-custom-token-details
     ;;TODO dynamic title
     :options   {:topBar {:visible false}}
     :component custom-tokens/custom-token-details}
    {:name      :currency-settings
-    :title     (i18n/label :t/main-currency)
+    :options {:topBar {:title {:text (i18n/label :t/main-currency)}}}
     :component currency-settings/currency-settings}
 
    ;;MY STATUS
@@ -330,36 +352,36 @@
     :insets    {:top false}
     :component profile.user/my-profile}
    {:name      :contacts-list
-    :title     (i18n/label :t/contacts)
+    :options {:topBar {:title {:text (i18n/label :t/contacts)}}}
     :component contacts-list/contacts-list}
    {:name      :ens-main
-    :title (i18n/label :t/ens-usernames)
+    :options {:topBar {:title {:text (i18n/label :t/ens-usernames)}}}
     :component ens/main}
    {:name      :ens-search
-    :title (i18n/label :t/ens-your-username)
+    :options {:topBar {:title {:text (i18n/label :t/ens-your-username)}}}
     :component ens/search}
    {:name      :ens-checkout
-    :title (i18n/label :t/ens-your-username)
+    :options {:topBar {:title {:text (i18n/label :t/ens-your-username)}}}
     :component ens/checkout}
    {:name      :ens-confirmation
-    :title (i18n/label :t/ens-your-username)
+    :options {:topBar {:title {:text (i18n/label :t/ens-your-username)}}}
     :component ens/confirmation}
    {:name      :ens-terms
-    :title (i18n/label :t/ens-terms-registration)
+    :options {:topBar {:title {:text (i18n/label :t/ens-terms-registration)}}}
     :component ens/terms}
    {:name      :ens-name-details
     ;;TODO dynamic title
     :options   {:topBar {:visible false}}
     :component ens/name-details}
    {:name      :blocked-users-list
-    :title (i18n/label :t/blocked-users)
+    :options {:topBar {:title {:text (i18n/label :t/blocked-users)}}}
     :component contacts-list/blocked-users-list}
    {:name      :bootnodes-settings
     ;;TODO dynamic title
     :options   {:topBar {:visible false}}
     :component bootnodes-settings/bootnodes-settings}
    {:name      :installations
-    :title (i18n/label :t/devices)
+    :options {:topBar {:title {:text (i18n/label :t/devices)}}}
     :component pairing/installations}
    {:name      :edit-bootnode
     ;;TODO dynamic title
@@ -374,83 +396,79 @@
     :options   {:topBar {:visible false}}
     :component edit-mailserver/edit-mailserver}
    {:name      :dapps-permissions
-    :title (i18n/label :t/dapps-permissions)
+    :options {:topBar {:title {:text (i18n/label :t/dapps-permissions)}}}
     :component dapps-permissions/dapps-permissions}
    {:name      :link-previews-settings
-    :title (i18n/label :t/chat-link-previews)
+    :options {:topBar {:title {:text (i18n/label :t/chat-link-previews)}}}
     :component link-previews-settings/link-previews-settings}
    {:name      :privacy-and-security
-    :title (i18n/label :t/privacy-and-security)
+    :options {:topBar {:title {:text (i18n/label :t/privacy-and-security)}}}
     :component privacy-and-security/privacy-and-security}
    {:name      :messages-from-contacts-only
-    :title (i18n/label :t/accept-new-chats-from)
+    :options {:topBar {:title {:text (i18n/label :t/accept-new-chats-from)}}}
     :component messages-from-contacts-only/messages-from-contacts-only}
    {:name      :appearance
-    :title (i18n/label :t/appearance)
+    :options {:topBar {:title {:text (i18n/label :t/appearance)}}}
     :component appearance/appearance}
    {:name      :appearance-profile-pic
-    :title (i18n/label :t/show-profile-pictures)
+    :options {:topBar {:title {:text (i18n/label :t/show-profile-pictures)}}}
     :component appearance/profile-pic}
    {:name      :notifications
-    :title (i18n/label :t/notification-settings)
+    :options {:topBar {:title {:text (i18n/label :t/notification-settings)}}}
     :component notifications-settings/notifications-settings}
    {:name      :notifications-servers
-    :title (i18n/label :t/notification-servers)
+    :options {:topBar {:title {:text (i18n/label :t/notification-servers)}}}
     :component notifications-settings/notifications-servers}
    {:name      :sync-settings
-    ;;TODO dynamic title
-    :options   {:topBar {:visible false}}
+    :options {:topBar {:title {:text (i18n/label :t/sync-settings)}}}
     :component sync-settings/sync-settings}
    {:name      :advanced-settings
-    :title (i18n/label :t/advanced)
+    :options {:topBar {:title {:text (i18n/label :t/advanced)}}}
     :component advanced-settings/advanced-settings}
    {:name      :help-center
-    :title (i18n/label :t/need-help)
+    :options {:topBar {:title {:text (i18n/label :t/need-help)}}}
     :component help-center/help-center}
    {:name      :glossary
-    :title (i18n/label :t/glossary)
+    :options {:topBar {:title {:text (i18n/label :t/glossary)}}}
     :component glossary/glossary}
    {:name      :about-app
-    :title (i18n/label :t/about-app)
+    :options {:topBar {:title {:text (i18n/label :t/about-app)}}}
     :component about-app/about-app}
    {:name      :manage-dapps-permissions
     ;;TODO dynamic title
     :options   {:topBar {:visible false}}
     :component dapps-permissions/manage}
    {:name      :network-settings
-    ;;TODO dynamic title
+    ;;TODO accessories
     :options   {:topBar {:visible false}}
     :component network/network-settings}
    {:name      :network-details
-    :title (i18n/label :t/network-details)
+    :options {:topBar {:title {:text (i18n/label :t/network-details)}}}
     :component network-details/network-details}
    {:name      :network-info
-    :title (i18n/label :t/network-info)
+    :options {:topBar {:title {:text (i18n/label :t/network-info)}}}
     :component network-info/network-info}
    {:name      :rpc-usage-info
-    :title (i18n/label :t/rpc-usage-info)
+    :options {:topBar {:title {:text (i18n/label :t/rpc-usage-info)}}}
     :component rpc-usage-info/usage-info}
    {:name      :edit-network
-    :title (i18n/label :t/add-network)
+    :options {:topBar {:title {:text (i18n/label :t/add-network)}}}
     :component edit-network/edit-network}
    {:name      :log-level-settings
-    :title (i18n/label :t/log-level-settings)
+    :options {:topBar {:title {:text (i18n/label :t/log-level-settings)}}}
     :component log-level-settings/log-level-settings}
    {:name      :fleet-settings
-    :title (i18n/label :t/fleet-settings)
+    :options {:topBar {:title {:text (i18n/label :t/fleet-settings)}}}
     :component fleet-settings/fleet-settings}
    {:name      :mobile-network-settings
-    :title (i18n/label :t/mobile-network-settings)
+    :options {:topBar {:title {:text (i18n/label :t/mobile-network-settings)}}}
     :component mobile-network-settings/mobile-network-settings}
    {:name      :backup-seed
-    ;;TODO dynamic title
+    ;;TODO dynamic navigation
     :options   {:topBar {:visible false}}
     :component profile.seed/backup-seed}
    {:name       :delete-profile
-    :transition :presentation-ios
     :insets     {:bottom true}
-    ;;TODO dynamic title
-    :options   {:topBar {:visible false}}
     :component  delete-profile/delete-profile}
    {:name      :default-sync-period-settings
     :component default-sync-period-settings/default-sync-period-settings}
@@ -458,43 +476,43 @@
    ;;MODALS
 
    ;[Chat] New Chat
-   {:name       :new-chat
-    :on-focus   [::new-chat.events/new-chat-focus]
-    ;;TODO custom topbar
-    :options    {:topBar {:visible false}}
-    :component  new-chat/new-chat}
+   {:name      :new-chat
+    :on-focus  [::new-chat.events/new-chat-focus]
+    ;;TODO accessories
+    :options   {:topBar {:visible false}}
+    :component new-chat/new-chat}
 
    ;[Chat] New Public chat
-   {:name       :new-public-chat
-    :insets     {:bottom true}
-    :title      (i18n/label :t/new-public-group-chat)
-    :component  new-public-chat/new-public-chat}
+   {:name      :new-public-chat
+    :insets    {:bottom true}
+    :options {:topBar {:title {:text (i18n/label :t/new-public-group-chat)}}}
+    :component new-public-chat/new-public-chat}
 
    ;[Chat] Link preview settings
-   {:name       :link-preview-settings
-    :title      (i18n/label :t/chat-link-previews)
-    :component  link-previews-settings/link-previews-settings}
+   {:name      :link-preview-settings
+    :options {:topBar {:title {:text (i18n/label :t/chat-link-previews)}}}
+    :component link-previews-settings/link-previews-settings}
 
    ;[Chat] Edit nickname
-   {:name       :nickname
-    :insets     {:bottom true}
-    ;;TODO subtitle
-    :options    {:topBar {:visible false}}
-    :component  contact/nickname}
+   {:name      :nickname
+    :insets    {:bottom true}
+    ;;TODO dyn subtitle
+    :options   {:topBar {:visible false}}
+    :component contact/nickname}
 
    ;[Group chat] Edit group chat name
-   {:name       :edit-group-chat-name
-    :insets     {:bottom true}
-    :title      (i18n/label :t/edit-group)
-    :component  group-chat/edit-group-chat-name}
+   {:name      :edit-group-chat-name
+    :insets    {:bottom true}
+    :options {:topBar {:title {:text (i18n/label :t/edit-group)}}}
+    :component group-chat/edit-group-chat-name}
 
    ;[Group chat] Add participants
-   {:name       :add-participants-toggle-list
-    :on-focus   [:group/add-participants-toggle-list]
-    :insets     {:bottom true}
-    ;;TODO subtitle
-    :options    {:topBar {:visible false}}
-    :component  group-chat/add-participants-toggle-list}
+   {:name      :add-participants-toggle-list
+    :on-focus  [:group/add-participants-toggle-list]
+    :insets    {:bottom true}
+    ;;TODO dyn subtitle
+    :options   {:topBar {:visible false}}
+    :component group-chat/add-participants-toggle-list}
 
    ;[Communities] Invite people
    {:name      :invite-people-community
@@ -502,121 +520,130 @@
     :insets    {:bottom true}}
 
    ;New Contact
-   {:name       :new-contact
-    :on-focus   [::new-chat.events/new-chat-focus]
-    ;;TODO custom topbar
-    :options    {:topBar {:visible false}}
-    :component  new-chat/new-contact}
+   {:name      :new-contact
+    :on-focus  [::new-chat.events/new-chat-focus]
+    ;;TODO accessories
+    :options   {:topBar {:visible false}}
+    :component new-chat/new-contact}
 
    ;Refferal invite
-   {:name       :referral-invite
-    :insets     {:bottom true}
-    :title      (i18n/label :t/invite-friends)
-    :component  invite/referral-invite}
+   {:name      :referral-invite
+    :insets    {:bottom true}
+    :options {:topBar {:title {:text (i18n/label :t/invite-friends)}}}
+    :component invite/referral-invite}
 
    ;[Wallet] Recipient
-   {:name       :recipient
-    :insets     {:bottom true}
-    ;;TODO custom topbar
-    :options    {:topBar {:visible false}}
-    :component  recipient/recipient}
+   {:name      :recipient
+    :insets    {:bottom true}
+    ;;TODO accessories
+    :options   {:topBar {:visible false}}
+    :component recipient/recipient}
 
    ;[Wallet] New favourite
-   {:name       :new-favourite
-    :insets     {:bottom true}
-    :title      (i18n/label :t/new-favourite)
-    :component  recipient/new-favourite}
+   {:name      :new-favourite
+    :insets    {:bottom true}
+    :options {:topBar {:title {:text (i18n/label :t/new-favourite)}}}
+    :component recipient/new-favourite}
 
    ;QR Scanner
    {:name      :qr-scanner
     :insets    {:top false :bottom false}
     ;;TODO custom topbar
-    :options   {:topBar    {:visible false}
+    :options   {:topBar        {:visible false}
                 :navigationBar {:backgroundColor colors/black-persist}
-                :statusBar {:backgroundColor colors/black-persist
-                            :style           :light}}
+                :statusBar     {:backgroundColor colors/black-persist
+                                :style           :light}}
     :component qr-scanner/qr-scanner}
 
    ;;TODO WHY MODAL?
    ;[Profile] Notifications settings
-   {:name         :notifications-settings
-    :back-handler :noop
-    :insets       {:bottom true}
-    :title        (i18n/label :t/notification-settings)
-    :component    notifications-settings/notifications-settings}
+   {:name      :notifications-settings
+    :options   {:topBar {:title {:text (i18n/label :t/notification-settings)}}
+                :popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :insets    {:bottom true}
+    :component notifications-settings/notifications-settings}
 
    ;;TODO WHY MODAL?
    ;[Profile] Notifications Advanced settings
-   {:name         :notifications-advanced-settings
-    :back-handler :noop
-    :title        (i18n/label :t/notification-settings)
-    :insets       {:bottom true}
-    :component    notifications-settings/notifications-advanced-settings}
+   {:name      :notifications-advanced-settings
+    :options   {:topBar {:title {:text (i18n/label :t/notification-settings)}}
+                :popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :insets    {:bottom true}
+    :component notifications-settings/notifications-advanced-settings}
 
    ;[Wallet] Prepare Transaction
-   {:name       :prepare-send-transaction
-    :insets     {:bottom true}
-    ;;TODO custom back handler
-    :options    {:topBar {:visible false}}
-    :component  wallet/prepare-send-transaction}
+   {:name      :prepare-send-transaction
+    ;;TODO custom back handler, we could have on-blure, similar to on-focus
+    :options   {:topBar {:visible false}}
+    :component wallet/prepare-send-transaction}
 
    ;[Wallet] Request Transaction
-   {:name       :request-transaction
-    :insets     {:bottom true}
+   {:name      :request-transaction
+    :insets    {:bottom true}
     ;;TODO custom back handler
-    :options    {:topBar {:visible false}}
-    :component  wallet/request-transaction}
+    :options   {:topBar {:visible false}}
+    :component wallet/request-transaction}
 
    ;[Wallet] Buy crypto
-   {:name       :buy-crypto
-    :insets     {:bottom true}
-    :component  wallet.buy-crypto/container}
+   {:name      :buy-crypto
+    :insets    {:bottom true}
+    :component wallet.buy-crypto/container}
 
    ;[Wallet] Buy crypto website
-   {:name       :buy-crypto-website
-    :insets     {:bottom true}
+   {:name      :buy-crypto-website
+    :insets    {:bottom true}
     ;;TODO subtitle
-    :options    {:topBar {:visible false}}
-    :component  wallet.buy-crypto/website}
+    :options   {:topBar {:visible false}}
+    :component wallet.buy-crypto/website}
 
    ;My Status
-   {:name       :my-status
-    :insets     {:bottom true}
-    :title      (i18n/label :t/my-status)
-    :component  status.new/my-status}
+   {:name      :my-status
+    :insets    {:bottom true}
+    :options {:topBar {:title {:text (i18n/label :t/my-status)}}}
+    :component status.new/my-status}
 
    ;[Browser] New bookmark
-   {:name       :new-bookmark
-    :insets     {:bottom true}
+   {:name      :new-bookmark
+    :insets    {:bottom true}
     ;;TODO dynamic title
-    :options    {:topBar {:visible false}}
-    :component  bookmarks/new-bookmark}
+    :options   {:topBar {:visible false}}
+    :component bookmarks/new-bookmark}
 
    ;Profile
-   {:name       :profile
-    :insets     {:bottom true}
+   {:name      :profile
+    :insets    {:bottom true}
     ;;TODO custom toolbar
-    :options    {:topBar {:visible false}}
-    :component  contact/profile}
+    :options   {:topBar {:visible false}}
+    :component contact/profile}
 
    ;KEYCARD
    {:name         :keycard-onboarding-intro
     :back-handler keycard.core/onboarding-intro-back-handler
     :component    keycard.onboarding/intro}
-   {:name         :keycard-onboarding-puk-code
-    :back-handler :noop
+   {:name      :keycard-onboarding-puk-code
+    :options   {:topBar {:visible false}
+                :popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
     ;;TODO dynamic
-    :options      {:topBar {:visible false}}
-    :component    keycard.onboarding/puk-code}
-   {:name         :keycard-onboarding-pin
-    :back-handler :noop
+    :component keycard.onboarding/puk-code}
+   {:name      :keycard-onboarding-pin
+    :options   {:topBar {:visible false}
+                :popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
     ;;TODO dynamic
-    :options      {:topBar {:visible false}}
-    :component    keycard.onboarding/pin}
-   {:name         :keycard-recovery-pair
-    :back-handler :noop
-    :title        (i18n/label :t/step-i-of-n {:number 2 :step 1})
-    :component    keycard.recovery/pair}
+    :component keycard.onboarding/pin}
+   {:name      :keycard-recovery-pair
+    :options   {:topBar {:title {:text (i18n/label :t/step-i-of-n {:number 2 :step 1})}}
+                :popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :component keycard.recovery/pair}
    {:name      :seed-phrase
     ;;TODO subtitle
     :options   {:topBar {:visible false}}
@@ -633,22 +660,32 @@
     :options   {:topBar {:visible false}}
     ;;TODO move to popover?
     :component keycard/not-keycard}
-   {:name         :keycard-onboarding-recovery-phrase
-    :back-handler :noop
-    :component    keycard.onboarding/recovery-phrase}
-   {:name         :keycard-onboarding-recovery-phrase-confirm-word1
-    :back-handler :noop
-    :component    keycard.onboarding/recovery-phrase-confirm-word}
-   {:name         :keycard-onboarding-recovery-phrase-confirm-word2
-    :back-handler :noop
-    :component    keycard.onboarding/recovery-phrase-confirm-word}
-   {:name         :keycard-recovery-intro
-    :back-handler :noop
-    :component    keycard.recovery/intro}
-   {:name         :keycard-recovery-success
-    :back-handler :noop
-    :insets       {:bottom true}
-    :component    keycard.recovery/success}
+   {:name      :keycard-onboarding-recovery-phrase
+    :options   {:popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :component keycard.onboarding/recovery-phrase}
+   {:name      :keycard-onboarding-recovery-phrase-confirm-word1
+    :options   {:popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :component keycard.onboarding/recovery-phrase-confirm-word}
+   {:name      :keycard-onboarding-recovery-phrase-confirm-word2
+    :options   {:popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :component keycard.onboarding/recovery-phrase-confirm-word}
+   {:name      :keycard-recovery-intro
+    :options   {:popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :component keycard.recovery/intro}
+   {:name      :keycard-recovery-success
+    :options   {:popGesture         false
+                :hardwareBackButton {:dismissModalOnPress false
+                                     :popStackOnPress     false}}
+    :insets    {:bottom true}
+    :component keycard.recovery/success}
    {:name      :keycard-recovery-no-key
     :component keycard.recovery/no-key}
    {:name      :keycard-authentication-method
@@ -660,10 +697,10 @@
    {:name      :keycard-unpaired
     :component keycard/unpaired}
    {:name      :keycard-settings
-    :title (i18n/label :t/status-keycard)
+    :options {:topBar {:title {:text (i18n/label :t/status-keycard)}}}
     :component keycard.settings/keycard-settings}
    {:name      :reset-card
-    :title (i18n/label :t/reset-card)
+    :options {:topBar {:title {:text (i18n/label :t/reset-card)}}}
     :component keycard.settings/reset-card}
    {:name      :keycard-pin
     ;;TODO dynamic title
@@ -680,14 +717,17 @@
 
    ;;KEYSTORAGE
    {:name      :actions-not-logged-in
+    ;;TODO: topbar
     :options   {:topBar {:visible false}}
     ;;TODO move to popover?
     :component key-storage.views/actions-not-logged-in}
    {:name      :actions-logged-in
+    ;;TODO: topbar
     :options   {:topBar {:visible false}}
     ;;TODO move to popover?
     :component key-storage.views/actions-logged-in}
    {:name      :storage
+    ;;TODO: topbar
     :options   {:topBar {:visible false}}
     ;;TODO move to popover?
     :component key-storage.views/storage}
