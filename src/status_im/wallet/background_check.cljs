@@ -94,8 +94,15 @@
   [cofx {:keys [rpc-url cached-balances] :as configs}]
   (log/debug "Configuration retrieved" configs)
   (let [addresses (mapv :address cached-balances)]
-    {:local/local-pushes-ios [{:title   "RETRIEVED CACHED BALANCES"
-                               :message (str rpc-url " " (count cached-balances))}]
+    {:local/local-pushes-ios (mapv
+                              (fn [{:keys [address nonce balance]}]
+                                {:title   "CACHED DATA"
+                                 :message (clojure.string/join
+                                           " "
+                                           ["address:" address
+                                            "nonce:" nonce
+                                            "balance:" balance])})
+                              cached-balances)
      :http-post
      {:url      rpc-url
       :data     (prepare-batch-request "eth_getBalance" addresses)
