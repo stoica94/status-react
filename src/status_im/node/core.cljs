@@ -97,7 +97,7 @@
       (get-base-node-config)
 
       current-fleet
-      (assoc :NoDiscovery   false
+      (assoc :NoDiscovery   wakuv2-enabled
              :Rendezvous    (boolean (seq rendezvous-nodes))
              :ClusterConfig {:Enabled true
                              :Fleet              (name current-fleet-key)
@@ -109,6 +109,8 @@
                              (into (pick-nodes 2
                                                (vals (:whisper current-fleet)))
                                    (vals (:static current-fleet)))
+                             :WakuNodes (vals (:wakuv2 current-fleet))
+                             :WakuStoreNodes (vals (:wakuv2 current-fleet))
                              :RendezvousNodes    rendezvous-nodes})
 
       :always
@@ -159,6 +161,7 @@ app-db"
   {:events [::save-new-config]}
   [{:keys [db]} config {:keys [on-success]}]
   (log/info "### save-new-config" (:WakuV2Config config))
+  (log/info "### save-new-config cluster" (:ClusterConfig config))
   {::json-rpc/call [{:method "settings_saveSetting"
                      :params [:node-config config]
                      :on-success on-success}]})
