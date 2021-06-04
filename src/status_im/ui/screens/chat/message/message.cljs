@@ -23,7 +23,9 @@
             [status-im.ui.screens.chat.components.reply :as components.reply]
             [status-im.ui.screens.chat.message.link-preview :as link-preview]
             [status-im.ui.screens.communities.icon :as communities.icon]
-            [status-im.chat.models.pin-message :as models.pin-message])
+            [status-im.chat.models.pin-message :as models.pin-message]
+            [status-im.ui.components.list.views :as list]
+            [status-im.utils.handlers :refer [<sub]])
   (:require-macros [status-im.utils.views :refer [defview letsubs]]))
 
 (defview mention-element [from]
@@ -360,12 +362,13 @@
 (def message-height-px 200)
 (def max-message-height-px 150)
 
-(defn on-long-press-fn [on-long-press {:keys [public? pinned?] :as message} content]
+(defn on-long-press-fn [on-long-press {:keys [public? pinned? chat-id] :as message} content]
   (let [{:keys [group-chat community-id admins]} @(re-frame/subscribe [:chats/current-chat-chat-view])
         current-pk @(re-frame/subscribe [:multiaccount/public-key])
         community @(re-frame/subscribe [:communities/community community-id])
         group-admin? (get admins current-pk)
-        community-admin? (when community (community :admin))]
+        community-admin? (when community (community :admin))
+        pinned-messages @(re-frame/subscribe [:chats/pinned chat-id])]
     (on-long-press
      (concat
       (when (:show-input? message)
@@ -379,7 +382,13 @@
                  (or (not group-chat)
                      (and group-chat
                           (or group-admin?
-                              community-admin?)))) [{:on-press #(re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned? (not pinned?))])
+                              community-admin?)))) [{:on-press #(if (and (not pinned?) (> (count pinned-messages) 2))
+                                                                  (re-frame/dispatch [:show-popover {:view :pin-limit
+                                                                                                     :chat-id chat-id}])
+                                                                  ;; (re-frame/dispatch [::models.pin-message/send-pin-message (assoc message :pinned? (not pinned?))])
+                                                                  (re-frame/dispatch [:hide-popover])
+                                                                  
+                                                                  )
                                                      :label    (if pinned? (i18n/label :t/unpin) (i18n/label :t/pin))}])))))
 
 (defn collapsible-text-message [{:keys [mentioned]} _]
@@ -563,3 +572,45 @@
    (when pinned?
      [react/view {:style (style/pin-indicator-container outgoing)}
       [pinned-by-indicator outgoing display-photo? pinned-by]])])
+
+(defn render-pin-fn [{:keys [outgoing type] :as message}
+                     idx
+                     _
+                     {:keys [group-chat public? current-public-key space-keeper chat-id show-input?]}]
+  [react/view
+   [chat-message
+    (assoc message
+           :incoming-group (and group-chat (not outgoing))
+           :group-chat group-chat
+           :public? public?
+           :current-public-key current-public-key
+           :show-input? show-input?
+           :pinned? false
+           :outgoing false
+           :display-username? true)
+    space-keeper]])
+
+(def list-key-fn #(or (:message-id %) (:value %)))
+
+(defn pinned-messages-view [chat-id]
+  (let [pinned-messages @(re-frame/subscribe [:chats/pinned chat-id])
+        current-public-key @(re-frame/subscribe [:multiaccount/public-key])]
+    ;;do not use anonymous functions for handlers
+    (println pinned-messages "pinned-messages")
+    [list/flat-list
+     {:key-fn                       list-key-fn
+      :data                         (reverse (vals pinned-messages))
+      :render-data                  {:chat-id chat-id}
+      :render-fn                    render-pin-fn
+      :on-scroll-to-index-failed    identity              ;;don't remove this
+      :content-container-style      {:padding-top 16
+                                     :padding-bottom 16
+                                     }}]))
+
+(defn pin-limit-popover []
+  (let [{:keys [chat-id]} @(re-frame/subscribe [:chats/current-chat-chat-view])]
+    (println chat-id "SDAS")
+    [react/view {:margin-top         24}
+     [react/text {:style {:padding-horizontal 40}}
+      "Pin limit reached. Unpin a previous message first."]
+     [pinned-messages-view chat-id]]))

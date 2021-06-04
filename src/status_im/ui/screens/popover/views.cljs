@@ -17,7 +17,8 @@
             [status-im.ui.screens.signing.views :as signing]
             [status-im.ui.screens.biometric.views :as biometric]
             [status-im.ui.components.colors :as colors]
-            [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]))
+            [status-im.ui.screens.keycard.frozen-card.view :as frozen-card]
+            [status-im.ui.screens.chat.message.message :as message]))
 
 (defn hide-panel-anim
   [bottom-anim-value alpha-value window-height]
@@ -164,6 +165,9 @@
                    (= :transfer-multiaccount-unknown-error view)
                    [multiaccounts.key-storage/unknown-error-popover]
 
+                   (= :pin-limit view)
+                   [message/pin-limit-popover]
+                   
                    :else
                    [view])]]]]])))})))
 
