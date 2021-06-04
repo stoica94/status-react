@@ -16,7 +16,13 @@
 (defn finish-task [id]
   (.finish ^js background-fetch id))
 
-(re-frame/reg-fx ::finish-task finish-task)
+(defn finish-with-timeout [id]
+  (js/setTimeout
+   (fn []
+     (finish-task id))
+   100))
+
+(re-frame/reg-fx ::finish-task finish-with-timeout)
 
 (fx/defn finish [{:keys [db]} message]
   {:events [::finish]}
@@ -199,11 +205,10 @@
     (fx/merge
      cofx
      {:local/local-pushes-ios [{:title   "TASK FINISHED"
-                                :message (str addresses-with-changes)}]
-      :dispatch-later         [{:ms       100
-                                :dispatch [::finish  "successfully finished"]}]}
+                                :message (str addresses-with-changes)}]}
      (update-cache cached-balances addresses-with-changes latest)
-     (notify addresses-with-changes latest))))
+     (notify addresses-with-changes latest)
+     (finish "successfully finished"))))
 
 (defn on-event [task-id]
   (re-frame.core/dispatch [::perform-check task-id]))
