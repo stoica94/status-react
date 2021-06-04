@@ -277,15 +277,21 @@
 
 (defn change-pin [{:keys [current-pin new-pin on-success on-failure]}]
   (authorized-action current-pin on-failure
-                     #(swap! state assoc :pin new-pin)))
+                     (fn []
+                       (swap! state assoc :pin new-pin)
+                       (on-success))))
 
 (defn change-puk [{:keys [pin puk on-success on-failure]}]
   (authorized-action pin on-failure
-                     #(swap! state assoc :puk puk)))
+                     (fn []
+                       (swap! state assoc :puk puk)
+                       (on-success))))
 
 (defn change-pairing [{:keys [pin pairing on-success on-failure]}]
   (authorized-action pin on-failure
-                     #(swap! state assoc :password pairing)))
+                     (fn []
+                       (swap! state assoc :password pairing)
+                       (on-success))))
 
 (defn unpair [args]
   (log/warn "unpair not implemented" args))
