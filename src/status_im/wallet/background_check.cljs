@@ -201,10 +201,9 @@
      {:local/local-pushes-ios [{:title   "TASK FINISHED"
                                 :message (str addresses-with-changes)}]
       :dispatch-later         [{:ms       100
-                                :dispatch [::finish]}]}
+                                :dispatch [::finish  "successfully finished"]}]}
      (update-cache cached-balances addresses-with-changes latest)
-     (notify addresses-with-changes latest)
-     (finish "successfully finished"))))
+     (notify addresses-with-changes latest))))
 
 (defn on-event [task-id]
   (re-frame.core/dispatch [::perform-check task-id]))
