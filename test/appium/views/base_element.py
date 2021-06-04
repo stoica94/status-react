@@ -220,7 +220,8 @@ class BaseElement(object):
         if diff_ratio*100 >  diff:
             self.driver.info('Image differs from template to %s percents' % str(diff_ratio*100))
             result = True
-        return result
+        #return result
+        return diff_ratio*10
 
     def is_element_image_similar_to_template(self, template_path: str = ''):
         image_template = os.sep.join(__file__.split(os.sep)[:-1]) + '/elements_templates/%s' % template_path

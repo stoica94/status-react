@@ -24,6 +24,9 @@ class TestDApps(SingleDeviceTestCase):
         if not dapp.element_by_text_part(camera_request_blocked).is_element_displayed():
             self.driver.fail("There is no pop-up notifying that camera access need to be granted in app")
         camera_dapp.swipe_down()
+        camera_dapp.camera_image_in_dapp.save_new_screenshot_of_element('blank_camera_image_real.png')
+        print("***********\n")
+        print(camera_dapp.camera_image_in_dapp.is_element_differs_from_template('blank_camera_image.png'))
         if not camera_dapp.camera_image_in_dapp.is_element_image_similar_to_template('blank_camera_image.png'):
             self.driver.fail("Even camera permissions not allowed - acccess to camera granted")
 

@@ -126,7 +126,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                                      recipient='0x%s' % recipient['address'],
                                      asset_name='ADI',
                                      default_gas_price=False)
-        self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True, decimals=7)
+        transaction = wallet_view.find_transaction_in_history(amount=amount, asset='ADI', return_hash=True)
+        self.network_api.find_transaction_by_hash(transaction)
 
 
     @marks.testrail_id(5412)

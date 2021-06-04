@@ -65,13 +65,10 @@ class NetworkApi(object):
         method = self.network_url + 'module=proxy&action=eth_blockNumber'
         return int(requests.request('GET', url=method).json()['result'], 0)
 
-    def find_transaction_by_hash(self, address: str, transaction_hash: str):
-        transactions = self.get_transactions(address=address)
-        for transaction in transactions:
-            if transaction['hash'] == transaction_hash:
-                logging.info('Transaction is found in Ropsten network')
-                return
-        pytest.fail('Transaction is not found in Ropsten network')
+    def find_transaction_by_hash(self,transaction_hash: str):
+        transaction = w3.transaction_status(transaction_hash)
+        if not transaction['blockHash']:
+            self.log("TX %s is still pending" %transaction_hash)
 
     def find_transaction_by_unique_amount(self, address, amount, token=False, decimals=18, wait_time=90):
         print("something is happening")

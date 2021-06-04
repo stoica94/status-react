@@ -24,15 +24,10 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
                                      keycard=True,
                                      recipient='0x%s'%recipient['address'],
                                      default_gas_price=False)
-        self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
         wallet_view.just_fyi('Check that transaction is appeared in transaction history')
-        wallet_view.find_transaction_in_history(amount=transaction_amount)
-
-        wallet_view.just_fyi('Check logcat for sensitive data')
-        values_in_logcat = wallet_view.find_values_in_logcat(pin=pin, puk=puk, password=pair_code)
-        if values_in_logcat:
-            self.driver.fail(values_in_logcat)
+        transaction = wallet_view.find_transaction_in_history(amount=transaction_amount, return_hash=True)
+        self.network_api.find_transaction_by_hash(transaction)
 
 
     @marks.testrail_id(6290)

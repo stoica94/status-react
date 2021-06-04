@@ -509,6 +509,9 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
             self.errors.append("Accept contacts from setting is not preserved after upgrade!")
         profile_1.profile_button.click()
         profile_1.appearance_button.click()
+        profile_1.show_profile_pictures_of.save_new_screenshot_of_element('block_dark_real.png')
+        print("***********\n")
+        print(profile_1.show_profile_pictures_of.is_element_differs_from_template('block_dark.png'))
         if not profile_1.show_profile_pictures_of.is_element_image_similar_to_template('block_dark.png'):
             self.errors.append('Dark mode is not applied!')
         if not profile_1.element_by_translation_id("everyone").is_element_displayed():
@@ -529,6 +532,9 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
 
         device_2.just_fyi("Check activity centre and profile photo")
         home_2.profile_button.click()
+        profile_2.profile_picture.save_new_screenshot_of_element('sauce_logo_profile_real.png')
+        print("***********\n")
+        print(profile_2.profile_picture.is_element_differs_from_template('sauce_logo_profile.png'))
         if not profile_2.profile_picture.is_element_image_similar_to_template('sauce_logo_profile.png'):
             self.errors.append('Profile picture was not shown after upgrade')
         profile_2.home_button.click()
@@ -543,6 +549,9 @@ class TestUpgradeMultipleApplication(MultipleDeviceTestCase):
         chat_1.home_button.click()
         chat_2 = home_2.get_chat('@%s' % user['ens']).click()
         chat_2.send_message(message)
+        home_1.get_chat(username_2).save_new_screenshot_of_element('dark_sauce_logo_real.png')
+        print("***********\n")
+        print(home_1.get_chat(username_2).is_element_differs_from_template('dark_sauce_logo.png'))
         if not home_1.get_chat(username_2).chat_image.is_element_image_similar_to_template('dark_sauce_logo.png'):
             self.errors.append('User profile picture was not updated on Chats view')
 
