@@ -27,7 +27,7 @@
 (defn connect-selected-card []
   (swap! state assoc :application-info
          {:free-pairing-slots     5
-          :app-version            "2.2"
+          :app-version            "3.0"
           :secure-channel-pub-key "04c3071768912a515c00aeab7ceb8a5bfda91d036f4a4e60b7944cee3ca7fb67b6d118e8df1e2480b87fd636c6615253245bbbc93a6a407f155f2c58f76c96ef0e",
           :instance-uid           "1b360b10a9a68b7d494e8f059059f118"
           :paired?                true
@@ -44,7 +44,7 @@
   (reset! initialization false)
   (swap! state assoc :application-info
          {:free-pairing-slots     5
-          :app-version            "2.2"
+          :app-version            "3.0"
           :secure-channel-pub-key "04c3071768912a515c00aeab7ceb8a5bfda91d036f4a4e60b7944cee3ca7fb67b6d118e8df1e2480b87fd636c6615253245bbbc93a6a407f155f2c58f76c96ef0e",
           :instance-uid           "1b360b10a9a68b7d494e8f059059f118"
           :paired?                false
@@ -66,6 +66,27 @@
 (defn- later [f]
   (when f
     (utils/set-timeout f 500)))
+
+(defn pin-error []
+  #js {:code    "EUNSPECIFIED"
+       :message (str "Unexpected error SW, 0x63C" (get-in @state [:application-info :pin-retry-counter]))})
+
+(defn puk-error []
+  #js {:code    "EUNSPECIFIED"
+       :message (str "Unexpected error SW, 0x63C" (get-in @state [:application-info :puk-retry-counter]))})
+
+(defn authorized-action [pin on-failure on-valid]
+  (if (= pin (get @state :pin))
+    (do
+      (swap! state update :application-info assoc
+             :pin-retry-counter 3
+             :puk-retry-counter 5)
+      (later on-valid))
+    (do
+      (swap! state update-in
+             [:application-info :pin-retry-counter]
+             (fnil dec 3))
+      (later #(on-failure (pin-error))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -119,7 +140,11 @@
   (log/debug "get-application-info")
   (later #(on-success (get @state :application-info))))
 
-(defn factory-reset [_])
+(defn factory-reset [args]
+  (log/debug "factory-reset")
+  (reset-state)
+  (get-application-info args))
+
 (defn install-applet [_])
 (defn install-cash-applet [_])
 
@@ -129,14 +154,16 @@
   (reset! initialization true)
   (swap! state assoc :application-info
          {:free-pairing-slots     5
-          :app-version            "2.2"
+          :app-version            "3.0"
           :secure-channel-pub-key "04c3071768912a515c00aeab7ceb8a5bfda91d036f4a4e60b7944cee3ca7fb67b6d118e8df1e2480b87fd636c6615253245bbbc93a6a407f155f2c58f76c96ef0e",
           :key-uid                "",
           :instance-uid           "1b360b10a9a68b7d494e8f059059f118"
           :paired?                false
           :has-master-key?        false
+          :pin-retry-counter      3
+          :puk-retry-counter      5
           :initialized?           true})
-  (swap! state assoc :pin pin)
+  (swap! state assoc :pin pin :puk default-puk :password kk1-password)
   (later
    #(on-success {:password kk1-password
                  :puk      default-puk
@@ -206,7 +233,7 @@
                    (reset! derived-acc
                            {:root-key root-data
                             :derived  derived-data-extended})))))))))))
-  (when (= password kk1-password)
+  (when (= password (get @state :password))
     (do
       (swap! state assoc-in [:application-info :paired?] true)
       (later #(on-success (str (rand-int 10000000)))))))
@@ -232,7 +259,7 @@
 
 (defn unblock-pin
   [{:keys [puk on-success on-failure]}]
-  (if (= puk default-puk)
+  (if (= puk (get @state :puk))
     (do
       (swap! state update :application-info assoc
              :pin-retry-counter 3
@@ -243,27 +270,23 @@
              [:application-info :puk-retry-counter]
              (fnil dec 5))
       (later
-       #(on-failure
-         #js {:code    "EUNSPECIFIED"
-              :message "Unexpected error SW, 0x63C2"})))))
+       #(on-failure (puk-error))))))
 
 (defn verify-pin [{:keys [pin on-success on-failure]}]
-  (if (= pin (get @state :pin))
-    (later #(on-success 3))
-    (do
-      (swap! state update-in
-             [:application-info :pin-retry-counter]
-             (fnil dec 3))
-      (later #(on-failure
-               #js {:code    "EUNSPECIFIED"
-                    :message "Unexpected error SW, 0x63C2"})))))
+  (authorized-action pin on-failure #(on-success 3)))
 
-(defn change-pin [args]
-  (log/warn "change-pin not implemented" args))
-(defn change-puk [args]
-  (log/warn "change-puk not implemented" args))
-(defn change-pairing [args]
-  (log/warn "change-pairing not implemented" args))
+(defn change-pin [{:keys [current-pin new-pin on-success on-failure]}]
+  (authorized-action current-pin on-failure
+                     #(swap! state assoc :pin new-pin)))
+
+(defn change-puk [{:keys [pin puk on-success on-failure]}]
+  (authorized-action pin on-failure
+                     #(swap! state assoc :puk puk)))
+
+(defn change-pairing [{:keys [pin pairing on-success on-failure]}]
+  (authorized-action pin on-failure
+                     #(swap! state assoc :password pairing)))
+
 (defn unpair [args]
   (log/warn "unpair not implemented" args))
 (defn delete [args]
@@ -280,37 +303,38 @@
     path))
 
 (defn export-key [{:keys [pin on-success on-failure]}]
-  (let [{:keys [key-uid wallet-root-address]}
-        (get @re-frame.db/app-db :multiaccount)
-        accounts            (get @re-frame.db/app-db :multiaccount/accounts)
-        hashed-password     (ethereum/sha3 pin)
-        path-num            (inc (get-in @re-frame.db/app-db [:multiaccount :latest-derived-path]))
-        path                (str "m/" path-num)]
-    (status/multiaccount-load-account
-     wallet-root-address
-     hashed-password
-     (fn [value]
-       (let [{:keys [id error]} (types/json->clj value)]
-         (if error
-           (re-frame/dispatch [::new-account-error :password-error error])
-           (status/multiaccount-derive-addresses
-            id
-            [path]
-            (fn [derived]
-              (let [derived-address (get-in (types/json->clj derived) [(keyword path) :address])]
-                (if (some #(= derived-address (get % :address)) accounts)
-                  (re-frame/dispatch [::new-account-error :account-error (i18n/label :t/account-exists-title)])
-                  (status/multiaccount-store-derived
-                   id
-                   key-uid
-                   [path]
-                   hashed-password
-                   (fn [result]
-                     (let [{:keys [error] :as result}  (types/json->clj result)
-                           {:keys [publicKey]} (get result (keyword path))]
-                       (if error
-                         (on-failure error)
-                         (on-success publicKey)))))))))))))))
+  (authorized-action pin on-failure
+                     #(let [{:keys [key-uid wallet-root-address]}
+                            (get @re-frame.db/app-db :multiaccount)
+                            accounts            (get @re-frame.db/app-db :multiaccount/accounts)
+                            hashed-password     (ethereum/sha3 pin)
+                            path-num            (inc (get-in @re-frame.db/app-db [:multiaccount :latest-derived-path]))
+                            path                (str "m/" path-num)]
+                        (status/multiaccount-load-account
+                         wallet-root-address
+                         hashed-password
+                         (fn [value]
+                           (let [{:keys [id error]} (types/json->clj value)]
+                             (if error
+                               (re-frame/dispatch [::new-account-error :password-error error])
+                               (status/multiaccount-derive-addresses
+                                id
+                                [path]
+                                (fn [derived]
+                                  (let [derived-address (get-in (types/json->clj derived) [(keyword path) :address])]
+                                    (if (some (fn [a] (= derived-address (get a :address))) accounts)
+                                      (re-frame/dispatch [::new-account-error :account-error (i18n/label :t/account-exists-title)])
+                                      (status/multiaccount-store-derived
+                                       id
+                                       key-uid
+                                       [path]
+                                       hashed-password
+                                       (fn [result]
+                                         (let [{:keys [error] :as result}  (types/json->clj result)
+                                               {:keys [publicKey]} (get result (keyword path))]
+                                           (if error
+                                             (on-failure error)
+                                             (on-success publicKey))))))))))))))))
 
 (defn unpair-and-delete [_])
 
@@ -346,58 +370,47 @@
              [:application-info :pin-retry-counter]
              (fnil dec 3))
       (later
-       #(on-failure
-         #js {:code    "EUNSPECIFIED"
-              :message "Unexpected error SW, 0x63C2"})))))
+       #(on-failure (pin-error))))))
 
 (def import-keys get-keys)
 
 (defn sign [{:keys [pin hash data path typed? on-success on-failure]}]
-  (if (= pin (get @state :pin))
-    (later
-     #(let [address
-            (if path
-              (reduce
-               (fn [_ {:keys [address] :as acc}]
-                 (when (= path (:path acc))
-                   (reduced address)))
-               nil
-               (:multiaccount/accounts @re-frame.db/app-db))
-              (-> (:multiaccount/accounts @re-frame.db/app-db)
-                  first
-                  :address))
-            password (ethereum/sha3 pin)]
-        (if-not typed?
-          (let [params (types/clj->json
-                        {:account  address
-                         :password password
-                         :data     (or data (str "0x" hash))})]
-            (status/sign-message
-             params
-             (fn [res]
-               (let [signature (-> res
-                                   types/json->clj
-                                   :result
-                                   ethereum/normalized-hex)]
-                 (on-success signature)))))
-          (status/sign-typed-data
-           data
-           address
-           password
-           (fn [res]
-             (let [signature (-> res
-                                 types/json->clj
-                                 :result
-                                 ethereum/normalized-hex)]
-               (on-success signature)))))))
-    (do
-      (swap! state update-in
-             [:application-info :pin-retry-counter]
-             (fnil dec 3))
-      (later
-       #(on-failure
-         #js {:code    "EUNSPECIFIED"
-              :message "Unexpected error SW, 0x63C2"})))))
+  (authorized-action pin on-failure
+                     #(let [address
+                            (if path
+                              (reduce
+                               (fn [_ {:keys [address] :as acc}]
+                                 (when (= path (:path acc))
+                                   (reduced address)))
+                               nil
+                               (:multiaccount/accounts @re-frame.db/app-db))
+                              (-> (:multiaccount/accounts @re-frame.db/app-db)
+                                  first
+                                  :address))
+                            password (ethereum/sha3 pin)]
+                        (if-not typed?
+                          (let [params (types/clj->json
+                                        {:account  address
+                                         :password password
+                                         :data     (or data (str "0x" hash))})]
+                            (status/sign-message
+                             params
+                             (fn [res]
+                               (let [signature (-> res
+                                                   types/json->clj
+                                                   :result
+                                                   ethereum/normalized-hex)]
+                                 (on-success signature)))))
+                          (status/sign-typed-data
+                           data
+                           address
+                           password
+                           (fn [res]
+                             (let [signature (-> res
+                                                 types/json->clj
+                                                 :result
+                                                 ethereum/normalized-hex)]
+                               (on-success signature))))))))
 
 (defn sign-typed-data [args]
   (log/warn "sign-typed-data not implemented" args))
