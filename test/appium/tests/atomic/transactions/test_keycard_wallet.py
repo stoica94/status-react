@@ -22,7 +22,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.send_transaction(amount=transaction_amount,
                                      sign_transaction=True,
                                      keycard=True,
-                                     recipient='0x%s'%recipient['address'])
+                                     recipient='0x%s'%recipient['address'],
+                                     default_gas_price=False)
         self.network_api.find_transaction_by_unique_amount(sender['address'], transaction_amount)
 
         wallet_view.just_fyi('Check that transaction is appeared in transaction history')
@@ -59,7 +60,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         wallet_view.accounts_status_account.click_until_presence_of_element(wallet_view.send_transaction_button)
         initial_amount_STT = wallet_view.get_asset_amount_by_name('STT')
         wallet_view.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
-                                     sign_transaction=True, keycard=True)
+                                     sign_transaction=True, keycard=True, default_gas_price=False)
         sign_in_view.toggle_airplane_mode()
         self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, confirmations=6, token=True)
 

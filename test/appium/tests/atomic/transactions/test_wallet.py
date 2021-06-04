@@ -76,7 +76,7 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         asset = 'STT'
         wallet_view.accounts_status_account.click_until_presence_of_element(wallet_view.send_transaction_button)
         wallet_view.send_transaction(asset_name=asset, amount=sending_amount, recipient=recipient,
-                                     sign_transaction=True)
+                                     sign_transaction=True, default_gas_price=False)
         sign_in_view.toggle_airplane_mode()
         self.network_api.wait_for_confirmation_of_transaction(basic_user['address'], sending_amount, confirmations=6, token=True)
 
@@ -124,7 +124,8 @@ class TestTransactionWalletSingleDevice(SingleDeviceTestCase):
         amount = '0.000%s' % str(random.randint(100, 999)) + '1'
         wallet_view.send_transaction(amount=amount,
                                      recipient='0x%s' % recipient['address'],
-                                     asset_name='ADI')
+                                     asset_name='ADI',
+                                     default_gas_price=False)
         self.network_api.find_transaction_by_unique_amount(recipient['address'], amount, token=True, decimals=7)
 
 

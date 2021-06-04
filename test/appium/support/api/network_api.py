@@ -28,6 +28,7 @@ class NetworkApi(object):
 
     def get_transactions(self, address: str) -> List[dict]:
         method = self.network_url + 'module=account&action=txlist&address=0x%s&sort=desc&apikey=%s' % (address, self.api_key)
+        print(method)
         try:
             transactions_response = requests.request('GET', url=method, headers=self.headers).json()
             if transactions_response:
@@ -72,7 +73,8 @@ class NetworkApi(object):
                 return
         pytest.fail('Transaction is not found in Ropsten network')
 
-    def find_transaction_by_unique_amount(self, address, amount, token=False, decimals=18, wait_time=600):
+    def find_transaction_by_unique_amount(self, address, amount, token=False, decimals=18, wait_time=90):
+        print("something is happening")
         additional_info = 'token transactions' if token else 'ETH transactions'
         counter = 0
         while True:
@@ -84,13 +86,14 @@ class NetworkApi(object):
                     'Transaction with amount %s is not found in list of %s, address is %s during %ss' %
                     (amount, additional_info, address, wait_time))
             else:
-                counter += 30
-                time.sleep(30)
+                self.log("Attempts #%s" % str(int(counter / 30)))
                 try:
                     if token:
                         transactions = self.get_token_transactions(address)
                     else:
                         transactions = self.get_transactions(address)
+                    counter += 30
+                    time.sleep(30)
                 except JSONDecodeError as e:
                     self.log("No valid JSON response from Etherscan: %s " % str(e))
                     continue
