@@ -90,18 +90,28 @@
           :address
           (get-in db [:multiaccount :wallet-root-address]))})
 
-
 (comment
   (let [{:keys [key-uid name]} (-> re-frame.db/app-db deref :multiaccount
                                    (select-keys [:key-uid :name]))]
     (status/change-database-password
-     key-uid (types/clj->json {:key-uid key-uid
-                               :name name})
-     (ethereum/sha3 "111111")
-     (ethereum/sha3 "111111")
-     (partial prn ::----Here->)))
+     key-uid
+     (types/clj->json {:key-uid key-uid
+                       :name name})
+     (ethereum/sha3 "222222")
+     (ethereum/sha3 "222222")
+     (partial prn :--password-reset-cb->)))
 
   (re-frame/dispatch [:hide-popover])
-  (re-frame/dispatch [::password-reset-success])
-  )
+  (re-frame/dispatch [::password-reset-success]))
 
+(comment
+  (let [address (-> re-frame.db/app-db
+                    deref
+                    :multiaccount
+                    :wallet-root-address)
+        pass (status-im.ethereum.core/sha3 "222222")]
+    (status/verify address pass (partial prn :--verify-cb->)))
+
+  (status/verify "0xc78Cf85d18EdD71216C0F26AB6C868Bde7615C89"
+          "0x9eee2d27a15c93ea945b2de2611ae121b747246520024b79f4ecb3dfe9d9b57f"
+          prn))
